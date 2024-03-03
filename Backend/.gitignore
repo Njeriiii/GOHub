@@ -1,0 +1,26 @@
+# ignore venv
+venv
+```
+# ignore instance
+instance
+```
+
+# ignore .DS_Store
+.DS_Store
+```
+
+# ignore compiled python files
+__pycache__/
+*.pyc
+
+# Ignore temporary files
+*.tmp
+*.log
+
+# ignore .env
+.env
+```
+
+# Ignore IDE-specific files
+.vscode/
+.idea/
