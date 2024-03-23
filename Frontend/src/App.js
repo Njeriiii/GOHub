@@ -7,6 +7,7 @@ import ApiProvider from './contexts/ApiProvider';
 import OnboardingForm from './pages/OnboardingForm';
 import OrgProfileForm from './pages/OrgProfileForm';
 import OrgProfile from './pages/OrgProfile';
+import DisplayPage from './pages/DisplayPage';
 
 
 function App() {
@@ -15,7 +16,8 @@ function App() {
       <BrowserRouter>
         <ApiProvider>
           <Routes>
-            <Route path="/" element={<Navigate to="/onboarding" />} />
+            <Route path="/display" element={<DisplayPage />} />
+            <Route path="/" element={<Navigate to="/display" />} />
             <Route path="/onboarding" element={<OnboardingForm />} />
             <Route path="/org_profile_form" element={<OrgProfileForm />} />
             <Route path="/org_profile" element={<OrgProfile />} />

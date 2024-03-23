@@ -9,9 +9,15 @@ import ContactInfo from '../components/OnboardingFormComponents/ContactInfo';
 import OrgAddress from '../components/OnboardingFormComponents/OrgAddress';
 import CoverImageUpload from '../components/OnboardingFormComponents/OrgCoverImg';
 
+import { useApi } from '../contexts/ApiProvider';
+
 function OnboardingForm( ) {
 
+    // Access the navigate function from the react-router-dom
     const navigate = useNavigate();
+
+    // Access the apiClient from the ApiProvider
+    const apiClient = useApi();
 
     const adminDetailsRef = useRef(null);
     const orgDetailsRef = useRef(null);
@@ -21,7 +27,7 @@ function OnboardingForm( ) {
     const orgAddressRef = useRef(null);
     const coverImageRef = useRef(null);
 
-    const handleFormSubmit = (event) => {
+    const handleFormSubmit = async (event) => {
         event.preventDefault();
 
         // Access and utilize admin details
@@ -33,8 +39,7 @@ function OnboardingForm( ) {
         const orgAddress = orgAddressRef.current.getData();
         const coverImage = coverImageRef.current.getImage();
         
-        // Send adminDetails to the backend 
-
+        // Send data to the backend 
         const formData = {
             adminDetails,
             orgDetails,
@@ -45,20 +50,31 @@ function OnboardingForm( ) {
             coverImage
         };
 
-        navigate('/org_profile_form');
+        try {
+            console.log('Sending form data to the backend');
+            const response = await apiClient.post('/profile/org', formData);
 
+            if (response.status === 201) {
+                console.log('Form data sent successfully');
+            }
+            
+            // navigate to an organisations profile page based on the admin email in the adminDetails object
+            navigate('/org_profile_form', { state: { adminDetails } });
+
+        } catch (error) {
+            console.error('Error sending form data to the backend:', error);
+        }
     };
 
 return (
     <form  id="onboardingForm" onSubmit={handleFormSubmit}>
         <div className="space-y-12 p-12 mx-52">
-            {/* Other sections of the onboarding form */}
             <div className="flex border-b border-gray-900/10 pb-12 justify-center flex-col">
                 <h2 className="text-2xl font-semibold leading-7 text-gray-900">Onboarding Form</h2>
                 <p className="mt-1 text-xl leading-6 text-gray-600">
                     Welcome to the onboarding form. Please fill out the form below to get started.
                 </p>
-
+                
                 <fieldset className="mb-6">
                     <AdminDetails ref={adminDetailsRef} /> 
                     <OrgDetails ref={orgDetailsRef} />
@@ -77,6 +93,7 @@ return (
                         Save
                     </button>
                 </div>
+                
             </div> 
         </div>
     </form>
