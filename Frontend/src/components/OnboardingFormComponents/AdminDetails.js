@@ -4,6 +4,7 @@ const AdminDetails = forwardRef((props, ref) => {
     const [state, setState] = useState({
         name: "",
         role: "",
+        email: "",
     });
 
     const handleInputChange = (event) => {
@@ -15,8 +16,8 @@ const AdminDetails = forwardRef((props, ref) => {
     };
 
     const getData = () => {
-        const { name, role } = state;
-        return { name, role };
+        const { name, role, email } = state;
+        return { name, role, email };
     };
 
     // Expose the getData function to parent components
@@ -65,6 +66,25 @@ const AdminDetails = forwardRef((props, ref) => {
                         value={state.role} 
                         onChange={handleInputChange} 
                     />
+                </div>
+            </div>
+
+            {/* email */}
+            <div className="col-span-full">
+                <label htmlFor="adminEmail" className="block text-xl font-medium leading-6 text-gray-900">
+                    Email:
+                </label>
+                <div className="mt-2 w-1/2">
+                    <input
+                        type="text" 
+                        id="adminEmail" 
+                        name="email"   // Added email attribute
+                        rows = {2}
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        placeholder=""
+                        value={state.email}
+                        onChange={handleInputChange}
+                />
                 </div>
             </div>
         </div>

@@ -1,40 +1,58 @@
 import React, { useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import ProgramInitiativesList from '../components/OrgProfileFormComponents/ProgramsInitiatives';
 import PreviousProjectsList from '../components/OrgProfileFormComponents/PreviousProjects';
 import OngoingProjectsList from '../components/OrgProfileFormComponents/OngoingProjects';
 import SupportNeeds from '../components/OrgProfileFormComponents/SupportNeeds';
 
+import { useApi } from '../contexts/ApiProvider';
+
 function OrgProfileForm( ) {
 
     const navigate = useNavigate();
 
-    // const adminDetailsRef = useRef(null);
+    const apiClient = useApi();
+
+    // Access and utilise admin details
+    const location = useLocation();
+    const { adminDetails } = location.state || {};
+
     const programInitiativesRef = useRef(null);
     const previousProjectsRef = useRef(null);
     const ongoingProjectsRef = useRef(null);
     const supportNeedsRef = useRef(null);
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
-        // Access and utilize admin details
-        // const adminDetails = adminDetailsRef.current.getData();
         const programInitiatives = programInitiativesRef.current.getInitiativesData();
         const previousProjects = previousProjectsRef.current.getProjectsData();
         const ongoingProjects = ongoingProjectsRef.current.getProjectsData();
         const supportNeeds = supportNeedsRef.current.getSupportNeedsData();
 
-        // Send adminDetails to the backend 
         const formData = {
+            adminDetails,
             programInitiatives,
             previousProjects,
             ongoingProjects,
             supportNeeds
         };
 
-        navigate('/org_profile');
+        try {
+            console.log('Sending form data to the backend');
+            const response = await apiClient.post('/profile/org/projects_initiatives', formData);
+
+            if (response.status === 201) {
+                console.log('Form data sent successfully');
+            }
+            
+            // navigate to an organisations profile page based on the org_id
+            navigate('/org_profile', { state: { adminDetails } });
+
+        } catch (error) {
+            console.error('Error sending form data to the backend:', error);
+        }
     };
 
 return (

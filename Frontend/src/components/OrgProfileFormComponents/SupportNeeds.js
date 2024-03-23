@@ -1,26 +1,55 @@
-import React, { useState, forwardRef, useImperativeHandle } from 'react';
-import { v4 as uuidv4 } from 'uuid'; 
+import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import CreatableSelect from "react-select/creatable";
-// import 'react-selectable/css/styles.css'; // Include default styles
+import { useApi } from '../../contexts/ApiProvider';
+
+
+// Query db for tech and non-tech skills
+const fetchSkills = async (apiClient) => {
+    const response = await apiClient.get('/all_skills');
+
+    if (response.status === 200) {
+        const skills = response.body.skills;
+        const techSkillList = skills.filter(skill => skill.status === 'tech');
+        const nonTechSkillList = skills.filter(skill => skill.status === 'non-tech');
+        return { techSkillList, nonTechSkillList };
+    } else {
+        throw new Error('Error fetching skills');
+    }
+};
+
 
 
 const SupportNeeds = forwardRef((props, ref) => {
 
     const [techSkills, setTechSkills] = useState([]);
+    const [techSkillsOptions, setTechSkillOptions] = useState([]);
+
     const [nonTechSkills, setNonTechSkills] = useState([]);
+    const [nonTechSkillsOptions, setNonTechSkillOptions] = useState([]);
 
     const [needVolunteers, setNeedVolunteers] = useState(false);
 
-    const techSkillOptions = [
-        { value: 'Web Development', label: 'Web Development' },
-        { value: 'Python', label: 'Python' },
-        { value: 'UI/UX Design', label: 'UI/UX Design' },// ... more tech skills ...
-        ];
-    const nonTechSkillOptions = [
-        { value: 'Fundraising', label: 'Fundraising' },
-        { value: 'Event Planning', label: 'Event Planning' },
-        { value: 'Social Media', label: 'Social Media' },// ... more non-tech skills ...
-    ];
+    const apiClient = useApi();
+
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const skills = await fetchSkills(apiClient);
+
+                const techSkillsOptions = skills.techSkillList.map(skill => ({ value: skill.skill, label: skill.skill }));
+                setTechSkillOptions(techSkillsOptions);
+
+                const nonTechSkillsOptions = skills.nonTechSkillList.map(skill => ({ value: skill.skill, label: skill.skill }));
+                setNonTechSkillOptions(nonTechSkillsOptions);
+            } catch (error) {
+                console.error('Error fetching skills:', error);
+            }
+        };
+
+        fetchData(); 
+    }, [apiClient]);  
+
 
     const handleVolunteerCheck = (event) => {
         setNeedVolunteers(event.target.checked);
@@ -54,11 +83,10 @@ const SupportNeeds = forwardRef((props, ref) => {
                 <div>
                     <div className="mb-4">
                         <label>Technical Skills Needed:</label>
-
                         <CreatableSelect
                         id="techSkills"
                         isMulti
-                        options={techSkillOptions}
+                        options={techSkillsOptions}
                         value={techSkills}
                         onChange={handleTechSkillChange}
                         placeholder="Select or type to add"
@@ -70,7 +98,7 @@ const SupportNeeds = forwardRef((props, ref) => {
                         <CreatableSelect
                         id="nonTechSkills"
                         isMulti
-                        options={nonTechSkillOptions}
+                        options={nonTechSkillsOptions}
                         value={nonTechSkills}
                         onChange={handleNonTechSkillChange}
                         placeholder="Select or type to add"
