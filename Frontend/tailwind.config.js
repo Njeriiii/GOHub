@@ -7,7 +7,7 @@ module.exports = {
         'custom-blue': '#36B8BF',
       },
       fontFamily: {
-        sans: ["Namdhinggo", 'sans-serif'], // Replace 'My Chosen Font' with your actual font name
+        sans: ["Namdhinggo", 'sans-serif'], // Add custom font
     }
     },
   },
