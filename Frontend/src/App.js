@@ -16,8 +16,9 @@ function App() {
       <BrowserRouter>
         <ApiProvider>
           <Routes>
-            <Route path="/display" element={<DisplayPage />} />
-            <Route path="/" element={<Navigate to="/display" />} />
+            <Route path="/home" element={<DisplayPage />} />
+            <Route path="/find-gos" element={<DisplayPage />} />
+            <Route path="/" element={<Navigate to="/find-gos" />} />
             <Route path="/onboarding" element={<OnboardingForm />} />
             <Route path="/org_profile_form" element={<OrgProfileForm />} />
             <Route path="/org_profile" element={<OrgProfile />} />
