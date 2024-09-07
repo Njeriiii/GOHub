@@ -24,3 +24,9 @@ __pycache__/
 # Ignore IDE-specific files
 .vscode/
 .idea/
+
+# Ignore flask cache
+__pycache__/
+
+# Ignore flask_session
+flask_session/
