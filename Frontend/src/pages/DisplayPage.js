@@ -3,6 +3,7 @@ import { useApi } from '../contexts/ApiProvider';
 
 import KeyWordSearch from '../components/KeyWordSearch';
 import OrgDisplayCard from '../components/OrgDisplayCard';
+import Header from '../components/Header';
 
 
 // Component to load all organisations and display their name and an overview
@@ -31,10 +32,10 @@ export default function DisplayPage() {
         }
         // Update search results
         setSearchResults(results);
+        
+        // Set isElevated to true after the state is updated
         setIsElevated(true); // Show results area
     };
-
-
 
     // Fetch all organisations from the backend
     useEffect(() => {
@@ -60,32 +61,38 @@ export default function DisplayPage() {
     , [apiClient]);
 
 return (
-    <div className=''>
-
-        <KeyWordSearch orgData={orgsData} onSearchResults={handleSearch} />
-
-    {isElevated ? (
-        <div className="p-2">
-            <h2 className="text-xl font-semibold mb-4">Search Results</h2> 
-            {searchResults.map((org) => (
-                <OrgDisplayCard key={org.org_id} org={org} />
-            ))}
-        </div>
-        
-    ) : (
-        
+    <div class="bg-gray-100 texture-subtle min-h-screen py-12">
         <div>
-            {loading ? (
-                <p>Loading organisations...</p>
-            ) : (
-                <div>
-                    {orgsData.map((org) => (
+            <Header />
+        </div>
+    
+        <div className="">
+
+            <KeyWordSearch orgData={orgsData} onSearchResults={handleSearch} />
+
+            {isElevated ? (
+                <div className="p-2">
+                    <h2 className="text-xl font-semibold mb-4">Search Results</h2>
+                    {searchResults.map((org) => (
                         <OrgDisplayCard key={org.org_id} org={org} />
                     ))}
                 </div>
+
+            ) : (
+
+                <div>
+                    {loading ? (
+                        <p>Loading organisations...</p>
+                    ) : (
+                        <div>
+                            {orgsData.map((org) => (
+                                <OrgDisplayCard key={org.org_id} org={org} />
+                            ))}
+                        </div>
+                    )}
+                </div>
             )}
         </div>
-    )}
     </div>
 );
 }
