@@ -4,6 +4,7 @@ from flask_cors import CORS
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
+from flask_jwt_extended import JWTManager
 
 from app.config import AppConfig
 from flask_session import Session
@@ -21,6 +22,7 @@ def create_app(config_class=AppConfig):
     app.config.from_object(config_class)
 
     Session(app)
+    JWTManager(app)
 
     db.init_app(app)
     bcrypt.init_app(app)

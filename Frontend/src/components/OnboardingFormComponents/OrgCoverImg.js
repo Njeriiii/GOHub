@@ -18,9 +18,11 @@ const CoverImageUpload = forwardRef((props, ref) => {
         reader.readAsDataURL(selectedFile);
     };
 
-    useImperativeHandle(ref, () => ({
-        getImage: () => file,
-    }));
+    const getData = () => {
+        return file;
+    };
+
+    useImperativeHandle(ref, () => ({ getData }));
 
 return (
     <div class="col-span-full p-6">
