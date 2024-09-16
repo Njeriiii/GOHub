@@ -22,7 +22,7 @@ class AppConfig:
     MAIL_USE_TLS = True
     UPLOAD_FOLDER = os.path.abspath("uploads")
     ENV = os.getenv("ENV")
-
+    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 
 class TestConfig(AppConfig):
     SQLALCHEMY_DATABASE_URI = "sqlite://"

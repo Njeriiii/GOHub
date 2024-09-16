@@ -20,6 +20,7 @@ export default function OrgDisplayCard({ org }) {
     }
 
     const categoryColor = categoryColors[org.category?.toLowerCase()] || categoryColors.default;
+    console.log('org', org)
 
     return (
         <div 
@@ -30,7 +31,18 @@ export default function OrgDisplayCard({ org }) {
                 <div className="flex justify-between items-start mb-4">
                     <h2 className="text-2xl font-bold text-gray-800 mb-2">{org.org_name}</h2>
                     <span className={`px-3 py-1 ${categoryColor} text-sm font-semibold rounded-full`}>
-                        {org.category || 'NGO'}
+                        {/* {org.focus_area || 'NGO'} */}
+                        <div className="flex flex-wrap gap-2">
+                            {org.focus_areas.map((focus_area) => (
+                                <span 
+                                key={focus_area.id} 
+                                className={`px-3 py-1 ${categoryColor} text-sm font-semibold rounded-full`}
+                                title={focus_area.description || focus_area.name}
+                                >
+                                {focus_area.name}
+                                </span>
+                            ))}
+                        </div>
                     </span>
                 </div>
                 <p className="text-gray-600 mb-4 line-clamp-3">{org.org_overview}</p>

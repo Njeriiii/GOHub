@@ -29,7 +29,7 @@ const PreviousProjectsList = forwardRef((props, ref) => {
 
     // Expose the getProjectsData function to parent components
     useImperativeHandle(ref, () => ({
-        getProjectsData: () => projects, // Return the array of projects
+        getData: () => projects, // Return the array of projects
     }));
 
 return (
@@ -69,7 +69,7 @@ return (
         </div>
 
         <div class="flex gap-x-6 justify-end mb-20">
-            <button type="button" onClick={handleAddProject} class="rounded-md w-1/10 bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+            <button type="button" onClick={handleAddProject} class="rounded-md w-1/10 bg-teal-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600">
             + Add Project 
             </button>
         </div>

@@ -1,29 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useApi } from '../contexts/ApiProvider';
+import { useAuth } from '../contexts/AuthProvider';
 import Header from '../components/Header';
 import OrgProjects from './OrgProjects';
 import Sidebar from '../components/Sidebar';
 
 export default function OrgProfile() {
-    // State variable to hold fetched data
     const [onboardingFormData, setOnboardingFormData] = useState(null);
     const [loading, setLoading] = useState(true);
     const apiClient = useApi();
-    
-    // Access and utilise admin details
     const location = useLocation(); 
+    const [userId, setUserId] = useState(null);
 
-    // Get the adminDetails or org object from location.state
-    const adminDetails = location.state?.adminDetails || location.state?.org;
+    console.log('location:', location);
 
     useEffect(() => {
-        if (!adminDetails) {
-        console.error('Neither adminDetails nor org found in location.state');
-        return;
+        if (location.state && location.state.org.user_id) {
+            setUserId(location.state.org.user_id);
         }
+    }, [location]);
 
-        apiClient.get(`/profile/org/${adminDetails.email}`)
+    useEffect(() => {
+        // if (!userId) {
+        // console.error('Neither adminDetails nor org found in location.state');
+        // return;
+        // }
+
+        apiClient.get(`/profile/load_org?user_id=${userId}`)
         .then((response) => {
             if (response.ok) {
             setOnboardingFormData(response.body);
@@ -35,7 +39,9 @@ export default function OrgProfile() {
         .catch((error) => {
             console.error("Error fetching data: ", error);
         });
-    }, [apiClient, adminDetails]);
+    }, [apiClient, userId]);
+
+    console.log('userId:', userId);
 
     if (loading) {
         return (
@@ -55,8 +61,8 @@ export default function OrgProfile() {
         <div className="bg-gray-100 min-h-screen">
         <Header />
         
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"> 
-            <div className="bg-gradient-to-r from-teal-400 to-teal-600 rounded-lg shadow-xl overflow-hidden">
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="bg-gradient-to-r from-teal-400 via-cyan-500 to-sky-500 rounded-lg shadow-xl overflow-hidden">
             <div className="p-8 sm:p-12 flex justify-between items-center">
                 <div>
                 <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4">{onboardingFormData.orgProfile.org_name}</h1>
