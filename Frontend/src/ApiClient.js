@@ -16,6 +16,14 @@ export default class ApiClient {
         // This includes the base URL obtained from the REACT_APP_BASE_API_URL environment variable, and the /api path prefix.
         // this.base_url = BASE_API_URL;
         this.base_url = BASE_API_URL;
+
+        // Initialize the token to null
+        this.token = null;
+    }
+
+    // Method to set the JWT token
+    setToken(token) {
+        this.token = token;
     }
 
     // Method for making HTTP requests with options
@@ -37,6 +45,11 @@ export default class ApiClient {
         const headers = {
             ...options.headers
         };
+
+        // Add Authorization header if token exists
+        if (this.token) {
+            headers['Authorization'] = `Bearer ${this.token}`;
+        }
 
         // Set Content-Type to application/json for non-FormData bodies
         if (!(options.body instanceof FormData)) {
@@ -86,6 +99,7 @@ export default class ApiClient {
     async post(url, body, options = {}) {
         // Check if the body is FormData and adjust headers
         if (body instanceof FormData) {
+            console.log('Posting FormData', body);
             return this.request({
                 method: "POST",
                 url,
@@ -95,6 +109,7 @@ export default class ApiClient {
                 },
             });
         } else {
+            console.log('Posting normal body', body);
             return this.request({
                 method: "POST",
                 url,

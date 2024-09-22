@@ -1,5 +1,5 @@
 import React, { useState, forwardRef, useImperativeHandle } from 'react';
-
+// This component represents the address section of the organization onboarding form.
 const OrgAddress = forwardRef((props, ref) => {
     const [districtTown, setDistrictTown] = useState('');
     const [county, setCounty] = useState('');

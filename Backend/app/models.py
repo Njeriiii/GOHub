@@ -1,10 +1,11 @@
-from app import db, login_manager
+from app import db
+from datetime import datetime, timezone
 
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
-
+# Association table for User (volunteer) skills
+user_skills = db.Table('user_skills',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+    db.Column('skill_id', db.Integer, db.ForeignKey('skills_needed.id'), primary_key=True)
+)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -12,6 +13,18 @@ class User(db.Model):
     last_name = db.Column(db.String(200), nullable=False)
     email = db.Column(db.String(200), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
+    is_admin = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
+    last_login = db.Column(db.DateTime)
+
+    # Relationship with OrgProfile
+    org_profile = db.relationship(
+        "OrgProfile", backref="admin", lazy=True, uselist=False
+    )
+
+    # Relationship with skills (for volunteers)
+    skills = db.relationship('SkillsNeeded', secondary=user_skills, lazy='subquery',
+        backref=db.backref('volunteers', lazy=True))
 
     def __repr__(self):
         return f"{self.first_name} {self.last_name}"
@@ -23,6 +36,10 @@ class User(db.Model):
             "first_name": self.first_name,
             "last_name": self.last_name,
             "email": self.email,
+            "is_admin": self.is_admin,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "last_login": self.last_login.isoformat() if self.last_login else None,
+            "skills": [skill.serialize() for skill in self.skills] if not self.is_admin else None,
         }
 
         return user_data
@@ -35,19 +52,26 @@ org_skills_connection = db.Table(
     db.Column(
         "skill_id", db.Integer, db.ForeignKey("skills_needed.id"), primary_key=True
     ),
+    # add a description column to the association table
+    db.Column("description", db.Text, nullable=True)
+)
+
+# Define the Focus Areas table
+org_focus_areas = db.Table(
+    "org_focus_areas",
+    db.Column("org_id", db.Integer, db.ForeignKey("org_profile.id"), primary_key=True),
+    db.Column(
+        "focus_area_id", db.Integer, db.ForeignKey("focus_area.id"), primary_key=True
+    ),
 )
 
 
 class OrgProfile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    admin_name = db.Column(db.String(200), nullable=False)
-    admin_role = db.Column(db.String(200), nullable=False)
-    admin_email = db.Column(db.String(200), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     org_name = db.Column(db.String(200), nullable=False)
     org_overview = db.Column(db.String(200), nullable=False)
-    # org_website = db.Column(db.String(200), nullable=False)
-    org_mission_statement = db.Column(db.String(200), nullable=True)
-    # An image in png/jpeg format
+    org_mission_statement = db.Column(db.Text, nullable=True)
     org_logo = db.Column(db.String(200), nullable=True)
     org_cover_photo = db.Column(db.String(200), nullable=True)
     org_email = db.Column(db.String(200), nullable=False)
@@ -56,9 +80,16 @@ class OrgProfile(db.Model):
     org_county = db.Column(db.String(200), nullable=False)
     org_po_box = db.Column(db.String(200), nullable=False)
     org_country = db.Column(db.String(200), nullable=False)
-
-    # TODO: Add a column for the organisation's website
-    # TODO: Add a column for the organisation's primary area of focus
+    org_website = db.Column(db.String(200), nullable=True)
+    org_registration_number = db.Column(db.String(200), nullable=True)
+    org_year_established = db.Column(db.Integer, nullable=True)
+    org_verified = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
+    updated_at = db.Column(
+        db.DateTime,
+        default=datetime.now(timezone.utc),
+        onupdate=datetime.now(timezone.utc),
+    )
 
     # 1 to many relationship org_profile to org_initiatives
     initiatives = db.relationship("OrgInitiatives", backref="org_profile", lazy=True)
@@ -75,6 +106,16 @@ class OrgProfile(db.Model):
         lazy=True,
     )
 
+    focus_areas = db.relationship(
+        "FocusArea", secondary=org_focus_areas, back_populates="org_profiles", lazy=True
+    )
+    social_media_links = db.relationship(
+        "SocialMediaLink",
+        backref="org_profile",
+        lazy=True,
+        cascade="all, delete-orphan",
+    )
+
     def __repr__(self):
         return f"{self.org_name}"
 
@@ -82,9 +123,7 @@ class OrgProfile(db.Model):
 
         org_data = {
             "id": self.id,
-            "admin_name": self.admin_name,
-            "admin_role": self.admin_role,
-            "admin_email": self.admin_email,
+            "user_id": self.user_id,
             "org_name": self.org_name,
             "org_overview": self.org_overview,
             "org_mission_statement": self.org_mission_statement,
@@ -96,7 +135,17 @@ class OrgProfile(db.Model):
             "org_county": self.org_county,
             "org_po_box": self.org_po_box,
             "org_country": self.org_country,
+            "org_website": self.org_website,
+            "org_registration_number": self.org_registration_number,
+            "org_year_established": self.org_year_established,
+            "org_verified": self.org_verified,
+            "created_at": self.created_at.isoformat(),
+            "updated_at": self.updated_at.isoformat(),
             "skills_needed": [skill.serialize() for skill in self.skills_needed],
+            "focus_areas": [area.serialize() for area in self.focus_areas],
+            "social_media_links": [
+                link.serialize() for link in self.social_media_links
+            ],
         }
         return org_data
 
@@ -166,5 +215,47 @@ class SkillsNeeded(db.Model):
         return f"{self.skill}"
 
     def serialize(self):
-        skill_data = {"id": self.id, "skill": self.skill, "status": self.status}
+        skill_data = {
+            "id": self.id,
+            "skill": self.skill,
+            "status": self.status,
+        }
         return skill_data
+
+
+class FocusArea(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+
+    org_profiles = db.relationship(
+        "OrgProfile", secondary=org_focus_areas, back_populates="focus_areas", lazy=True
+    )
+
+    def __repr__(self):
+        return f"{self.name}"
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+        }
+
+
+class SocialMediaLink(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    org_id = db.Column(db.Integer, db.ForeignKey("org_profile.id"), nullable=False)
+    platform = db.Column(db.String(200), nullable=False)
+    url = db.Column(db.String(500), nullable=False)
+
+    def __repr__(self):
+        return f"{self.platform}: {self.url}"
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "org_id": self.org_id,
+            "platform": self.platform,
+            "url": self.url,
+        }

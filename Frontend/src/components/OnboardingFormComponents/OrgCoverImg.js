@@ -1,5 +1,6 @@
 import React, { useState, forwardRef, useImperativeHandle } from 'react';
-
+// This component represents the cover image upload section of the organization onboarding form.
+// Not fully functional yet
 const CoverImageUpload = forwardRef((props, ref) => {
     const [file, setFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
@@ -18,9 +19,11 @@ const CoverImageUpload = forwardRef((props, ref) => {
         reader.readAsDataURL(selectedFile);
     };
 
-    useImperativeHandle(ref, () => ({
-        getImage: () => file,
-    }));
+    const getData = () => {
+        return file;
+    };
+
+    useImperativeHandle(ref, () => ({ getData }));
 
 return (
     <div class="col-span-full p-6">

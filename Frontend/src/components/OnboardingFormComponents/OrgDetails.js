@@ -1,5 +1,7 @@
 import { useState, forwardRef, useImperativeHandle } from "react";
-
+// This component represents the organization details section of the organization onboarding form.
+// It includes fields for the organization name and a brief overview of the organization.
+// Currently deprecated (Not in use) in favor of OrgAdditionalDetails.js
 const OrgDetails = forwardRef((props, ref) => {
     const [state, setState] = useState({
         orgName: "",
