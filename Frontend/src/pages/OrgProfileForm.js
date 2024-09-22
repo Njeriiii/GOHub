@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Save } from 'lucide-react';
 
 import ProgramInitiativesList from '../components/OrgProfileFormComponents/ProgramsInitiatives';
@@ -10,6 +10,8 @@ import SupportNeeds from '../components/OrgProfileFormComponents/SupportNeeds';
 import { useApi } from '../contexts/ApiProvider';
 import { useAuth } from '../contexts/AuthProvider';
 
+// This component represents the organization onboarding form.
+// It includes steps for adding programs & initiatives, previous projects, ongoing projects, and support needs.
 const CustomAlert = ({ message, onClose }) => (
     <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
         <strong className="font-bold">Error!</strong>
@@ -37,21 +39,12 @@ const OrgProfileForm = () => {
     const navigate = useNavigate();
     const apiClient = useApi();
     const { getUserId } = useAuth();
-    const location = useLocation();
 
     const refs = useRef(steps.map(() => React.createRef()));
     const formRef = useRef(null);
 
     // Get the userId from the API context
     const userId = getUserId();
-
-    // useEffect(() => {
-    //     if (location.state && location.state.userId) {
-    //         setUserId(location.state.userId);
-    //     } else {
-    //         setUserId(2); // temporary userId for testing
-    //     }
-    // }, [location]);
 
     useEffect(() => {
         const updateFormHeight = () => {
@@ -107,8 +100,6 @@ const OrgProfileForm = () => {
             user_id: userId,
             ...formData
         };
-
-        console.log('Submitting form data:', completeFormData);
 
         try {
             const response = await apiClient.post('/profile/org/projects_initiatives', completeFormData);

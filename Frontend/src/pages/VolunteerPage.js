@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
 import { PencilIcon, MapPinIcon, EnvelopeIcon, BriefcaseIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/solid';
 import Header from '../components/Header';
 import OrgDisplayCard from '../components/OrgDisplayCard';
@@ -11,22 +10,15 @@ export default function VolunteerPage() {
     const [volunteerInfo, setVolunteerInfo] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
-    const location = useLocation();
     const apiClient = useApi();
     const { getUserId } = useAuth();
     const [showAllSkills, setShowAllSkills] = useState(false);
 
     // Get the userId from the API context
     const userId = getUserId();
-    console.log('userId:', userId);
 
     useEffect(() => {
         const fetchData = async () => {
-            // if (!userId) {
-            //     setError("User ID is missing. Please log in again.");
-            //     setIsLoading(false);
-            //     return;
-            // }
 
             try {
                 const [matchResponse, volunteerResponse] = await Promise.all([
@@ -39,9 +31,7 @@ export default function VolunteerPage() {
                 }
 
                 const matchData = await matchResponse.body;
-                console.log('matchData:', matchData);
                 const volunteerData = await volunteerResponse.body;
-                console.log('volunteerData:', volunteerData);
 
                 setMatchedOrgs(matchData.matches || []);
                 setVolunteerInfo(volunteerData.volunteer || null);
@@ -55,8 +45,6 @@ export default function VolunteerPage() {
 
         fetchData();
     }, [userId, apiClient]);
-
-    console.log('volunteerInfo:', volunteerInfo);
 
     if (isLoading) {
         return (
@@ -74,9 +62,35 @@ export default function VolunteerPage() {
             <>
                 <Header />
                 <div className="flex justify-center items-center h-screen">
-                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    {/* <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
                         <strong className="font-bold">Error: </strong>
                         <span className="block sm:inline">{error}</span>
+                    </div> */}
+
+                    <div className="bg-white shadow-lg rounded-lg p-6">
+                        <h3 className="text-xl font-semibold mb-4 text-teal-600">Please sign up as a volunteer to access volunteering opportunities!</h3>
+                        <ul className="space-y-2 text-gray-600">
+                            <li className="flex items-start">
+                                <span className="bg-teal-100 text-teal-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-1 flex-shrink-0">1</span>
+                                <span>Update your skills profile to include more areas you're interested in.</span>
+                            </li>
+                            <li className="flex items-start">
+                                <span className="bg-teal-100 text-teal-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-1 flex-shrink-0">2</span>
+                                <span>Expand your search criteria, such as considering remote opportunities.</span>
+                            </li>
+                            <li className="flex items-start">
+                                <span className="bg-teal-100 text-teal-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-1 flex-shrink-0">3</span>
+                                <span>Check back regularly, as new opportunities are added frequently.</span>
+                            </li>
+                            <li className="flex items-start">
+                                <span className="bg-teal-100 text-teal-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-1 flex-shrink-0">4</span>
+                                <span>Consider gaining new skills through online courses or workshops.</span>
+                            </li>
+                            <li className="flex items-start">
+                                <span className="bg-teal-100 text-teal-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-1 flex-shrink-0">5</span>
+                                <span>Reach out to our support team for personalized assistance in finding opportunities.</span>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </>

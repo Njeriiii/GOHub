@@ -23,8 +23,6 @@ profile = Blueprint("profile", __name__)
 @profile.route("/profile/org", methods=["POST"])
 def create_org_profile():
 
-    print("You are in the create_org_profile route")
-
     response_data = {}
     data = request.get_json()
 
@@ -71,7 +69,7 @@ def create_org_profile():
     # Handle social media links - TODO - fix this 
     social_media = social_media.get("socialMedia", [])
     for link in social_media:
-        print('link:', link)
+
         # // remove website
         if link.get("platform") == "website":
             continue
@@ -94,8 +92,6 @@ def create_org_profile():
 # Store an organisations projects and initiatives
 @profile.route("/profile/org/projects_initiatives", methods=["POST"])
 def store_org_projects_initiatives():
-
-    print("You are in the store_org_projects_initiatives route")
 
     response_data = {}
     data = request.get_json()
@@ -159,9 +155,9 @@ def store_org_projects_initiatives():
         # check if need is in the database
         # if not add it
         # if it is, get the id and add it to the skillsneeded table
-        print('need:', need_data)
+
         need = need_data["value"]
-        print('need:', need)
+
         skill_description = need_data["description"]
         skill = SkillsNeeded.query.filter_by(skill=need).first()
 
@@ -219,10 +215,7 @@ def store_org_projects_initiatives():
 @profile.route("/profile/load_org", methods=["GET"])
 def load_org_profile():
 
-    print("You are in the load_org_profile route")
-
     user_id = request.args.get("user_id")
-    print('user_id:', user_id)
 
     if not user_id:
         return jsonify({"message": "User ID is required"}), 400
@@ -230,7 +223,6 @@ def load_org_profile():
     response_data = {}
 
     org_profile = OrgProfile.query.filter_by(user_id=user_id).first()
-    print('org_profile:', org_profile)
 
     if org_profile is None:
         response_data["message"] = "Organisation profile not found"
@@ -266,8 +258,6 @@ def load_org_profile():
 @profile.route("/all_skills", methods=["GET"])
 def load_all_skills():
 
-    print("You are in the load_all_skills route")
-
     response_data = {}
 
     skills = SkillsNeeded.query.all()
@@ -283,12 +273,10 @@ def load_all_skills():
 @profile.route("/profile/volunteer", methods=["POST"])
 def create_volunteer_profile():
     data = request.get_json()
-
-    print("You are in the create_volunteer_profile route")
     
     # Get user_id from the request data
     user_id = data.get('userId')
-    print(user_id)
+
     if not user_id:
         return jsonify({"message": "User ID is required"}), 400
 
@@ -302,8 +290,6 @@ def create_volunteer_profile():
 
     non_tech_skills = data.get("nonTechSkills", [])
     tech_skills = data.get("techSkills", [])
-
-    print('non_tech_skills', non_tech_skills)
 
     for skill in non_tech_skills:
         skill_obj = SkillsNeeded.query.filter_by(skill=skill).first()
@@ -334,7 +320,6 @@ def create_volunteer_profile():
 def get_volunteer_profile():
 
     user_id = request.args.get("user_id")
-    print('user_id:', user_id)
     
     if not user_id:
         return jsonify({"message": "User ID is required"}), 400
@@ -344,11 +329,6 @@ def get_volunteer_profile():
         if not volunteer:
             return jsonify({"message": "Volunteer not found"}), 404
         
-        # Get the volunteer's skills
-        volunteer_skills = set(skill.id for skill in volunteer.skills)
-        print('volunteer_skills:', volunteer_skills)
-        print('volunteer:', volunteer.skills)
-
         return jsonify({
             "message": "Volunteer found",
             "volunteer": volunteer.serialize(),

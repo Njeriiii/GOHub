@@ -1,5 +1,6 @@
 import React, { useState, forwardRef, useImperativeHandle } from 'react';
-
+// This component represents the organization logo section of the organization onboarding form.
+// Not fully functional yet
 const OrgLogo = forwardRef((props, ref) => {
     const [logoFile, setLogoFile] = useState(null);
     const [previewSrc, setPreviewSrc] = useState(''); // To display a preview

@@ -1,5 +1,6 @@
 import React, { useState, forwardRef, useImperativeHandle } from 'react';
-
+// This component represents the previous projects section of the organization onboarding form.
+// It includes fields for the project name and a brief description of the project.
 const PreviousProjectsList = forwardRef((props, ref) => {
     const [projects, setProjects] = useState([
         { projectName: "", description: "" }, // Add initial project

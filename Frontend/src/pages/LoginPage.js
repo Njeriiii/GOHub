@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useApi } from '../contexts/ApiProvider';
 import { useAuth } from '../contexts/AuthProvider';
 
+// Component to handle user login
 export default function LoginPage() {
 
     const navigate = useNavigate();
@@ -23,11 +24,9 @@ export default function LoginPage() {
             if (response.ok) {
                 
                 const userId = getUserId();
-                console.log('userId', userId);
 
                 // Check if a profile has been created
                 const profileResponse = await apiClient.get(`/profile/load_org?user_id=${userId}`)
-                console.log('profileResponse:', profileResponse);
                 
                 if (profileResponse.ok && profileResponse.body.orgProfile) {
                     // Profile exists, redirect to dashboard
@@ -37,7 +36,6 @@ export default function LoginPage() {
 
                     // Check if a profile has been created
                     const profileResponse = await apiClient.get(`/profile/volunteer?user_id=${userId}`)
-                    console.log('profileResponse:', profileResponse);
 
                     if (profileResponse.ok && profileResponse.body.volunteer) {
                         // Profile exists, redirect to dashboard

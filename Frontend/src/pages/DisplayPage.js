@@ -3,14 +3,10 @@ import { useApi } from '../contexts/ApiProvider';
 import KeyWordSearch from '../components/KeyWordSearch';
 import OrgDisplayCard from '../components/OrgDisplayCard';
 import Header from '../components/Header';
-import { useAuth } from '../contexts/AuthProvider';
 
 // Component to load all organisations and display their name and an overview
 export default function DisplayPage() {
     const apiClient = useApi();
-    const { getUserId } = useAuth();
-    const userId = getUserId();
-    console.log('userId:', userId);
 
     // State variable to hold fetched data
 

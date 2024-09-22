@@ -1,6 +1,9 @@
 // Search.js
 import React, { useState } from 'react';
 
+// This component represents the search bar for the organization directory.
+// It allows users to search for organizations by name or keywords.
+// This is not fully functional yet.
 export default function KeyWordSearch({ orgData, onSearchResults }) {
 
     const [searchTerm, setSearchTerm] = useState('');

@@ -1,5 +1,6 @@
 import React, { useState, forwardRef, useImperativeHandle } from 'react';
-
+// This component represents the initiatives section of the organization profile form.
+// It includes fields for the initiative name and description.
 const ProgramInitiativesList = forwardRef((props, ref) => {
     const [initiatives, setInitiatives] = useState([
         { initiativeName: "", description: "" }, // Add initial initiative

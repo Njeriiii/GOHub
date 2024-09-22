@@ -11,16 +11,15 @@ const categoryColors = {
     // Add more categories as needed
 };
 
+// Organization display card component - used to display organization information in a card format
 export default function OrgDisplayCard({ org }) {
     const navigate = useNavigate();
 
     function handleProfileLinkClick(org) {
-        console.log('Navigating to org profile page');
         navigate('/org_profile', { state: { org } });
     }
 
     const categoryColor = categoryColors[org.category?.toLowerCase()] || categoryColors.default;
-    console.log('org', org)
 
     return (
         <div 
@@ -31,7 +30,6 @@ export default function OrgDisplayCard({ org }) {
                 <div className="flex justify-between items-start mb-4">
                     <h2 className="text-2xl font-bold text-gray-800 mb-2">{org.org_name}</h2>
                     <span className={`px-3 py-1 ${categoryColor} text-sm font-semibold rounded-full`}>
-                        {/* {org.focus_area || 'NGO'} */}
                         <div className="flex flex-wrap gap-2">
                             {org.focus_areas.map((focus_area) => (
                                 <span 

@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+// This component represents the signup page.
+// It allows users to sign up for an account using their email or Google account.
 export default function SignupPage() {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
@@ -13,12 +15,12 @@ export default function SignupPage() {
         e.preventDefault();
         // Implement your email signup logic here
         // After successful signup, navigate to user type selection
-        console.log('Signing up with email:', email, password, firstName, lastName);
         navigate('/select-user-type', { 
             state: { email, password, firstName, lastName } 
             });
         };
 
+    // This has not been implemented yet
     const handleGoogleSignup = () => {
         // Redirect to your backend's Google authentication route
         window.location.href = '/auth/login/google';

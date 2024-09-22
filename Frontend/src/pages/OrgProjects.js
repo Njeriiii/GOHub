@@ -1,5 +1,6 @@
 import React from 'react';
-
+// This component displays the organization's initiatives and projects.
+// It includes fields for the initiative name, description, project name, and description.
 export default function OrgProjects({ onboardingFormData }) {
     return (
         <div className="bg-white rounded-lg shadow-lg p-8">

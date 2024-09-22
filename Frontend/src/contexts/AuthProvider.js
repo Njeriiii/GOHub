@@ -1,5 +1,9 @@
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import ApiClient from '../ApiClient';
+// This component provides authentication context to its children components.
+// It includes functions for user login, logout, and fetching user data.
+// It also manages the authentication token and user data in localStorage.
+
 
 // Create a context for authentication
 const AuthContext = createContext();
@@ -14,7 +18,6 @@ function AuthProvider({ children }) {
     // Initialize from localStorage if available
     const [user, setUser] = useState(() => {
         const storedUser = localStorage.getItem('user');
-        console.log('Initial user from localStorage:', storedUser);
         return storedUser ? JSON.parse(storedUser) : null;
     });
 
@@ -26,7 +29,6 @@ function AuthProvider({ children }) {
 
     // Function to set user data and persist it to localStorage
     const setUserAndPersist = useCallback((userData) => {
-        console.log('Setting user data:', userData);
         setUser(userData);
         if (userData) {
             localStorage.setItem('user', JSON.stringify(userData));
@@ -37,14 +39,12 @@ function AuthProvider({ children }) {
 
     // Function to set the token in localStorage and update the API client
     const setToken = useCallback((token) => {
-        console.log('Setting token');
         localStorage.setItem('token', token);
         api.setToken(token);
     }, [api]);
 
     // Function to remove the token from localStorage and clear it from the API client
     const removeToken = useCallback(() => {
-        console.log('Removing token');
         localStorage.removeItem('token');
         api.setToken(null);
     }, [api]);
@@ -52,7 +52,6 @@ function AuthProvider({ children }) {
     // Function to refresh the authentication token
     const refreshToken = useCallback(async () => {
         try {
-            console.log('Refreshing token');
             const response = await api.post('/auth/refresh');
             if (response.ok) {
                 setToken(response.body.access_token);
@@ -67,9 +66,7 @@ function AuthProvider({ children }) {
     // Function to fetch the current user's data
     const fetchUser = useCallback(async () => {
         try {
-            console.log('Fetching user data');
             const response = await api.get('/auth/user');
-            console.log('User data response:', response);
             if (response.ok) {
                 setUserAndPersist(response.body);
             } else {
@@ -85,9 +82,7 @@ function AuthProvider({ children }) {
 
     // Function to handle user login
     const login = useCallback(async (email, password) => {
-        console.log('Attempting login');
         const response = await api.post('/auth/login', { email, password });
-        console.log('Login response:', response);
         if (response.ok) {
             setToken(response.body.access_token);
             await fetchUser();
@@ -98,7 +93,6 @@ function AuthProvider({ children }) {
     // Function to handle user logout
     const logout = useCallback(async () => {
         try {
-            console.log('Logging out');
             const token = localStorage.getItem('token');
             if (!token) {
                 console.log('No token found, user is already logged out');
@@ -120,14 +114,12 @@ function AuthProvider({ children }) {
 
     // Function to get the current user's ID
     const getUserId = useCallback(() => {
-        console.log('Getting user ID. Current user:', user);
         return user ? user.id : null;
     }, [user]);
 
     // Effect to initialize authentication state
     useEffect(() => {
         const initAuth = async () => {
-            console.log('Initializing authentication');
             const token = localStorage.getItem('token');
             if (token) {
                 api.setToken(token);
