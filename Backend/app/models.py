@@ -1,11 +1,5 @@
-from app import db, login_manager
+from app import db
 from datetime import datetime, timezone
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
-
 
 # Association table for User (volunteer) skills
 user_skills = db.Table('user_skills',

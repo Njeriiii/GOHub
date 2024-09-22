@@ -1,6 +1,8 @@
 import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import CreatableSelect from "react-select/creatable";
 import { useApi } from '../../contexts/ApiProvider';
+// This component represents the support needs section of the organization onboarding form.
+// It includes fields for technical and non-technical skills needed by the organization.
 
 // Query db for tech and non-tech skills
 const fetchSkills = async (apiClient) => {

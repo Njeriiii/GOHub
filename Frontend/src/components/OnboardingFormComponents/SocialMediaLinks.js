@@ -1,5 +1,6 @@
 import React, { useState, forwardRef, useImperativeHandle } from 'react';
-
+// This component represents the social media links section of the organization onboarding form.
+// It includes fields for the organization's website, Facebook, Twitter, Instagram, LinkedIn, and YouTube links.
 const SocialMediaLinks = forwardRef((props, ref) => {
     const [links, setLinks] = useState({
         facebook: '',

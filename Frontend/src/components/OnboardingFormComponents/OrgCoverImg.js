@@ -1,5 +1,6 @@
 import React, { useState, forwardRef, useImperativeHandle } from 'react';
-
+// This component represents the cover image upload section of the organization onboarding form.
+// Not fully functional yet
 const CoverImageUpload = forwardRef((props, ref) => {
     const [file, setFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);

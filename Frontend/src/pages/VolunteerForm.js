@@ -1,28 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import CreatableSelect from "react-select/creatable";
 import { useApi } from '../contexts/ApiProvider';
 import { useAuth } from '../contexts/AuthProvider';
 
+// This component represents the volunteer form page.
+// It allows volunteers to submit their technical and non-technical skills.
 const VolunteerForm = () => {
     const [techSkills, setTechSkills] = useState([]);
     const [nonTechSkills, setNonTechSkills] = useState([]);
-    const location = useLocation();
     const navigate = useNavigate();
     const apiClient = useApi();
     const { getUserId } = useAuth();
 
     // Get the userId from the API context
     const userId = getUserId();
-
-    // useEffect(() => {
-    //     if (location.state && location.state.userId) {
-    //         setUserId(location.state.userId);
-    //     } else {
-    //       // Redirect to login or display an error if userId is not available
-    //         // navigate('/login', { state: { error: 'User ID is required. Please log in again.' } });
-    //     }
-    // }, [location, navigate]);
 
     const techSkillOptions = [
         { value: 'webdevelopment', label: 'Web Development' },
@@ -113,10 +105,6 @@ const VolunteerForm = () => {
             },
             }),
         };
-        
-        // if (!userId) {
-        //     return <div>Loading...</div>; // Or a more sophisticated loading state
-        // }
         
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50">

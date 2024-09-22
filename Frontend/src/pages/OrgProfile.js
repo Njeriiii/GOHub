@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useApi } from '../contexts/ApiProvider';
-import { useAuth } from '../contexts/AuthProvider';
 import Header from '../components/Header';
 import OrgProjects from './OrgProjects';
 import Sidebar from '../components/Sidebar';
 
+// This component displays the profile of an organization
+// It includes the organization's name, overview, and projects
 export default function OrgProfile() {
     const [onboardingFormData, setOnboardingFormData] = useState(null);
     const [loading, setLoading] = useState(true);
     const apiClient = useApi();
     const location = useLocation(); 
     const [userId, setUserId] = useState(null);
-
-    console.log('location:', location);
 
     useEffect(() => {
         if (location.state && location.state.org.user_id) {
@@ -22,10 +21,6 @@ export default function OrgProfile() {
     }, [location]);
 
     useEffect(() => {
-        // if (!userId) {
-        // console.error('Neither adminDetails nor org found in location.state');
-        // return;
-        // }
 
         apiClient.get(`/profile/load_org?user_id=${userId}`)
         .then((response) => {
@@ -40,8 +35,6 @@ export default function OrgProfile() {
             console.error("Error fetching data: ", error);
         });
     }, [apiClient, userId]);
-
-    console.log('userId:', userId);
 
     if (loading) {
         return (

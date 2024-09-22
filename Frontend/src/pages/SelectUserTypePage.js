@@ -3,6 +3,8 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useApi } from '../contexts/ApiProvider';
 
+// This component represents the user type selection page.
+// It allows users to select their user type (admin or volunteer) during the signup process.
 export default function SelectUserTypePage() {
     const navigate = useNavigate();
     const location = useLocation();
@@ -10,8 +12,6 @@ export default function SelectUserTypePage() {
     const apiClient = new useApi();
 
     const handleSelection = async (userType) => {
-        console.log('userType', userType);
-        console.log('userDetails', userDetails);
 
         try {
             const response = await apiClient.post('/auth/signup', {
@@ -20,14 +20,10 @@ export default function SelectUserTypePage() {
             });
         
             if (response.ok) {
-                console.log('response', response);
-                console.log('response.body', response.body);
 
                 const nextPage = '/login';  // Always redirect to login page
                 navigate(nextPage, { state: { userId: response.body.user_id, userType: userType } });
-                
-                // const nextPage = userType === 'admin' ? '/onboarding' : '/volunteer-form';
-                // navigate(nextPage, { state: { userId: response.body.user_id } });
+
             } else {
                 // ApiClient already handles errors, so we can use the error message directly
                 throw new Error(response.body.message || 'Signup failed');

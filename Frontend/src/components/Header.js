@@ -6,6 +6,9 @@ import { UserCircleIcon } from "@heroicons/react/24/solid";
 import { useAuth } from "../contexts/AuthProvider";
 import { LogOutIcon } from "lucide-react";
 
+// Header component This component represents the header of the application.
+// It includes the navigation links and user authentication controls.
+
 // Navigation links
 const navigation = [
     { name: "Home", href: "/" },
@@ -79,15 +82,6 @@ export default function Header() {
                 </a>
             ))}
             </div>
-            {/* <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-            <a
-                href="/login"
-                className="text-sm font-semibold leading-6 text-white bg-teal-600 hover:bg-teal-700 px-4 py-2 rounded-md transition duration-150 ease-in-out flex items-center"
-            >
-                <UserCircleIcon className="h-5 w-5 mr-2" />
-                Log in
-            </a>
-            </div> */}
 
             <div className="hidden lg:flex lg:flex-1 lg:justify-end">
                     {user ? (
@@ -152,14 +146,6 @@ export default function Header() {
                     </a>
                     ))}
                 </div>
-                {/* <div className="py-6">
-                    <a
-                    href="/login"
-                    className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white bg-teal-600 hover:bg-teal-700"
-                    >
-                    Log in
-                    </a>
-                </div> */}
                 </div>
                 <div className="py-6">
                     {user ? (

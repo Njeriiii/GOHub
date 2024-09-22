@@ -1,5 +1,6 @@
 import React, { useState, forwardRef, useImperativeHandle } from 'react';
-
+// This component represents the ongoing projects section of the organization profile form.
+// It includes fields for the project name and description.
 const OngoingProjectsList = forwardRef((props, ref) => {
     const [projects, setProjects] = useState([
         { projectName: "", description: "" }, // Add initial project

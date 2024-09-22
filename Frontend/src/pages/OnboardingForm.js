@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Save } from 'lucide-react';
+// This component represents the organization onboarding form.
+// It includes multiple steps for collecting information about the organization.
 
 // import AdminDetails from '../components/OnboardingFormComponents/AdminDetails';
 import OrgDetails from '../components/OnboardingFormComponents/OrgDetails';
