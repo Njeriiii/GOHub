@@ -7,7 +7,6 @@ import axios from "axios";
 
 // Import the BASE_API_URL from environment variables in frontend/.env
 const BASE_API_URL = process.env.REACT_APP_BASE_API_URL;
-//const BASE_API_URL = 'https://internlink.onrender.com';
     
 // Create a class for the ApiClient
 export default class ApiClient {
