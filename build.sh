@@ -3,7 +3,7 @@
 set -o errexit
 
 echo "Installing Python dependencies..."
-pip install -r backend/requirements.prod.txt
+pip install -r Backend/requirements.prod.txt
 
 echo "Installing frontend dependencies..."
 cd Frontend
