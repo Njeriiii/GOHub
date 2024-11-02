@@ -138,8 +138,10 @@ const steps = [
             const response = await apiClient.post('/profile/org', completeFormData);
             if (response.status === 201) {
 
+                console.log('Response:', response);
+
                 // Assuming the API returns the organization ID in the response body
-                const orgId = response.data.organization_id;
+                const orgId = response.data.org_id;
                 console.log('Organization ID:', orgId);
 
                 if (!orgId) {
