@@ -23,14 +23,16 @@ function App() {
       <AuthProvider>
         <ApiProvider>
           <Routes>
-            <Route path="/signup" element={<SignupPage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
             <Route path="/select-user-type" element={<SelectUserTypePage />} />
             <Route path="/volunteer-form" element={<VolunteerForm />} />
+
             <Route path="/volunteer" element={<VolunteerPage />} />
             <Route path="/home" element={<DisplayPage />} />
             <Route path="/find-gos" element={<DisplayPage />} />
             <Route path="/" element={<Navigate to="/find-gos" />} />
+            
             <Route path="/onboarding" element={<OnboardingForm />} />
             <Route path="/org_profile_form" element={<OrgProfileForm />} />
             <Route path="/org_profile" element={<OrgProfile />} />
