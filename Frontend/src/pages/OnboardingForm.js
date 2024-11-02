@@ -141,7 +141,7 @@ const steps = [
                 console.log('Response:', response);
 
                 // Assuming the API returns the organization ID in the response body
-                const orgId = response.data.org_id;
+                const orgId = response.body.org_id;
                 console.log('Organization ID:', orgId);
 
                 if (!orgId) {
