@@ -26,7 +26,6 @@ services:
       - FLASK_DEBUG=0
       - FLASK_APP=run.py
       - PORT=5162
-      # Add any other environment variables your create_app() needs
     volumes:
       - ./backend:/app
     healthcheck:
