@@ -14,30 +14,13 @@ services:
     healthCheckPath: /api/health
 
 
-# Frontend service
+  # Frontend service
   - type: static
     name: gohub-frontend
     buildCommand: cd Frontend && npm install && npm run build
     publishPath: Frontend/build
-    # Add these specific static site settings
     routes:
-      - type: rewrite
-        source: /login
-        destination: /index.html
-      - type: rewrite
-        source: /register
-        destination: /index.html
-      - type: rewrite
-        source: /profile
-        destination: /index.html
-      - type: rewrite
-        source: /organizations
-        destination: /index.html
+      # Single catch-all route
       - type: rewrite
         source: /*
         destination: /index.html
-    headers:
-      - source: /**
-        headers:
-          - key: Cache-Control
-            value: no-cache
