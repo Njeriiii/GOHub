@@ -3,7 +3,7 @@ services:
     name: gohub-app
     env: python
     buildCommand: "./build.sh"
-    startCommand: "gunicorn run:app"
+    startCommand: "cd backend && gunicorn run:app"
     envVars:
       - key: PYTHON_VERSION
         value: 3.12
