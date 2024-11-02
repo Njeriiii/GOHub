@@ -1,7 +1,6 @@
 import logging
 from flask import Blueprint, jsonify, request, session, make_response
 from werkzeug.security import check_password_hash, generate_password_hash
-from flask_oauthlib.client import OAuth
 from app import db
 from app.models import User
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt, unset_jwt_cookies
@@ -9,7 +8,6 @@ from werkzeug.security import check_password_hash
 from datetime import timedelta
 
 auth = Blueprint("auth", __name__)
-oauth = OAuth()
 
 
 @auth.route("/auth/signup", methods=["OPTIONS", "POST"])
