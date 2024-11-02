@@ -14,12 +14,17 @@ services:
     healthCheckPath: /api/health
 
   # Frontend service
-  - type: web
+  - type: static
     name: gohub-frontend
     env: docker
     plan: free
     dockerfilePath: ./frontend/Dockerfile
+    publishPath: Frontend/build
     autoDeploy: true
     envVars:
       - key: REACT_APP_API_URL
         value: http://localhost:5162
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
