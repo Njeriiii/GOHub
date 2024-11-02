@@ -26,6 +26,7 @@ def create_app(config_class=AppConfig):
 
     db.init_app(app)
     bcrypt.init_app(app)
+    migrate.init_app(app, db)  # Initialize migrate with app and db
     login_manager.init_app(app)
 
     # initialising db

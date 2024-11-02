@@ -8,6 +8,15 @@ pip install -r Backend/requirements.prod.txt
 echo "Initializing database..."
 cd Backend
 python create_db.py
+
+# Run migrations if they exist
+if [ -d "migrations" ]; then
+    echo "Running database migrations..."
+    export FLASK_APP=run.py
+    flask db upgrade
+else
+    echo "No migrations directory found. Skipping migrations."
+fi
 cd ..
 
 echo "Installing frontend dependencies..."
