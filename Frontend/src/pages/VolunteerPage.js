@@ -110,7 +110,8 @@ export default function VolunteerPage() {
                             <div className="bg-white shadow-lg rounded-lg overflow-hidden">
                                 <div className="bg-teal-600 text-white p-4">
                                     <h2 className="text-2xl font-semibold">{volunteerInfo.first_name} {volunteerInfo.last_name}</h2>
-                                    <p className="text-teal-100">Volunteer</p>
+                                    {volunteerInfo.is_admin && <p className="text-teal-100">Admin</p>}
+                                    {!volunteerInfo.is_admin && <p className="text-teal-100">Volunteer</p>}
                                 </div>
                                 <div className="p-6">
                                     <div className="flex items-center mb-4">

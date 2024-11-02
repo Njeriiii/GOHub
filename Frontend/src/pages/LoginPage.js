@@ -114,6 +114,15 @@ export default function LoginPage() {
                         </button>
                     </div>
                 </form>
+
+                <div className="text-center">
+                    <a
+                        href="/signup"
+                        className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-black bg-white-600 hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+                    >
+                        Don't have an account? Sign up Here!
+                    </a>
+                </div>
             </div>
         </div>
     );
