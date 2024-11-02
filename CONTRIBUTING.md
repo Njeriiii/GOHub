@@ -65,7 +65,6 @@ For production deployment, we will use Docker to create optimized images for the
 ### Notes
 
 - **Environment Variables**: Ensure that the necessary environment variables are set for both development and production environments. These can be specified in a `.env` file or directly in the Docker Compose files.
-- **Health Checks**: For production deployments, ensure to monitor the health of your services using the provided health check endpoints.
 - **Debugging**: In development mode, you can set the `FLASK_ENV` environment variable to `development` to enable debug mode for the Flask app.
 
 ### Docker Compose Files
