@@ -8,9 +8,14 @@ load_dotenv()
 
 class AppConfig:
     SECRET_KEY = secrets.token_hex(24)
-    SQLALCHEMY_DATABASE_URI = (
-        os.getenv("SQLALCHEMY_DATABASE_URI") or "sqlite:///db.sqlite"
-    )
+    # Database configuration
+    database_url = os.getenv("SQLALCHEMY_DATABASE_URI")
+    if database_url and database_url.startswith("postgres://"):
+        # Convert postgres:// to postgresql:// for newer SQLAlchemy versions
+        database_url = database_url.replace("postgres://", "postgresql://")
+    
+    SQLALCHEMY_DATABASE_URI = database_url or "sqlite:///db.sqlite"
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_PRE_PING = True
     SESSION_TYPE = "filesystem"
     SESSION_COOKIE_SAMESITE = "None"
