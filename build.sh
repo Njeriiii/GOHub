@@ -9,6 +9,11 @@ echo "Installing frontend dependencies..."
 cd Frontend
 npm install
 
+echo "Initializing database..."
+cd Backend
+python create_db.py
+cd ..
+
 echo "Building frontend..."
 npm run build
 cd ..
