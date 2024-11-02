@@ -5,14 +5,14 @@ set -o errexit
 echo "Installing Python dependencies..."
 pip install -r Backend/requirements.prod.txt
 
-echo "Installing frontend dependencies..."
-cd Frontend
-npm install
-
 echo "Initializing database..."
 cd Backend
 python create_db.py
 cd ..
+
+echo "Installing frontend dependencies..."
+cd Frontend
+npm install
 
 echo "Building frontend..."
 npm run build
