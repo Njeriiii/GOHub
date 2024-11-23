@@ -24,8 +24,15 @@ function AuthProvider({ children }) {
     // State to track if we're loading authentication data
     const [loading, setLoading] = useState(true);
 
-    // Create an instance of the API client
-    const [api] = useState(() => new ApiClient());
+    // Create an instance of the API client with proper initialization
+    const [api] = useState(() => {
+        const newApi = new ApiClient();
+        const storedToken = localStorage.getItem('token');
+        if (storedToken) {
+            newApi.setToken(storedToken);
+        }
+        return newApi;
+    });
 
     // Function to set user data and persist it to localStorage
     const setUserAndPersist = useCallback((userData) => {
@@ -38,9 +45,17 @@ function AuthProvider({ children }) {
     }, []);
 
     // Function to set the token in localStorage and update the API client
-    const setToken = useCallback((token) => {
-        localStorage.setItem('token', token);
-        api.setToken(token);
+    const setToken = useCallback(async (token) => {
+        return new Promise(resolve => {
+            if (token) {
+                localStorage.setItem('token', token);
+                api.setToken(token);
+            } else {
+                localStorage.removeItem('token');
+                api.setToken(null);
+            }
+            resolve();
+        });
     }, [api]);
 
     // Function to remove the token from localStorage and clear it from the API client
@@ -65,8 +80,22 @@ function AuthProvider({ children }) {
 
     // Function to fetch the current user's data
     const fetchUser = useCallback(async () => {
+        const currentToken = api.getToken();
+        
+        if (!currentToken) {
+            setUserAndPersist(null);
+            setLoading(false);
+            return;
+        }
+
         try {
-            const response = await api.get('/auth/user');
+            // Make request with explicit headers
+            const response = await api.get('/auth/user', null, {
+                headers: {
+                    'Authorization': `Bearer ${currentToken}`,
+                    'Content-Type': 'application/json'
+                }
+            });
             if (response.ok) {
                 setUserAndPersist(response.body);
             } else {
@@ -82,12 +111,21 @@ function AuthProvider({ children }) {
 
     // Function to handle user login
     const login = useCallback(async (email, password) => {
-        const response = await api.post('/auth/login', { email, password });
-        if (response.ok) {
-            setToken(response.body.access_token);
-            await fetchUser();
+        try {
+            const response = await api.post('/auth/login', { email, password });
+            
+            if (response.ok) {
+                await setToken(response.body.access_token);
+
+                 // Add a small delay before fetching user
+                await new Promise(resolve => setTimeout(resolve, 100));
+
+                await fetchUser();
+            }
+            return response;
+        } catch (error) {
+            throw error;
         }
-        return response;
     }, [api, fetchUser, setToken]);
 
     // Function to handle user logout
@@ -97,6 +135,7 @@ function AuthProvider({ children }) {
             if (!token) {
                 console.log('No token found, user is already logged out');
                 setUser(null);
+                setUserAndPersist(null);
                 return;
             }
             const response = await api.post('/auth/logout');

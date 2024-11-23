@@ -59,16 +59,38 @@ const steps = [
     // User ID state
     const userId = getUserId();
 
-    // useEffect(() => {
-    //     if (location.state && location.state.userId) {
-    //         // temporary userId = 2 for testing
-    //         const userID = location.state.userId;
-    //     } else {
-    //         setUserId(2); // temporary userId for testing
-    //       // Redirect to login or display an error if userId is not available
-    //         // navigate('/login', { state: { error: 'User ID is required. Please log in again.' } });
-    //     }
-    // }, [location, navigate]);
+    // Retrieve userType from the state passed via navigate
+    const { userType } = location.state || {};
+
+    const checkRedirect = async () => {
+        // Check if a profile has been created
+        const profileResponse = await apiClient.get(`/profile/load_org?user_id=${userId}`)
+                
+        if (profileResponse.ok && profileResponse.body.orgProfile) {
+            // Profile exists, redirect to dashboard
+            navigate('/');
+        
+        } else {
+
+            // Check if a profile has been created
+            const profileResponse = await apiClient.get(`/profile/volunteer?user_id=${userId}`)
+
+            if (profileResponse.ok && profileResponse.body.volunteer) {
+                // Profile exists, redirect to dashboard
+                navigate('/');
+
+            } else {
+                
+                // Redirect based on userType
+                if (userType === 'admin') {
+                    const nextPage = '/onboarding';
+                    navigate(nextPage);
+                } else {
+                    return;
+                }
+            }
+        }
+    }
 
     // Calculate the height of the form based on the number of steps
     useEffect(() => {
@@ -174,6 +196,7 @@ const steps = [
     // }
 
     return (
+        checkRedirect(),
         <div className="relative py-3 sm:max-w-xl md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mx-auto">
             <div className="relative px-6 py-12 bg-white shadow-lg sm:rounded-3xl sm:p-24">
                 <div className="max-w-4xl mx-auto">

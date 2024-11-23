@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import CreatableSelect from "react-select/creatable";
 import { useApi } from '../contexts/ApiProvider';
 import { useAuth } from '../contexts/AuthProvider';
@@ -10,8 +10,12 @@ const VolunteerForm = () => {
     const [techSkills, setTechSkills] = useState([]);
     const [nonTechSkills, setNonTechSkills] = useState([]);
     const navigate = useNavigate();
+    const location = useLocation();
     const apiClient = useApi();
     const { getUserId } = useAuth();
+
+    // Retrieve userType from the state passed via navigate
+    const { userType } = location.state || {};
 
     // Get the userId from the API context
     const userId = getUserId();
@@ -45,6 +49,36 @@ const VolunteerForm = () => {
         { value: 'mentoring', label: 'Mentoring' },
         { value: 'conflictresolution', label: 'Conflict Resolution' },
     ];
+
+    const checkRedirect = async () => {
+        // Check if a profile has been created
+        const profileResponse = await apiClient.get(`/profile/load_org?user_id=${userId}`)
+                
+        if (profileResponse.ok && profileResponse.body.orgProfile) {
+            // Profile exists, redirect to dashboard
+            navigate('/');
+        
+        } else {
+
+            // Check if a profile has been created
+            const profileResponse = await apiClient.get(`/profile/volunteer?user_id=${userId}`)
+
+            if (profileResponse.ok && profileResponse.body.volunteer) {
+                // Profile exists, redirect to dashboard
+                navigate('/');
+
+            } else {
+                
+                // Redirect based on userType
+                if (userType === 'admin') {
+                    const nextPage = '/onboarding';
+                    navigate(nextPage);
+                } else {
+                    return;
+                }
+            }
+        }
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -107,6 +141,7 @@ const VolunteerForm = () => {
         };
         
         return (
+            checkRedirect(),
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
             <div className="max-w-md w-full space-y-8">
                 <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">

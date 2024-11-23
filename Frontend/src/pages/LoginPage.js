@@ -22,37 +22,13 @@ export default function LoginPage() {
         try {
             const response = await login(email, password);
             if (response.ok) {
-                
-                const userId = getUserId();
 
-                // Check if a profile has been created
-                const profileResponse = await apiClient.get(`/profile/load_org?user_id=${userId}`)
-                
-                if (profileResponse.ok && profileResponse.body.orgProfile) {
-                    // Profile exists, redirect to dashboard
-                    navigate('/');
-                
-                } else {
-
-                    // Check if a profile has been created
-                    const profileResponse = await apiClient.get(`/profile/volunteer?user_id=${userId}`)
-
-                    if (profileResponse.ok && profileResponse.body.volunteer) {
-                        // Profile exists, redirect to dashboard
-                        navigate('/');
-
-                    } else {
-
-                        // Store the token in localStorage
-                        localStorage.setItem('token', response.body.access_token);
+                // Store the token in localStorage
+                localStorage.setItem('token', response.body.access_token);
                         
-                        // Redirect based on userType
-                        const nextPage = userType === 'admin' ? '/onboarding' : '/volunteer-form';
-                        navigate(nextPage);
-                    }
-                }
-            } else {
-                throw new Error(response.body.msg || 'Login failed');
+                // Redirect based on userType
+                const nextPage = userType === 'admin' ? '/onboarding' : '/volunteer-form';
+                navigate(nextPage);
             }
         } catch (error) {
             console.error('Error during login:', error);
