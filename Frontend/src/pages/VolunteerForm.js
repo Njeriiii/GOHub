@@ -67,7 +67,7 @@ const VolunteerForm = () => {
                 navigate('/onboarding');
                 }
             }
-    }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
