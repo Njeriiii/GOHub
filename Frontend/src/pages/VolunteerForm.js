@@ -64,10 +64,7 @@ const VolunteerForm = () => {
                 navigate('/');
 
             } else {
-                if (profileResponse.ok && profileResponse.body.volunteer) {
-                    return;
-                } else {
-                    navigate('/onboarding');
+                navigate('/onboarding');
                 }
             }
         }
