@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate} from 'react-router-dom';
 import CreatableSelect from "react-select/creatable";
 import { useApi } from '../contexts/ApiProvider';
 import { useAuth } from '../contexts/AuthProvider';
@@ -10,12 +10,8 @@ const VolunteerForm = () => {
     const [techSkills, setTechSkills] = useState([]);
     const [nonTechSkills, setNonTechSkills] = useState([]);
     const navigate = useNavigate();
-    const location = useLocation();
     const apiClient = useApi();
     const { getUserId } = useAuth();
-
-    // Retrieve userType from the state passed via navigate
-    const { userType } = location.state || {};
 
     // Get the userId from the API context
     const userId = getUserId();
@@ -54,7 +50,7 @@ const VolunteerForm = () => {
         // Check if a profile has been created
         const profileResponse = await apiClient.get(`/profile/load_org?user_id=${userId}`)
                 
-        if (profileResponse.ok && profileResponse.body.orgProfile) {
+        if (profileResponse.ok && profileResponse.body) {
             // Profile exists, redirect to dashboard
             navigate('/');
         
@@ -63,18 +59,16 @@ const VolunteerForm = () => {
             // Check if a profile has been created
             const profileResponse = await apiClient.get(`/profile/volunteer?user_id=${userId}`)
 
-            if (profileResponse.ok && profileResponse.body.volunteer) {
+            if (profileResponse.ok && profileResponse.body.volunteer && profileResponse.body.volunteer.skills) {
                 // Profile exists, redirect to dashboard
                 navigate('/');
 
             } else {
-                
-                // Redirect based on userType
-                if (userType === 'admin') {
-                    const nextPage = '/onboarding';
+                if (profileResponse.ok && profileResponse.body.volunteer) {
+                    const nextPage = '/volunteer-form';
                     navigate(nextPage);
                 } else {
-                    return;
+                    navigate('/onboarding');
                 }
             }
         }
@@ -139,57 +133,61 @@ const VolunteerForm = () => {
             },
             }),
         };
-        
-        return (
-            checkRedirect(),
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
-            <div className="max-w-md w-full space-y-8">
-                <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                Volunteer Information
-                </h2>
-                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="tech-skills" className="block text-sm font-medium text-gray-700">
-                    Technical Skills
-                    </label>
-                    <CreatableSelect
-                    isMulti
-                    onChange={setTechSkills}
-                    options={techSkillOptions}
-                    styles={customStyles}
-                    className="mt-1"
-                    placeholder="Select or create technical skills"
-                    value={techSkills}
-                    />
+
+        // delay the redirect to allow the checkRedirect function to run
+        // before the return statement
+        setTimeout(() => {
+            checkRedirect();
+
+            return (            
+                <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <div className="max-w-md w-full space-y-8">
+                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                    Volunteer Information
+                    </h2>
+                    <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+                    <div>
+                        <label htmlFor="tech-skills" className="block text-sm font-medium text-gray-700">
+                        Technical Skills
+                        </label>
+                        <CreatableSelect
+                        isMulti
+                        onChange={setTechSkills}
+                        options={techSkillOptions}
+                        styles={customStyles}
+                        className="mt-1"
+                        placeholder="Select or create technical skills"
+                        value={techSkills}
+                        />
+                    </div>
+            
+                    <div>
+                        <label htmlFor="non-tech-skills" className="block text-sm font-medium text-gray-700">
+                        Non-Technical Skills
+                        </label>
+                        <CreatableSelect
+                        isMulti
+                        onChange={setNonTechSkills}
+                        options={nonTechSkillOptions}
+                        styles={customStyles}
+                        className="mt-1"
+                        placeholder="Select or create non-technical skills"
+                        value={nonTechSkills}
+                        />
+                    </div>
+            
+                    <div>
+                        <button
+                        type="submit"
+                        className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+                        >
+                        Submit
+                        </button>
+                    </div>
+                    </form>
                 </div>
-        
-                <div>
-                    <label htmlFor="non-tech-skills" className="block text-sm font-medium text-gray-700">
-                    Non-Technical Skills
-                    </label>
-                    <CreatableSelect
-                    isMulti
-                    onChange={setNonTechSkills}
-                    options={nonTechSkillOptions}
-                    styles={customStyles}
-                    className="mt-1"
-                    placeholder="Select or create non-technical skills"
-                    value={nonTechSkills}
-                    />
                 </div>
-        
-                <div>
-                    <button
-                    type="submit"
-                    className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
-                    >
-                    Submit
-                    </button>
-                </div>
-                </form>
-            </div>
-            </div>
-        );
+            );
+        }, 500);
     };
-    
 export default VolunteerForm;

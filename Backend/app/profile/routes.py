@@ -326,7 +326,7 @@ def get_volunteer_profile():
 
     try:
         volunteer = User.query.get(user_id)
-        if not volunteer:
+        if not volunteer or volunteer.is_admin:
             return jsonify({"message": "Volunteer not found"}), 404
         
         return jsonify({
