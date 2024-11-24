@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useApi } from '../contexts/ApiProvider';
 import { useAuth } from '../contexts/AuthProvider';
 
@@ -7,10 +7,6 @@ import { useAuth } from '../contexts/AuthProvider';
 export default function LoginPage() {
 
     const navigate = useNavigate();
-    const location = useLocation();
-    
-    // Retrieve userType from the state passed via navigate
-    const { userType } = location.state || {};
     
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -27,7 +23,7 @@ export default function LoginPage() {
                 localStorage.setItem('token', response.body.access_token);
                         
                 // Redirect based on userType
-                const nextPage = userType === 'admin' ? '/onboarding' : '/volunteer-form';
+                const nextPage = '/volunteer-form';
                 navigate(nextPage);
             }
         } catch (error) {
