@@ -65,8 +65,7 @@ const VolunteerForm = () => {
 
             } else {
                 if (profileResponse.ok && profileResponse.body.volunteer) {
-                    const nextPage = '/volunteer-form';
-                    navigate(nextPage);
+                    return;
                 } else {
                     navigate('/onboarding');
                 }
