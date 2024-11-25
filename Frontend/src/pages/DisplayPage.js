@@ -3,6 +3,9 @@ import { useApi } from '../contexts/ApiProvider';
 import KeyWordSearch from '../components/KeyWordSearch';
 import OrgDisplayCard from '../components/OrgDisplayCard';
 import Header from '../components/Header';
+import KenyaIcon from '../components/icons/KenyaIcon';
+import { Loader2, Search } from 'lucide-react';
+
 
 // Component to load all organisations and display their name and an overview
 export default function DisplayPage() {
@@ -18,98 +21,151 @@ export default function DisplayPage() {
     // State variable to hold search results
     const [searchResults, setSearchResults] = useState(null);
     
-    // State variable to hold active tab - featured, all, or search
-    const [activeTab, setActiveTab] = useState('featured');
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     const handleSearch = (results) => {
         setSearchResults(results);
-        setActiveTab('search');
+        if (results) {
+            window.scrollTo({ top: document.getElementById('results').offsetTop - 100, behavior: 'smooth' });
+        }
     };
 
     useEffect(() => {
-        apiClient.get("/main/orgs")
-            .then((response) => {
+        const fetchOrgs = async () => {
+            try {
+                const response = await apiClient.get("/main/orgs");
                 if (response.ok) {
-                    setOrgsData(response?.body);
-                    setLoading(false);
-                } else {
-                    console.error("Error fetching data: ", response.body);
+                    setOrgsData(response.body);
                 }
-            })
-            .catch((error) => {
+            } catch (error) {
                 console.error("Error fetching data: ", error);
-            });
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchOrgs();
     }, [apiClient]);
 
-    const renderOrgCards = (orgs) => (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {orgs.map((org) => (
-                <OrgDisplayCard key={org.org_id} org={org} />
-            ))}
-        </div>
-    );
+    const renderOrgCards = (orgs) => {
+        if (!orgs?.length) return null;
+
+        return (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {orgs.map((org) => (
+                    <div key={org.org_id}>
+                        <OrgDisplayCard org={org} />
+                    </div>
+                ))}
+            </div>
+        );
+    };
 
     return (
-        <div className="bg-gray-100 min-h-screen flex flex-col">
+        <div className="min-h-screen bg-white">
             <Header />
             
-            <main className="flex-grow container mx-auto px-4 py-8">
-                <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-                    <h1 className="text-3xl font-bold text-gray-800 mb-4">Discover Kenyan Grassroots Organizations</h1>
-                    <p className="text-gray-600 mb-6">Connect with community-based charities making a difference across Kenya.</p>
-                    <KeyWordSearch orgData={orgsData} onSearchResults={handleSearch} />
+            <main className="pb-20">
+                {/* Hero Section */}
+                <div className="bg-teal-600">
+                    <div className="container mx-auto px-4 py-16">
+                        <div className="max-w-2xl mx-auto text-center">
+                            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/10 mb-6">
+                                <KenyaIcon className="w-8 h-8 text-white" />
+                            </div>
+                            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+                                Discover Kenyan Organizations
+                            </h1>
+                            <p className="text-2xl text-white/90 font-bold">
+                                Connect with community-based charities making a real difference
+                            </p>
+                        </div>
+                    </div>
+                    
+                    {/* Search Section */}
+                    <div className="container mx-auto px-4 relative -mb-8">
+                        <div className="max-w-4xl mx-auto">
+                            <KeyWordSearch 
+                                orgData={orgsData} 
+                                onSearchResults={handleSearch}
+                                onFilterOpen={setIsFilterOpen}
+                            />
+                        </div>
+                    </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-md p-6">
-                    <div className="flex mb-6 space-x-4">
-                        {['featured', 'all', 'search'].map((tab) => (
-                            <button
-                                key={tab}
-                                className={`px-4 py-2 rounded-full ${activeTab === tab ? 'bg-teal-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'} transition-colors`}
-                                onClick={() => setActiveTab(tab)}
-                                disabled={tab === 'search' && !searchResults}
-                            >
-                                {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                            </button>
-                        ))}
-                    </div>
+                <div className="">
 
-                    {activeTab === 'featured' && (
-                        <div>
-                            <h2 className="text-2xl font-semibold text-gray-800 mb-4">Featured Organizations</h2>
-                            {loading ? (
-                                <div className="flex justify-center items-center h-64">
-                                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                    {/* Results Section */}
+                    <section 
+                        id="results" 
+                        className={`container mx-auto px-4 ${isFilterOpen ? 'mt-32' : 'mt-16'}`}
+                    >
+                        {/* Results Header */}
+                        <div className="bg-white rounded-lg mb-8 border border-slate-200">
+                            <div className="px-6 py-4">
+                                <div className="flex justify-between items-center">
+                                    <div className="flex items-center gap-4">
+                                        <h2 className="text-xl font-bold text-teal-900">
+                                            {searchResults 
+                                                ? 'Search Results' 
+                                                : 'All Organizations'
+                                            }
+                                        </h2>
+                                        <span className="px-4 py-1.5 text-xl font-bold bg-teal-50 text-teal-600 rounded-full">
+                                            {searchResults?.length || orgsData?.length || 0} organization(s)
+                                        </span>
+                                    </div>
+                                    {searchResults && (
+                                        <button
+                                            onClick={() => setSearchResults(null)}
+                                            className="inline-flex items-center gap-2 text-xl font-bold 
+                                                    text-teal-600 hover:text-teal-700 px-4 py-2 rounded-lg 
+                                                    hover:bg-teal-50 transition-colors"
+                                        >
+                                            View All Organizations
+                                        </button>
+                                    )}
                                 </div>
-                            ) : (
-                                renderOrgCards(orgsData.slice(0, 6))
-                            )}
+                            </div>
                         </div>
-                    )}
 
-                    {activeTab === 'all' && (
-                        <div>
-                            <h2 className="text-2xl font-semibold text-gray-800 mb-4">All Organizations</h2>
-                            {loading ? (
-                                <div className="flex justify-center items-center h-64">
-                                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                        {/* Results Content */}
+                        {loading ? (
+                            <div className="bg-white rounded-lg p-12 border border-slate-200">
+                                <div className="flex justify-center items-center">
+                                    <div className="flex flex-col items-center gap-4">
+                                        <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
+                                        <p className="text-sm text-gray-500">Loading organizations...</p>
+                                    </div>
                                 </div>
-                            ) : (
-                                renderOrgCards(orgsData)
-                            )}
-                        </div>
-                    )}
-
-                    {activeTab === 'search' && (
-                        <div>
-                            <h2 className="text-2xl font-semibold text-gray-800 mb-4">Search Results</h2>
-                            {searchResults && searchResults.length > 0 ? (
-                                renderOrgCards(searchResults)
-                            ) : (
-                                <p className="text-gray-600">No results found. Try a different search term.</p>
-                            )}
-                        </div>
-                    )}
+                            </div>
+                        ) : searchResults?.length === 0 ? (
+                            <div className="bg-white rounded-lg p-12 border border-slate-200">
+                                <div className="max-w-sm mx-auto text-center">
+                                    <div className="inline-flex items-center justify-center w-12 h-12 
+                                                rounded-full bg-teal-50 text-teal-600 mb-4">
+                                        <Search className="w-6 h-6" />
+                                    </div>
+                                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                                        No Organizations Found
+                                    </h3>
+                                    <p className="text-gray-500 mb-6">
+                                        Try adjusting your search criteria or explore all available organizations
+                                    </p>
+                                    <button
+                                        onClick={() => setSearchResults(null)}
+                                        className="px-6 py-2.5 bg-teal-50 text-teal-600 rounded-lg 
+                                                hover:bg-teal-100 transition-colors font-medium"
+                                    >
+                                        View All Organizations
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            renderOrgCards(searchResults || orgsData)
+                        )}
+                    </section>
                 </div>
             </main>
         </div>
