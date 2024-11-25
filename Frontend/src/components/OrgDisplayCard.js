@@ -23,7 +23,7 @@ export default function OrgDisplayCard({ org }) {
 
     return (
         <div 
-            className="m-4 bg-slate-300 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:translate-y-[-5px] cursor-pointer border-l-4 border-teal-800"
+            className="m-4 bg-slate-50 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:translate-y-[-5px] cursor-pointer border-l-4 border-teal-800"
             onClick={() => handleProfileLinkClick(org)}
         >
             <div className="p-6">
