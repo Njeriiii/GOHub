@@ -64,7 +64,12 @@ const VolunteerForm = () => {
                 navigate('/');
 
             } else {
-                navigate('/onboarding');
+                if (profileResponse.ok && profileResponse.body.volunteer && !profileResponse.body.volunteer.skills) {
+                    // stay on the page
+                    return;
+                } else {
+                    navigate('/onboarding');
+                    }
                 }
             }
     };
