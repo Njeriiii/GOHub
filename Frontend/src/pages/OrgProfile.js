@@ -15,7 +15,7 @@ export default function OrgProfile() {
     const [userId, setUserId] = useState(null);
 
     useEffect(() => {
-        if (location.state && location.state.org.user_id) {
+        if (location.state && location.state.org && location.state.org.user_id) {
             setUserId(location.state.org.user_id);
         }
     }, [location]);

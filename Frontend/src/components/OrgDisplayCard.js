@@ -23,24 +23,28 @@ export default function OrgDisplayCard({ org }) {
 
     return (
         <div 
-            className="m-4 bg-white rounded-lg overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl hover:translate-y-[-5px] cursor-pointer border-l-4 border-teal-500"
+            className="m-4 bg-slate-300 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:translate-y-[-5px] cursor-pointer border-l-4 border-teal-800"
             onClick={() => handleProfileLinkClick(org)}
         >
             <div className="p-6">
                 <div className="flex justify-between items-start mb-4">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-2">{org.org_name}</h2>
+                    <h2 className="text-2xl font-bold text-teal-900 mb-2">{org.org_name}</h2>
                     <span className={`px-3 py-1 ${categoryColor} text-sm font-semibold rounded-full`}>
-                        <div className="flex flex-wrap gap-2">
-                            {org.focus_areas.map((focus_area) => (
+                    <div className="flex flex-wrap items-center">
+                        {org.focus_areas.map((focus_area, index) => (
+                            <React.Fragment key={focus_area.id}>
                                 <span 
-                                key={focus_area.id} 
-                                className={`px-3 py-1 ${categoryColor} text-sm font-semibold rounded-full`}
-                                title={focus_area.description || focus_area.name}
+                                    className={`px-3 py-1 ${categoryColor} text-sm font-semibold rounded-full`}
+                                    title={focus_area.description || focus_area.name}
                                 >
-                                {focus_area.name}
+                                    {focus_area.name}
                                 </span>
-                            ))}
-                        </div>
+                                {index < org.focus_areas.length - 1 && (
+                                    <span className="mx-1 text-gray-400">•</span>
+                                )}
+                            </React.Fragment>
+                        ))}
+                    </div>
                     </span>
                 </div>
                 <p className="text-gray-600 mb-4 line-clamp-3">{org.org_overview}</p>
@@ -60,7 +64,7 @@ export default function OrgDisplayCard({ org }) {
                 </div>
                 <div className="flex justify-end">
                     <button
-                        className="flex items-center px-4 py-2 bg-teal-600 text-white rounded-full hover:bg-teal-700 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
+                        className="flex items-center px-4 py-2 bg-teal-600 text-white rounded-full hover:bg-teal-800 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
                         onClick={(e) => {
                             e.stopPropagation();
                             handleProfileLinkClick(org);

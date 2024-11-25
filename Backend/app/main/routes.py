@@ -27,6 +27,7 @@ def get_all_orgs():
             "org_name": org.org_name,
             "org_overview": org.org_overview,
             "focus_areas": [focus_area.serialize() for focus_area in org.focus_areas],
+            "skills_needed": [skill.serialize() for skill in org.skills_needed],
         }
 
         orgs_data.append(org_data)

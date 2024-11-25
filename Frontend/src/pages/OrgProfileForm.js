@@ -104,7 +104,7 @@ const OrgProfileForm = () => {
         try {
             const response = await apiClient.post('/profile/org/projects_initiatives', completeFormData);
             if (response.status === 201) {
-                navigate('/org_profile', { state: { userId } });
+                navigate('/' );
             }
         } catch (error) {
             setError('An error occurred while submitting the form. Please try again.');
