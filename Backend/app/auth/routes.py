@@ -1,7 +1,6 @@
 import logging
 from flask import Blueprint, jsonify, request, session, make_response
 from werkzeug.security import check_password_hash, generate_password_hash
-from flask_oauthlib.client import OAuth
 from app import db
 from app.models import User
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt, unset_jwt_cookies
@@ -9,7 +8,6 @@ from werkzeug.security import check_password_hash
 from datetime import timedelta
 
 auth = Blueprint("auth", __name__)
-oauth = OAuth()
 
 
 @auth.route("/auth/signup", methods=["OPTIONS", "POST"])
@@ -95,7 +93,12 @@ def login():
 
     if user and check_password_hash(user.password, password):
         # Identity can be any data that is json serializable
-        access_token = create_access_token(identity=user.id, expires_delta=timedelta(days=1))
+        access_token = create_access_token(identity=str(user.id), expires_delta=timedelta(days=1), 
+                                        additional_claims={
+                'sub': str(user.id),  # Explicitly set sub as string
+                'user_id_str': str(user.id)
+            })
+
         return jsonify(access_token=access_token), 200
     else:
         return jsonify({"msg": "Bad username or password"}), 401
@@ -117,20 +120,32 @@ def logout():
 @auth.route('/auth/user', methods=['GET'])
 @jwt_required()  # This decorator ensures that a valid JWT token is present
 def get_current_user():
-    # Get the identity of the current user from the JWT token
-    current_user_id = get_jwt_identity()
-    
-    # Query the database to get the user
-    user = User.query.get(current_user_id)
-    
-    if not user:
-        return jsonify({"msg": "User not found"}), 404
-    
-    # Return the user data
-    return jsonify({
-        "id": user.id,
-        "email": user.email,
-        "first_name": user.first_name,
-        "last_name": user.last_name,
-        "is_admin": user.is_admin,
-    }), 200
+    try:
+        # Get the identity and handle potential numeric value
+        current_user_id = get_jwt_identity()
+        
+        # Convert to string if it's not already
+        if not isinstance(current_user_id, str):
+            current_user_id = str(current_user_id)
+            
+        # Convert back to int for database query
+        user_id = int(current_user_id)
+        
+        # Query the database
+        user = User.query.get(user_id)
+        
+        if not user:
+            return jsonify({"msg": "User not found"}), 404
+            
+        return jsonify({
+            "id": user.id,
+            "email": user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "is_admin": user.is_admin,
+        }), 200
+        
+    except ValueError as ve:
+        return jsonify({"msg": "Invalid user ID format"}), 400
+    except Exception as e:
+        return jsonify({"msg": "Internal server error"}), 500

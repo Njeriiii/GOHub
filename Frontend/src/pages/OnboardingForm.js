@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Save } from 'lucide-react';
 // This component represents the organization onboarding form.
 // It includes multiple steps for collecting information about the organization.
@@ -46,7 +46,6 @@ const steps = [
     const navigate = useNavigate();
     const apiClient = useApi();
     const { getUserId } = useAuth();
-    const location = useLocation();
     const [formHeight, setFormHeight] = useState('auto');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -58,17 +57,16 @@ const steps = [
 
     // User ID state
     const userId = getUserId();
+        const checkRedirect = async () => {
+        // Check if a profile has been created
+        const profileResponse = await apiClient.get(`/profile/load_org?user_id=${userId}`)
+                
+        if (profileResponse.ok && profileResponse.body) {
+            // Profile exists, redirect to dashboard
+            navigate('/');
+        }
+    }
 
-    // useEffect(() => {
-    //     if (location.state && location.state.userId) {
-    //         // temporary userId = 2 for testing
-    //         const userID = location.state.userId;
-    //     } else {
-    //         setUserId(2); // temporary userId for testing
-    //       // Redirect to login or display an error if userId is not available
-    //         // navigate('/login', { state: { error: 'User ID is required. Please log in again.' } });
-    //     }
-    // }, [location, navigate]);
 
     // Calculate the height of the form based on the number of steps
     useEffect(() => {
@@ -138,8 +136,10 @@ const steps = [
             const response = await apiClient.post('/profile/org', completeFormData);
             if (response.status === 201) {
 
+                console.log('Response:', response);
+
                 // Assuming the API returns the organization ID in the response body
-                const orgId = response.data.organization_id;
+                const orgId = response.body.org_id;
                 console.log('Organization ID:', orgId);
 
                 if (!orgId) {
@@ -172,6 +172,7 @@ const steps = [
     // }
 
     return (
+        checkRedirect(),
         <div className="relative py-3 sm:max-w-xl md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mx-auto">
             <div className="relative px-6 py-12 bg-white shadow-lg sm:rounded-3xl sm:p-24">
                 <div className="max-w-4xl mx-auto">

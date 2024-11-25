@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate} from 'react-router-dom';
 import CreatableSelect from "react-select/creatable";
 import { useApi } from '../contexts/ApiProvider';
 import { useAuth } from '../contexts/AuthProvider';
@@ -45,6 +45,34 @@ const VolunteerForm = () => {
         { value: 'mentoring', label: 'Mentoring' },
         { value: 'conflictresolution', label: 'Conflict Resolution' },
     ];
+
+    const checkRedirect = async () => {
+        // Check if a profile has been created
+        const profileResponse = await apiClient.get(`/profile/load_org?user_id=${userId}`)
+                
+        if (profileResponse.ok && profileResponse.body) {
+            // Profile exists, redirect to dashboard
+            navigate('/');
+        
+        } else {
+
+            // Check if a Volunteer profile has been created
+            const profileResponse = await apiClient.get(`/profile/volunteer?user_id=${userId}`)
+            
+            // If the user is an admin, redirect to the onboarding page
+            if (profileResponse.body.code === 403) {
+                navigate('/onboarding');
+            }
+
+            if (profileResponse.ok && profileResponse.body.volunteer && profileResponse.body.volunteer.skills) {
+
+                if (profileResponse.body.volunteer.skills.length > 0) {
+                    // Profile exists, redirect to dashboard
+                    navigate('/');
+                }
+            }
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -105,56 +133,61 @@ const VolunteerForm = () => {
             },
             }),
         };
-        
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
-            <div className="max-w-md w-full space-y-8">
-                <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                Volunteer Information
-                </h2>
-                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="tech-skills" className="block text-sm font-medium text-gray-700">
-                    Technical Skills
-                    </label>
-                    <CreatableSelect
-                    isMulti
-                    onChange={setTechSkills}
-                    options={techSkillOptions}
-                    styles={customStyles}
-                    className="mt-1"
-                    placeholder="Select or create technical skills"
-                    value={techSkills}
-                    />
+
+        // delay the redirect to allow the checkRedirect function to run
+        // before the return statement
+        setTimeout(() => {
+            checkRedirect();
+
+            return (            
+                <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <div className="max-w-md w-full space-y-8">
+                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                    Volunteer Information
+                    </h2>
+                    <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+                    <div>
+                        <label htmlFor="tech-skills" className="block text-sm font-medium text-gray-700">
+                        Technical Skills
+                        </label>
+                        <CreatableSelect
+                        isMulti
+                        onChange={setTechSkills}
+                        options={techSkillOptions}
+                        styles={customStyles}
+                        className="mt-1"
+                        placeholder="Select or create technical skills"
+                        value={techSkills}
+                        />
+                    </div>
+            
+                    <div>
+                        <label htmlFor="non-tech-skills" className="block text-sm font-medium text-gray-700">
+                        Non-Technical Skills
+                        </label>
+                        <CreatableSelect
+                        isMulti
+                        onChange={setNonTechSkills}
+                        options={nonTechSkillOptions}
+                        styles={customStyles}
+                        className="mt-1"
+                        placeholder="Select or create non-technical skills"
+                        value={nonTechSkills}
+                        />
+                    </div>
+            
+                    <div>
+                        <button
+                        type="submit"
+                        className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+                        >
+                        Submit
+                        </button>
+                    </div>
+                    </form>
                 </div>
-        
-                <div>
-                    <label htmlFor="non-tech-skills" className="block text-sm font-medium text-gray-700">
-                    Non-Technical Skills
-                    </label>
-                    <CreatableSelect
-                    isMulti
-                    onChange={setNonTechSkills}
-                    options={nonTechSkillOptions}
-                    styles={customStyles}
-                    className="mt-1"
-                    placeholder="Select or create non-technical skills"
-                    value={nonTechSkills}
-                    />
                 </div>
-        
-                <div>
-                    <button
-                    type="submit"
-                    className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
-                    >
-                    Submit
-                    </button>
-                </div>
-                </form>
-            </div>
-            </div>
-        );
+            );
+        }, 500);
     };
-    
 export default VolunteerForm;

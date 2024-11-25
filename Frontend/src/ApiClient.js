@@ -6,8 +6,9 @@ import axios from "axios";
 // Source: React Mega Tutorial Chapter 6 by Miguel Grinberg
 
 // Import the BASE_API_URL from environment variables in frontend/.env
-const BASE_API_URL = process.env.REACT_APP_BASE_API_URL;
-//const BASE_API_URL = 'https://internlink.onrender.com';
+const BASE_API_URL = process.env.NODE_ENV === 'production' 
+    ? 'https://gohub.onrender.com'  // This will be proxied through nginx
+    : process.env.REACT_APP_BASE_API_URL;
     
 // Create a class for the ApiClient
 export default class ApiClient {
@@ -26,6 +27,10 @@ export default class ApiClient {
         this.token = token;
     }
 
+    getToken() {
+        return this.token;
+    }
+
     // Method for making HTTP requests with options
     // This method takes all of its arguments from an options object.
     async request(options) {
@@ -41,14 +46,17 @@ export default class ApiClient {
             withCredentials: true,
         });
 
+        // Get token at request time
+        const currentToken = this.getToken();
+
         // Prepare headers
         const headers = {
             ...options.headers
         };
 
         // Add Authorization header if token exists
-        if (this.token) {
-            headers['Authorization'] = `Bearer ${this.token}`;
+        if (currentToken) {
+            headers['Authorization'] = `Bearer ${currentToken}`;
         }
 
         // Set Content-Type to application/json for non-FormData bodies

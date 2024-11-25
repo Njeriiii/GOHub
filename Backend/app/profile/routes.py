@@ -329,6 +329,9 @@ def get_volunteer_profile():
         if not volunteer:
             return jsonify({"message": "Volunteer not found"}), 404
         
+        if volunteer.is_admin:
+            return jsonify({"message": "Admin users cannot be volunteers"}), 403
+        
         return jsonify({
             "message": "Volunteer found",
             "volunteer": volunteer.serialize(),

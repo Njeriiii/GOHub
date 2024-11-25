@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useApi } from '../contexts/ApiProvider';
 import { useAuth } from '../contexts/AuthProvider';
 
@@ -7,10 +7,6 @@ import { useAuth } from '../contexts/AuthProvider';
 export default function LoginPage() {
 
     const navigate = useNavigate();
-    const location = useLocation();
-    
-    // Retrieve userType from the state passed via navigate
-    const { userType } = location.state || {};
     
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -22,37 +18,13 @@ export default function LoginPage() {
         try {
             const response = await login(email, password);
             if (response.ok) {
-                
-                const userId = getUserId();
 
-                // Check if a profile has been created
-                const profileResponse = await apiClient.get(`/profile/load_org?user_id=${userId}`)
-                
-                if (profileResponse.ok && profileResponse.body.orgProfile) {
-                    // Profile exists, redirect to dashboard
-                    navigate('/');
-                
-                } else {
-
-                    // Check if a profile has been created
-                    const profileResponse = await apiClient.get(`/profile/volunteer?user_id=${userId}`)
-
-                    if (profileResponse.ok && profileResponse.body.volunteer) {
-                        // Profile exists, redirect to dashboard
-                        navigate('/');
-
-                    } else {
-
-                        // Store the token in localStorage
-                        localStorage.setItem('token', response.body.access_token);
+                // Store the token in localStorage
+                localStorage.setItem('token', response.body.access_token);
                         
-                        // Redirect based on userType
-                        const nextPage = userType === 'admin' ? '/onboarding' : '/volunteer-form';
-                        navigate(nextPage);
-                    }
-                }
-            } else {
-                throw new Error(response.body.msg || 'Login failed');
+                // Redirect based on userType
+                const nextPage = '/volunteer-form';
+                navigate(nextPage);
             }
         } catch (error) {
             console.error('Error during login:', error);

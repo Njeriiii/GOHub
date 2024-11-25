@@ -1,0 +1,19 @@
+# Frontend Dockerfile
+# ./frontend/Dockerfile.dev
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# No need to copy files here since we're using volumes in docker-compose
+# No need to build since we want hot reloading
+
+EXPOSE 3000
+
+# Run the development server instead of nginx
+CMD ["npm", "start"]
