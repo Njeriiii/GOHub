@@ -56,22 +56,22 @@ const VolunteerForm = () => {
         
         } else {
 
-            // Check if a profile has been created
+            // Check if a Volunteer profile has been created
             const profileResponse = await apiClient.get(`/profile/volunteer?user_id=${userId}`)
+            
+            // If the user is an admin, redirect to the onboarding page
+            if (profileResponse.body.code === 403) {
+                navigate('/onboarding');
+            }
 
             if (profileResponse.ok && profileResponse.body.volunteer && profileResponse.body.volunteer.skills) {
-                // Profile exists, redirect to dashboard
-                navigate('/');
 
-            } else {
-                if (profileResponse.ok && profileResponse.body.volunteer && !profileResponse.body.volunteer.skills) {
-                    // stay on the page
-                    return;
-                } else {
-                    navigate('/onboarding');
-                    }
+                if (profileResponse.body.volunteer.skills.length > 0) {
+                    // Profile exists, redirect to dashboard
+                    navigate('/');
                 }
             }
+        }
     };
 
     const handleSubmit = async (e) => {
