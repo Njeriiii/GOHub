@@ -2,9 +2,9 @@ from flask import Blueprint, jsonify, request
 from flask_login import login_required, current_user
 from sqlalchemy.orm.exc import NoResultFound
 from app.models import User, SkillsNeeded
-
-
 from app import db
+from app import mpesa_client
+import logging
 
 from app.models import (
     OrgProfile,
@@ -346,3 +346,33 @@ def get_volunteer_profile():
 def get_all_skills():
     skills = SkillsNeeded.query.all()
     return jsonify([skill.serialize() for skill in skills]), 200
+
+# In your route handler
+@profile.route("/profile/generate-qr", methods=['POST', 'OPTIONS'])
+def generate_qr():
+
+    # Handle CORS preflight request
+    if request.method == 'OPTIONS':
+        response = jsonify({'status': 'ok'})
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+        response.headers.add('Access-Control-Allow-Methods', 'POST')
+        return response
+
+    # Get JSON data from request
+    qr_data = request.get_json()
+    if not qr_data:
+        return jsonify({'error': 'No data provided'}), 400
+    
+    # Validate required fields
+    required_fields = ['MerchantName', 'RefNo', 'Amount', 'TrxCode', 'CPI', 'Size']
+    for field in required_fields:
+        if field not in qr_data:
+            return jsonify({'error': f'Missing required field: {field}'}), 400
+            
+    try:
+        # Return generated QR code
+        qr_code = mpesa_client.generate_qr_code(qr_data)
+        return jsonify({"qr_code": qr_code})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

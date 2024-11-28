@@ -1,5 +1,6 @@
 from app import db
 from datetime import datetime, timezone
+import enum
 
 # Association table for User (volunteer) skills
 user_skills = db.Table('user_skills',
@@ -116,6 +117,9 @@ class OrgProfile(db.Model):
         cascade="all, delete-orphan",
     )
 
+    # One-to-one relationship
+    mpesa_config = db.relationship("MpesaConfig", uselist=False, backref="org_profile")
+
     def __repr__(self):
         return f"{self.org_name}"
 
@@ -146,6 +150,7 @@ class OrgProfile(db.Model):
             "social_media_links": [
                 link.serialize() for link in self.social_media_links
             ],
+            "mpesa_config": self.mpesa_config.serialize() if self.mpesa_config else None,
         }
         return org_data
 
@@ -258,4 +263,36 @@ class SocialMediaLink(db.Model):
             "org_id": self.org_id,
             "platform": self.platform,
             "url": self.url,
+        }
+
+class PaymentType(enum.Enum):
+    PAYBILL = "PB"
+    SEND_MONEY = "SM"
+
+class MpesaConfig(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    org_profile_id = db.Column(db.Integer, db.ForeignKey("org_profile.id"), unique=True, nullable=False)
+
+    merchant_name = db.Column(db.String(255), nullable=False)  # M-PESA merchant name
+    payment_type = db.Column(db.Enum(PaymentType), nullable=False)
+    
+    # This will store either the paybill number or phone number depending on payment_type
+    identifier = db.Column(db.String(50), nullable=False)  
+    
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
+    
+
+    def __repr__(self):
+        return f"<MpesaConfig(merchant_name='{self.merchant_name}', payment_type='{self.payment_type.value}', identifier='{self.identifier}')>"
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "org_profile_id": self.org_profile_id,
+            "merchant_name": self.merchant_name,
+            "payment_type": self.payment_type.value,
+            "identifier": self.identifier,
+            "created_at": self.created_at.isoformat(),
+            "updated_at": self.updated_at.isoformat(),
         }

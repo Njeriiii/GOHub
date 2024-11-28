@@ -40,6 +40,11 @@ class AppConfig:
     JWT_HEADER_NAME = 'Authorization'
     JWT_ERROR_MESSAGE_KEY = 'msg'
 
+    # M-Pesa API settings
+    MPESA_CONSUMER_KEY = os.getenv("MPESA_CONSUMER_KEY")
+    MPESA_CONSUMER_SECRET = os.getenv("MPESA_CONSUMER_SECRET")
+    MPESA_IS_SANDBOX = os.getenv("MPESA_IS_SANDBOX") == "True"
+
 class TestConfig(AppConfig):
     SQLALCHEMY_DATABASE_URI = "sqlite://"
     TESTING = True
