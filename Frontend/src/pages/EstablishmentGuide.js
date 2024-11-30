@@ -447,6 +447,56 @@ const REGISTRATION_STEPS = [
                     </div>
                 </CardContent>
             </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center text-teal-600">
+                    <FileText className="mr-2" />
+                    Sources
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="space-y-4">
+                    <p className="text-gray-700">This guide has been compiled using information from official government sources and professional registrars:</p>
+                    
+                    <ul className="space-y-2">
+                        <li className="flex items-start">
+                        <ExternalLink className="text-teal-600 mr-2 mt-1" size={16} />
+                        <div>
+                            <a 
+                            href="https://www.socialprotection.go.ke/services-group-registration"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-teal-600 hover:text-teal-800 underline"
+                            >
+                            Ministry of Labour and Social Protection - Group Registration Services
+                            </a>
+                            <p className="text-gray-600 text-sm mt-1">Official government portal for CBO and group registration</p>
+                        </div>
+                        </li>
+                        
+                        <li className="flex items-start">
+                        <ExternalLink className="text-teal-600 mr-2 mt-1" size={16} />
+                        <div>
+                            <a 
+                            href="https://companysecretariesafrica.com/registering-community-based-organization/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-teal-600 hover:text-teal-800 underline"
+                            >
+                            Company Secretaries Africa - CBO Registration Guide
+                            </a>
+                            <p className="text-gray-600 text-sm mt-1">Professional guidance on CBO registration process</p>
+                        </div>
+                        </li>
+                    </ul>
+
+                    <p className="text-sm text-gray-600 mt-4 italic">
+                        Note: While we strive to keep this information up-to-date, requirements may change. Please verify current requirements with your local Social Development Office.
+                    </p>
+                    </div>
+                </CardContent>
+            </Card>
         </main>
         </div>
     );
