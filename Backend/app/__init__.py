@@ -10,6 +10,7 @@ import os
 
 from app.config import AppConfig
 from flask_session import Session
+from app.profile.mpesa_client import MpesaClient
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -52,6 +53,13 @@ def create_app(config_class=AppConfig):
     app.config['JWT_HEADER_NAME'] = 'Authorization'
     app.config['JWT_ERROR_MESSAGE_KEY'] = 'msg'
     app.config['JWT_IDENTITY_CLAIM'] = 'sub'
+
+    global mpesa_client
+    mpesa_client = MpesaClient(
+        consumer_key=app.config['MPESA_CONSUMER_KEY'],
+        consumer_secret=app.config['MPESA_CONSUMER_SECRET'],
+        is_sandbox=app.config['MPESA_IS_SANDBOX']
+        )
 
     # Add a loader to convert the JWT subject to string before verification
     @jwt.decode_key_loader

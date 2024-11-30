@@ -4,6 +4,7 @@ import { useApi } from '../contexts/ApiProvider';
 import Header from '../components/Header';
 import OrgProjects from './OrgProjects';
 import Sidebar from '../components/Sidebar';
+import QRDonation from '../components/QRDonation';
 
 // This component displays the profile of an organization
 // It includes the organization's name, overview, and projects
@@ -13,6 +14,7 @@ export default function OrgProfile() {
     const apiClient = useApi();
     const location = useLocation(); 
     const [userId, setUserId] = useState(null);
+    const [donationMode, setDonationMode] = useState(false);
 
     useEffect(() => {
         if (location.state && location.state.org && location.state.org.user_id) {
@@ -49,6 +51,10 @@ export default function OrgProfile() {
         return <div className="text-center text-2xl text-gray-700 mt-10">No data available</div>;
     }
 
+    const handleQRDonation = () => {
+        setDonationMode(true);
+    }
+
     // If data is available, display the org profile
     return (
         <div className="bg-gray-100 min-h-screen">
@@ -81,6 +87,22 @@ export default function OrgProfile() {
             </div>
             <div className="lg:col-span-1">
                 <Sidebar onboardingFormData={onboardingFormData} />
+            </div>
+            <div>
+            <button 
+                onClick={() => setDonationMode(true)} 
+                className="bg-teal-500 text-white px-6 py-3 rounded-full font-bold text-lg hover:bg-teal-600 transition duration-300"
+            >
+                Donate
+            </button>
+
+            <QRDonation
+                isOpen={donationMode}
+                onClose={() => setDonationMode(false)}
+                merchantName="Your Business Nameeee"
+                trxCode="PB"
+                cpi="834831"
+            />
             </div>
             </div>
         </main>

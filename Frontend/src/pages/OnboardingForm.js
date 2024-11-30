@@ -57,10 +57,10 @@ const steps = [
 
     // User ID state
     const userId = getUserId();
-        const checkRedirect = async () => {
-        // Check if a profile has been created
-        const profileResponse = await apiClient.get(`/profile/load_org?user_id=${userId}`)
-                
+    const checkRedirect = async () => {
+    // Check if a profile has been created
+    const profileResponse = await apiClient.get(`/profile/load_org?user_id=${userId}`)
+            
         if (profileResponse.ok && profileResponse.body) {
             // Profile exists, redirect to dashboard
             navigate('/');
@@ -172,7 +172,7 @@ const steps = [
     // }
 
     return (
-        checkRedirect(),
+        !formData ? checkRedirect() : null,
         <div className="relative py-3 sm:max-w-xl md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mx-auto">
             <div className="relative px-6 py-12 bg-white shadow-lg sm:rounded-3xl sm:p-24">
                 <div className="max-w-4xl mx-auto">

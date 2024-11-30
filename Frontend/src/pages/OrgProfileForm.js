@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Save } from 'lucide-react';
 
 import ProgramInitiativesList from '../components/OrgProfileFormComponents/ProgramsInitiatives';
 import PreviousProjectsList from '../components/OrgProfileFormComponents/PreviousProjects';
 import OngoingProjectsList from '../components/OrgProfileFormComponents/OngoingProjects';
 import SupportNeeds from '../components/OrgProfileFormComponents/SupportNeeds';
+import DonationData from '../components/OrgProfileFormComponents/DonationData';
 
 import { useApi } from '../contexts/ApiProvider';
 import { useAuth } from '../contexts/AuthProvider';
@@ -27,6 +28,7 @@ const steps = [
     { name: 'Previous Projects', component: PreviousProjectsList },
     { name: 'Ongoing Projects', component: OngoingProjectsList },
     { name: 'Support Needs', component: SupportNeeds },
+    { name: 'Donation Data', component: DonationData }
 ];
 
 const OrgProfileForm = () => {
@@ -37,6 +39,7 @@ const OrgProfileForm = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const navigate = useNavigate();
+    const location = useLocation();
     const apiClient = useApi();
     const { getUserId } = useAuth();
 
@@ -45,6 +48,8 @@ const OrgProfileForm = () => {
 
     // Get the userId from the API context
     const userId = getUserId();
+
+    const orgId = 3; //location.state?.orgId;
 
     useEffect(() => {
         const updateFormHeight = () => {
@@ -62,27 +67,39 @@ const OrgProfileForm = () => {
         return () => window.removeEventListener('resize', updateFormHeight);
     }, []);
 
-    const collectDataFromCurrentStep = () => {
+    // need to finish this function before submitting - make this async
+    const collectDataFromCurrentStep = async () => {
+        console.log('org id', orgId);
         const currentStepData = refs.current[currentStep].current?.getData();
+        console.log('current step data', currentStepData);
         if (currentStepData) {
-            setFormData(prevData => ({
-                ...prevData,
-                [steps[currentStep].name]: currentStepData
-            }));
+
+            // Return a promise that resolves when state is updated
+            return new Promise(resolve => {
+                setFormData(prevData => {
+                    const newData = {
+                        ...prevData,
+                        [steps[currentStep].name]: currentStepData
+                    };
+                    resolve(newData);
+                    return newData;
+                });
+            });
         }
+        return Promise.resolve(null);
     };
 
-    const handleNext = (event) => {
+    const handleNext = async (event) => {
         event.preventDefault();
-        collectDataFromCurrentStep();
+        const updatedData = await collectDataFromCurrentStep();
         if (currentStep < steps.length - 1) {
             setCurrentStep(currentStep + 1);
         }
     };
-
-    const handlePrevious = (event) => {
+    
+    const handlePrevious = async (event) => {
         event.preventDefault();
-        collectDataFromCurrentStep();
+        const updatedData = await collectDataFromCurrentStep();
         if (currentStep > 0) {
             setCurrentStep(currentStep - 1);
         }
@@ -90,18 +107,30 @@ const OrgProfileForm = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        console.log('form data', formData);
+
         if (isSubmitting) return;
         setIsSubmitting(true);
         setError(null);
 
-        collectDataFromCurrentStep();
-
-        const completeFormData = {
-            user_id: userId,
-            ...formData
-        };
+        // const completeFormData = {
+        //     user_id: userId,
+        //     ...formData
+        // };
 
         try {
+            // Wait for form data to be updated
+            const updatedFormData = await collectDataFromCurrentStep();
+            console.log('form data after update', updatedFormData);
+
+            const completeFormData = {
+                user_id: userId,
+                ...updatedFormData
+            };
+
+            // delay for 1 second
+            // await new Promise(resolve => setTimeout(resolve, 2000));
+            console.log('complete form data', completeFormData);
             const response = await apiClient.post('/profile/org/projects_initiatives', completeFormData);
             if (response.status === 201) {
                 navigate('/' );

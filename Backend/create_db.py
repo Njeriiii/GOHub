@@ -1,7 +1,7 @@
 import logging
 from sqlalchemy import inspect
 from app import create_app, db
-from app.models import User, OrgProfile, OrgInitiatives, OrgProjects, SkillsNeeded, FocusArea, SocialMediaLink
+from sqlalchemy import text
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -13,45 +13,60 @@ app = create_app()
 def verify_db_connection():
     try:
         with app.app_context():
-            # Test database connection
-            db.session.execute('SELECT 1')
+            db.session.execute(text('SELECT 1'))
             logger.info("Database connection successful")
             return True
     except Exception as e:
         logger.error(f"Database connection failed: {str(e)}")
         return False
-    
 
-def reset_db():
+def verify_table_columns(inspector, table_name, expected_columns):
+    """Helper function to verify table columns"""
+    existing_columns = [col['name'] for col in inspector.get_columns(table_name)]
+    missing_columns = [col for col in expected_columns if col not in existing_columns]
+    return missing_columns
+
+def upgrade_db():
     try:
         with app.app_context():
-            logger.info("Starting database initialization...")
+            logger.info("Starting database upgrade...")
             
-            # Create all tables
-            db.create_all()
-            logger.info("Database tables created successfully.")
+            # Verify connection
+            if not verify_db_connection():
+                raise Exception("Database connection failed")
             
-            # Verify tables using inspector
+            # Get current database state
             inspector = inspect(db.engine)
-            tables = inspector.get_table_names()
-            logger.info(f"Created tables: {', '.join(tables)}")
+            existing_tables = inspector.get_table_names()
+            logger.info(f"Current tables: {', '.join(existing_tables)}")
             
-            # Additional verification
-            logger.info("Verifying key tables...")
-            expected_tables = ['user', 'org_profile', 'org_initiatives', 'org_projects', 
-                                'skills_needed', 'focus_area', 'social_media_link']
-            missing_tables = [table for table in expected_tables if table not in tables]
+            # Get all expected tables from models
+            model_tables = {model.__tablename__: model for model in db.Model.__subclasses__()}
+            logger.info(f"Expected tables from models: {', '.join(model_tables.keys())}")
+            
+            # Create missing tables
+            for table_name, model in model_tables.items():
+                if table_name not in existing_tables:
+                    logger.info(f"Creating table {table_name}...")
+                    model.__table__.create(db.engine)
+                    logger.info(f"Table {table_name} created successfully")
+            
+            # Verify all tables after creation
+            inspector = inspect(db.engine)
+            final_tables = inspector.get_table_names()
+            missing_tables = [table for table in model_tables.keys() if table not in final_tables]
             
             if missing_tables:
-                logger.warning(f"Missing tables: {', '.join(missing_tables)}")
-            else:
-                logger.info("All expected tables are present.")
+                logger.error(f"Failed to create tables: {', '.join(missing_tables)}")
+                raise Exception("Database upgrade incomplete - missing tables")
             
+            logger.info("Database upgrade completed successfully")
             return True
             
     except Exception as e:
-        logger.error(f"Error initializing database: {str(e)}")
+        logger.error(f"Error upgrading database: {str(e)}")
         raise e
 
 if __name__ == "__main__":
-    reset_db()
+    verify_db_connection()
+    upgrade_db()
