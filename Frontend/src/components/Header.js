@@ -13,7 +13,7 @@ import { LogOutIcon } from "lucide-react";
 const navigation = [
     { name: "Home", href: "/" },
     { name: "Find GOs", href: "/find-gos" },
-    { name: "Donate", href: "/donate" },
+    { name: "Establishment Guide", href: "/establishment-guide" },
     { name: "Volunteer", href: "/volunteer" },
     { name: "About", href: "/about" },
 ];
