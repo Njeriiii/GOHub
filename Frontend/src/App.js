@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import ApiProvider from './contexts/ApiProvider';
 import AuthProvider from './contexts/AuthProvider';
+import TranslationProvider, { TranslatedContent } from './contexts/TranslationProvider';
 
 
 import OnboardingForm from './pages/OnboardingForm';
@@ -21,28 +22,71 @@ function App() {
   return (
     <Container fluid className="App">
       <BrowserRouter>
-      <AuthProvider>
-        <ApiProvider>
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
-            <Route path="/select-user-type" element={<SelectUserTypePage />} />
-            <Route path="/volunteer-form" element={<VolunteerForm />} />
-
-            <Route path="/volunteer" element={<VolunteerPage />} />
-            <Route path="/home" element={<DisplayPage />} />
-            <Route path="/find-gos" element={<DisplayPage />} />
-            <Route path="/" element={<Navigate to="/find-gos" />} />
-            
-            <Route path="/onboarding" element={<OnboardingForm />} />
-            <Route path="/org_profile_form" element={<OrgProfileForm />} />
-            <Route path="/org_profile" element={<OrgProfile />} />
-
-            <Route path="/establishment-guide" element={<EstablishmentGuide />} />
-          </Routes>
-        </ApiProvider>
+        <AuthProvider>
+          <ApiProvider>
+            <TranslationProvider>
+              <Routes>
+                <Route path="/login" element={
+                  <TranslatedContent>
+                    <LoginPage />
+                  </TranslatedContent>
+                } />
+                <Route path="/signup" element={
+                  <TranslatedContent>
+                    <SignupPage />
+                  </TranslatedContent>
+                } />
+                <Route path="/select-user-type" element={
+                  <TranslatedContent>
+                    <SelectUserTypePage />
+                  </TranslatedContent>
+                } />
+                <Route path="/volunteer-form" element={
+                  <TranslatedContent>
+                    <VolunteerForm />
+                  </TranslatedContent>
+                } />
+                <Route path="/volunteer" element={
+                  <TranslatedContent>
+                    <VolunteerPage />
+                  </TranslatedContent>
+                } />
+                <Route path="/home" element={
+                  <TranslatedContent>
+                    <DisplayPage />
+                  </TranslatedContent>
+                } />
+                <Route path="/find-gos" element={
+                  <TranslatedContent>
+                    <DisplayPage />
+                  </TranslatedContent>
+                } />
+                <Route path="/" element={<Navigate to="/find-gos" />} />
+                <Route path="/onboarding" element={
+                  <TranslatedContent>
+                    <OnboardingForm />
+                  </TranslatedContent>
+                } />
+                <Route path="/org_profile_form" element={
+                  <TranslatedContent>
+                    <OrgProfileForm />
+                  </TranslatedContent>
+                } />
+                <Route path="/org_profile" element={
+                  <TranslatedContent>
+                    <OrgProfile />
+                  </TranslatedContent>
+                } />
+                <Route path="/establishment-guide" element={
+                  <TranslatedContent>
+                    <EstablishmentGuide />
+                  </TranslatedContent>
+                } />
+              </Routes>
+            </TranslationProvider>
+          </ApiProvider>
         </AuthProvider>
-    </BrowserRouter>
+      </BrowserRouter>
     </Container>
   );
 }

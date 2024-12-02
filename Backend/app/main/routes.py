@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+import requests
 
 from app import db
 
@@ -84,3 +85,42 @@ def match_volunteer_skills():
     except Exception as e:
         db.session.rollback()
         return jsonify({"message": f"An error occurred: {str(e)}"}), 500
+    
+
+# Add this new route to your existing Flask app
+@main.route('/main/translate', methods=['POST'])
+def translate_text():
+
+    if request.method == "OPTIONS":
+        # Explicitly handle OPTIONS request
+        return jsonify({"status": "ok"}), 200
+
+    data = request.json
+    text = data.get('text')
+    target_language = data.get('target_language', 'sw')
+    
+    # MyMemory API endpoint
+    MYMEMORY_URL = "https://api.mymemory.translated.net/get"
+    
+    try:
+        # Call MyMemory API
+        params = {
+            "q": text,
+            "langpair": f"en|{target_language}",
+            # Optional: Add your email for higher usage limits
+            # "de": "your.email@example.com"
+        }
+        
+        response = requests.get(MYMEMORY_URL, params=params)
+        
+        if response.status_code == 200:
+            translation = response.json()
+            return jsonify({
+                'original_text': text,
+                'translated_text': translation['responseData']['translatedText']
+            })
+        else:
+            return jsonify({'error': 'Translation failed'}), 500
+            
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
