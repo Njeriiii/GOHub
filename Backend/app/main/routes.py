@@ -1,6 +1,8 @@
 from flask import Blueprint, jsonify, request
-import requests
-
+from google.cloud import translate_v2 as translate
+import os
+import json
+from google.oauth2 import service_account
 from app import db
 
 from app.models import (
@@ -87,40 +89,53 @@ def match_volunteer_skills():
         return jsonify({"message": f"An error occurred: {str(e)}"}), 500
     
 
-# Add this new route to your existing Flask app
-@main.route('/main/translate', methods=['POST'])
+
+# Initialize the client with your Google Cloud API key
+# os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/flawless-snow-443501-q3-85e4441a1dd7.json'
+
+# If using environment variable
+if 'GOOGLE_CREDENTIALS' in os.environ:
+    # Create credentials from JSON string
+    credentials_info = json.loads(os.getenv['GOOGLE_CREDENTIALS'])
+    credentials = service_account.Credentials.from_service_account_info(credentials_info)
+    translate_client = translate.Client(credentials=credentials)
+else:
+    # Fall back to file-based credentials
+    translate_client = translate.Client()
+
+@main.route('/main/translate', methods=['POST', 'OPTIONS'])
 def translate_text():
-
-    if request.method == "OPTIONS":
-        # Explicitly handle OPTIONS request
-        return jsonify({"status": "ok"}), 200
-
-    data = request.json
-    text = data.get('text')
-    target_language = data.get('target_language', 'sw')
+    print("Received translation request")  # Debug log
     
-    # MyMemory API endpoint
-    MYMEMORY_URL = "https://api.mymemory.translated.net/get"
+    if request.method == "OPTIONS":
+        return jsonify({"status": "ok"}), 200
     
     try:
-        # Call MyMemory API
-        params = {
-            "q": text,
-            "langpair": f"en|{target_language}",
-            # Optional: Add your email for higher usage limits
-            # "de": "your.email@example.com"
-        }
+        data = request.json
+        print("Request data:", data)  # Debug log
         
-        response = requests.get(MYMEMORY_URL, params=params)
+        text = data.get('text')
+        target_language = data.get('target_language', 'sw')
         
-        if response.status_code == 200:
-            translation = response.json()
-            return jsonify({
-                'original_text': text,
-                'translated_text': translation['responseData']['translatedText']
-            })
-        else:
-            return jsonify({'error': 'Translation failed'}), 500
+        if not text:
+            return jsonify({'error': 'No text provided'}), 400
+
+        print("Calling Google Translate API")  # Debug log
+        
+        # Call Google Translate
+        result = translate_client.translate(
+            text,
+            target_language=target_language,
+            source_language='en'
+        )
+        
+        print("Translation result:", result)  # Debug log
+        
+        return jsonify({
+            'original_text': text,
+            'translated_text': result['translatedText']
+        })
             
     except Exception as e:
+        print("Error:", str(e))  # Debug log
         return jsonify({'error': str(e)}), 500
