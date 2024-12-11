@@ -5,6 +5,7 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
 import { useAuth } from "../contexts/AuthProvider";
 import { LogOutIcon } from "lucide-react";
+import { Translate } from '../contexts/TranslationProvider';
 
 // Header component This component represents the header of the application.
 // It includes the navigation links and user authentication controls.
@@ -78,7 +79,7 @@ export default function Header() {
                 href={item.href}
                 className="text-sm font-semibold leading-6 text-gray-900 hover:text-teal-600 transition duration-150 ease-in-out"
                 >
-                {item.name}
+                    <Translate>{item.name}</Translate>
                 </a>
             ))}
             </div>
@@ -87,14 +88,14 @@ export default function Header() {
                     {user ? (
                         <div className="flex items-center">
                             <span className="mr-4 text-sm font-semibold text-gray-900">
-                                Welcome, {user.name}
+                                <Translate>Welcome,</Translate> {user.name}
                             </span>
                             <button
                                 onClick={handleLogout}
                                 className="text-sm font-semibold leading-6 text-white bg-teal-600 hover:bg-teal-700 px-4 py-2 rounded-md transition duration-150 ease-in-out flex items-center"
                             >
                                 <LogOutIcon className="h-5 w-5 mr-2" />
-                                Log out
+                                <Translate>Log out</Translate>
                             </button>
                         </div>
                     ) : (
@@ -103,7 +104,7 @@ export default function Header() {
                             className="text-sm font-semibold leading-6 text-white bg-teal-600 hover:bg-teal-700 px-4 py-2 rounded-md transition duration-150 ease-in-out flex items-center"
                         >
                             <UserCircleIcon className="h-5 w-5 mr-2" />
-                            Log in
+                            <Translate>Login</Translate>
                         </a>
                     )}
             </div>
@@ -142,7 +143,7 @@ export default function Header() {
                         href={item.href}
                         className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                     >
-                        {item.name}
+                        <Translate>{item.name}</Translate>
                     </a>
                     ))}
                 </div>
@@ -153,14 +154,14 @@ export default function Header() {
                             onClick={handleLogout}
                             className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white bg-teal-600 hover:bg-teal-700 w-full text-left"
                         >
-                            Log out
+                            <Translate>Log out</Translate>
                         </button>
                     ) : (
                         <a
                             href="/login"
                             className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white bg-teal-600 hover:bg-teal-700"
                         >
-                            Log in
+                            <Translate>Login</Translate>
                         </a>
                     )}
                 </div>

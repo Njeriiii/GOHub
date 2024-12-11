@@ -5,7 +5,7 @@ import OrgDisplayCard from '../components/OrgDisplayCard';
 import Header from '../components/Header';
 import KenyaIcon from '../components/icons/KenyaIcon';
 import { Loader2, Search } from 'lucide-react';
-
+import { Translate } from '../contexts/TranslationProvider';
 
 // Component to load all organisations and display their name and an overview
 export default function DisplayPage() {
@@ -74,10 +74,10 @@ export default function DisplayPage() {
                                 <KenyaIcon className="w-8 h-8 text-white" />
                             </div>
                             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-                                Discover Kenyan Organizations
+                                <Translate>Discover Kenyan Organizations</Translate>
                             </h1>
                             <p className="text-2xl text-white/90 font-bold">
-                                Connect with community-based charities making a real difference
+                                <Translate>Connect with community-based charities making a real difference</Translate>
                             </p>
                         </div>
                     </div>
@@ -108,12 +108,12 @@ export default function DisplayPage() {
                                     <div className="flex items-center gap-4">
                                         <h2 className="text-xl font-bold text-teal-900">
                                             {searchResults 
-                                                ? 'Search Results' 
-                                                : 'All Organizations'
+                                                ? <Translate>Search Results</Translate>
+                                                : <Translate>All Organizations</Translate>
                                             }
                                         </h2>
                                         <span className="px-4 py-1.5 text-xl font-bold bg-teal-50 text-teal-600 rounded-full">
-                                            {searchResults?.length || orgsData?.length || 0} organization(s)
+                                            {searchResults?.length || orgsData?.length || 0} <Translate>organization(s)</Translate>
                                         </span>
                                     </div>
                                     {searchResults && (
@@ -123,7 +123,7 @@ export default function DisplayPage() {
                                                     text-teal-600 hover:text-teal-700 px-4 py-2 rounded-lg 
                                                     hover:bg-teal-50 transition-colors"
                                         >
-                                            View All Organizations
+                                            <Translate>View All Organizations</Translate>
                                         </button>
                                     )}
                                 </div>
@@ -136,7 +136,9 @@ export default function DisplayPage() {
                                 <div className="flex justify-center items-center">
                                     <div className="flex flex-col items-center gap-4">
                                         <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
-                                        <p className="text-sm text-gray-500">Loading organizations...</p>
+                                        <p className="text-sm text-gray-500">
+                                            <Translate>Loading organizations...</Translate>
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -148,17 +150,17 @@ export default function DisplayPage() {
                                         <Search className="w-6 h-6" />
                                     </div>
                                     <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                                        No Organizations Found
+                                        <Translate>No results found</Translate>
                                     </h3>
                                     <p className="text-gray-500 mb-6">
-                                        Try adjusting your search criteria or explore all available organizations
+                                        <Translate>Try adjusting your search criteria or explore all available organizations</Translate>
                                     </p>
                                     <button
                                         onClick={() => setSearchResults(null)}
                                         className="px-6 py-2.5 bg-teal-50 text-teal-600 rounded-lg 
                                                 hover:bg-teal-100 transition-colors font-medium"
                                     >
-                                        View All Organizations
+                                        <Translate>View All Organizations</Translate>
                                     </button>
                                 </div>
                             </div>

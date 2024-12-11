@@ -1,21 +1,22 @@
 import React from 'react';
 import { MapPinIcon, PhoneIcon, EnvelopeIcon, GlobeAltIcon, UserGroupIcon } from '@heroicons/react/24/outline';
+import { Translate } from '../contexts/TranslationProvider';
 
 // Sidebar component - renders the organization's contact information
 export default function Sidebar({ onboardingFormData }) {
     return (
         <div className="bg-white rounded-lg shadow-lg p-8">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">Contact Information</h2>
+        <h2 className="text-2xl font-bold text-gray-800 mb-6"><Translate>Contact Information</Translate></h2>
         <ul className="space-y-4">
-            <InfoItem icon={EnvelopeIcon} title="Email" content={onboardingFormData.orgProfile.org_email} link={`mailto:${onboardingFormData.orgProfile.org_email}`} />
-            <InfoItem icon={PhoneIcon} title="Phone" content={onboardingFormData.orgProfile.org_phone} link={`tel:${onboardingFormData.orgProfile.org_phone}`} />
-            <InfoItem icon={MapPinIcon} title="Address" content={`${onboardingFormData.orgProfile.org_district_town}, ${onboardingFormData.orgProfile.org_county}`} />
-            <InfoItem icon={GlobeAltIcon} title="Website" content={onboardingFormData.orgProfile.org_website} link={onboardingFormData.orgProfile.org_website} />
-            <InfoItem icon={UserGroupIcon} title="Beneficiaries" content={onboardingFormData.orgProfile.org_beneficiaries} />
+            <InfoItem icon={EnvelopeIcon} title={<Translate>Email</Translate>} content={onboardingFormData.orgProfile.org_email} link={`mailto:${onboardingFormData.orgProfile.org_email}`} />
+            <InfoItem icon={PhoneIcon} title={<Translate>Phone</Translate>} content={onboardingFormData.orgProfile.org_phone} link={`tel:${onboardingFormData.orgProfile.org_phone}`} />
+            <InfoItem icon={MapPinIcon} title={<Translate>Address</Translate>} content={`${onboardingFormData.orgProfile.org_district_town}, ${onboardingFormData.orgProfile.org_county}`} />
+            <InfoItem icon={GlobeAltIcon} title={<Translate>Website</Translate>} content={onboardingFormData.orgProfile.org_website} link={onboardingFormData.orgProfile.org_website} />
+            <InfoItem icon={UserGroupIcon} title={<Translate>Beneficiaries</Translate>} content={onboardingFormData.orgProfile.org_beneficiaries} />
         </ul>
         <div className="mt-8">
             <a href={`mailto:${onboardingFormData.orgProfile.org_email}`} className="block w-full text-center px-8 py-4 bg-teal-600 text-white rounded-full font-bold text-lg hover:bg-teal-700 transition duration-300">
-            Contact Us
+            <Translate>Contact Us</Translate>
             </a>
         </div>
         </div>
@@ -23,7 +24,7 @@ export default function Sidebar({ onboardingFormData }) {
     }
 
     // InfoItem component - renders a single contact information item
-    function InfoItem({ icon: Icon, title, content, link }) {
+function InfoItem({ icon: Icon, title, content, link }) {
     const ContentWrapper = link ? 'a' : 'div';
     const wrapperProps = link ? { href: link, className: "block hover:text-teal-600" } : {};
 

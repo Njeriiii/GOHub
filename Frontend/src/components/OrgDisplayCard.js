@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, MapPin, Users, Calendar } from 'lucide-react';
+import { Translate, DynamicTranslate } from '../contexts/TranslationProvider';
 
 const categoryColors = {
     default: 'bg-teal-100 text-teal-800',
@@ -28,16 +29,18 @@ export default function OrgDisplayCard({ org }) {
         >
             <div className="p-6">
                 <div className="flex justify-between items-start mb-4">
-                    <h2 className="text-2xl font-bold text-teal-900 mb-2">{org.org_name}</h2>
+                    <h2 className="text-2xl font-bold text-teal-900 mb-2">
+                        <DynamicTranslate>{org.org_name}</DynamicTranslate>
+                    </h2>
                     <span className={`px-3 py-1 ${categoryColor} text-sm font-semibold rounded-full`}>
                     <div className="flex flex-wrap items-center">
                         {org.focus_areas.map((focus_area, index) => (
                             <React.Fragment key={focus_area.id}>
                                 <span 
                                     className={`px-3 py-1 ${categoryColor} text-sm font-semibold rounded-full`}
-                                    title={focus_area.description || focus_area.name}
+                                    title={<DynamicTranslate>{focus_area.description}</DynamicTranslate> || <DynamicTranslate>{focus_area.name}</DynamicTranslate>}
                                 >
-                                    {focus_area.name}
+                                    <DynamicTranslate>{focus_area.name}</DynamicTranslate>
                                 </span>
                                 {index < org.focus_areas.length - 1 && (
                                     <span className="mx-1 text-gray-400">•</span>
@@ -47,19 +50,21 @@ export default function OrgDisplayCard({ org }) {
                     </div>
                     </span>
                 </div>
-                <p className="text-gray-600 mb-4 line-clamp-3">{org.org_overview}</p>
+                <p className="text-gray-600 mb-4 line-clamp-3">
+                    <DynamicTranslate>{org.org_overview}</DynamicTranslate>
+                </p>
                 <div className="flex flex-wrap gap-4 mb-4">
                     <div className="flex items-center text-gray-600">
                         <MapPin size={18} className="mr-2 text-teal-600" />
-                        <span>{org.location || 'Location N/A'}</span>
+                        <span><DynamicTranslate>{org.location || 'Location N/A'}</DynamicTranslate></span>
                     </div>
                     <div className="flex items-center text-gray-600">
                         <Users size={18} className="mr-2 text-teal-600" />
-                        <span>{org.beneficiaries || 'Beneficiaries N/A'}</span>
+                        <span><DynamicTranslate>{org.beneficiaries || 'Beneficiaries N/A'}</DynamicTranslate></span>
                     </div>
                     <div className="flex items-center text-gray-600">
                         <Calendar size={18} className="mr-2 text-teal-600" />
-                        <span>{org.established || 'Est. N/A'}</span>
+                        <span><DynamicTranslate>{org.established || 'Est. N/A'}</DynamicTranslate></span>
                     </div>
                 </div>
                 <div className="flex justify-end">
@@ -70,7 +75,7 @@ export default function OrgDisplayCard({ org }) {
                             handleProfileLinkClick(org);
                         }}
                     >
-                        View Profile
+                        <Translate>View Profile</Translate>
                         <ArrowRight className="ml-2 h-4 w-4" />
                     </button>
                 </div>
