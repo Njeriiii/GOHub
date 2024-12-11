@@ -1,8 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import Select from 'react-select';
 import { Search, X, ChevronDown } from 'lucide-react';
-import { Translate, DynamicTranslate } from '../contexts/TranslationProvider';
-
+import { Translate, DynamicTranslate, useTranslation } from '../contexts/TranslationProvider';
+import { STATIC_PHRASES } from './utils/translationConstants';
 
 /**
  * KeyWordSearch Component
@@ -78,6 +78,7 @@ export default function KeyWordSearch({ orgData = [], onSearchResults }) {
     const [selectedFocusArea, setSelectedFocusArea] = useState(null);
     const [selectedSkill, setSelectedSkill] = useState(null);
     const [isFiltersVisible, setIsFiltersVisible] = useState(false);
+    const { currentLanguage } = useTranslation();
 
     /**
      * Debounce helper function to limit the rate of search execution
@@ -222,8 +223,8 @@ export default function KeyWordSearch({ orgData = [], onSearchResults }) {
                                     bg-white/95 border-0 rounded-xl
                                     focus:outline-none focus:ring-2 focus:ring-teal-400
                                     hover:bg-white transition-colors shadow-sm"
-                        placeholder={<Translate>Search organizations by name...</Translate>}
-                        value={searchTerm}
+                                    placeholder={STATIC_PHRASES[currentLanguage]['Search organizations by name...']}
+                                    value={searchTerm}
                         onChange={handleSearchChange}
                     />
                     {(searchTerm || selectedFocusArea || selectedSkill) && (
