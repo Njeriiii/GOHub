@@ -4,6 +4,7 @@ import { useApi } from '../contexts/ApiProvider';
 import Header from '../components/Header';
 import OrgProjects from './OrgProjects';
 import Sidebar from '../components/Sidebar';
+import { Translate } from '../contexts/TranslationProvider';
 
 // This component displays the profile of an organization
 // It includes the organization's name, overview, and projects
@@ -46,7 +47,7 @@ export default function OrgProfile() {
 
     // If no data is available, display a message
     if (!onboardingFormData) {
-        return <div className="text-center text-2xl text-gray-700 mt-10">No data available</div>;
+        return <div className="text-center text-2xl text-gray-700 mt-10"><Translate>No results found</Translate></div>;
     }
 
     // If data is available, display the org profile
@@ -61,14 +62,14 @@ export default function OrgProfile() {
                 <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4">{onboardingFormData.orgProfile.org_name}</h1>
                 <p className="text-xl text-white max-w-2xl mb-8">{onboardingFormData.orgProfile.org_overview}</p>
                 <div className="flex space-x-4">
-                    <a href="#" className="bg-orange-400 text-white px-6 py-3 rounded-full font-bold text-lg hover:bg-orange-500 transition duration-300">Join Us</a>
-                    <a href="#" className="bg-transparent text-white border-2 border-white px-6 py-3 rounded-full font-bold text-lg hover:bg-white hover:text-teal-500 transition duration-300">Learn More</a>
+                    <a href="#" className="bg-orange-400 text-white px-6 py-3 rounded-full font-bold text-lg hover:bg-orange-500 transition duration-300"><Translate>Join Us</Translate></a>
+                    <a href="#" className="bg-transparent text-white border-2 border-white px-6 py-3 rounded-full font-bold text-lg hover:bg-white hover:text-teal-500 transition duration-300"><Translate>Learn More</Translate></a>
                 </div>
                 </div>
                 <div className="hidden sm:block">
                 <div className="w-32 h-32 rounded-full bg-white flex items-center justify-center">
                     <span className="text-teal-500 text-xs text-center">
-                    {onboardingFormData.orgProfile.org_name} Logo
+                    {onboardingFormData.orgProfile.org_name} <Translate>Logo</Translate>
                     </span>
                 </div>
                 </div>

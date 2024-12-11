@@ -78,6 +78,10 @@ export const STATIC_PHRASES = {
         'Learn More': 'Learn More',
         'View Profile': 'View Profile',
 
+        // Skill Categories
+        'Technical Skills': 'Technical Skills',
+        'Non-Technical Skills': 'Non-Technical Skills',
+
         },
 
     sw: {
@@ -157,5 +161,12 @@ export const STATIC_PHRASES = {
         'Join Us': 'Jiunge Nasi',
         'Learn More': 'Jifunze Zaidi',
         'View Profile': 'Tazama Profaili',
+
+        // Skill Categories
+        'Technical Skills': 'Ujuzi wa Kiufundi',
+        'Non-Technical Skills': 'Ujuzi wa Kawaida',
+
+        // Results
+        'results': 'matokeo'
     }
 };
