@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { Globe } from 'lucide-react';
 import { STATIC_PHRASES } from '../components/utils/translationConstants';
 
 const TranslationContext = createContext();
@@ -26,41 +27,86 @@ export function DynamicTranslate({ children }) {
     return children; // TODO: Will integrate with backend translation API
 }
 
+export function LanguageSwitch() {
+    const context = useContext(TranslationContext);
+    if (!context) {
+        throw new Error('LanguageSwitch must be used within a TranslationProvider');
+    }
+
+    const { currentLanguage, setCurrentLanguage } = context;
+    const [isLoading, setIsLoading] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
+
+    const handleLanguageChange = (newLanguage) => {
+        if (newLanguage === currentLanguage) return;
+        
+        setIsLoading(true);
+        setCurrentLanguage(newLanguage);
+        setIsOpen(false);
+        setTimeout(() => setIsLoading(false), 100);
+    };
+
+    return (
+        <div className="relative">
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                aria-label="Change Language"
+            >
+                <Globe className={`h-5 w-5 ${isLoading ? 'animate-spin' : ''} text-gray-600`} />
+            </button>
+            
+            {isOpen && (
+                <>
+                    <div 
+                        className="fixed inset-0" 
+                        onClick={() => setIsOpen(false)}
+                    />
+                    <div className="absolute right-0 mt-2 py-1 w-32 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
+                        <button
+                            onClick={() => handleLanguageChange('en')}
+                            className={`block w-full text-left px-4 py-2 text-sm ${
+                                currentLanguage === 'en' 
+                                    ? 'bg-teal-50 text-teal-600' 
+                                    : 'text-gray-700 hover:bg-gray-50'
+                            }`}
+                        >
+                            English
+                        </button>
+                        <button
+                            onClick={() => handleLanguageChange('sw')}
+                            className={`block w-full text-left px-4 py-2 text-sm ${
+                                currentLanguage === 'sw' 
+                                    ? 'bg-teal-50 text-teal-600' 
+                                    : 'text-gray-700 hover:bg-gray-50'
+                            }`}
+                        >
+                            Kiswahili
+                        </button>
+                    </div>
+                </>
+            )}
+        </div>
+    );
+}
+
 export default function TranslationProvider({ children }) {
-    // Get initial language from localStorage, default to 'en' if not found
     const [currentLanguage, setCurrentLanguage] = useState(() => {
         return localStorage.getItem('preferredLanguage') || 'en';
     });
-    const [isLoading, setIsLoading] = useState(false);
 
-    // Update localStorage whenever language changes
     useEffect(() => {
         localStorage.setItem('preferredLanguage', currentLanguage);
     }, [currentLanguage]);
 
-    const handleLanguageChange = () => {
-        setIsLoading(true);
-        const newLanguage = currentLanguage === 'en' ? 'sw' : 'en';
-        setCurrentLanguage(newLanguage);
-        setTimeout(() => setIsLoading(false), 100);
-    };
-
     const contextValue = {
         currentLanguage,
-        setCurrentLanguage,
-        isLoading
+        setCurrentLanguage
     };
 
     return (
         <TranslationContext.Provider value={contextValue}>
             {children}
-            <button
-                onClick={handleLanguageChange}
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                disabled={isLoading}
-            >
-                {isLoading ? 'Translating...' : currentLanguage === 'en' ? 'Switch to Swahili' : 'Switch to English'}
-            </button>
         </TranslationContext.Provider>
     );
 }
@@ -70,9 +116,5 @@ export function useTranslation() {
     if (!context) {
         throw new Error('useTranslation must be used within a TranslationProvider');
     }
-    return {
-        currentLanguage: context.currentLanguage,
-        setLanguage: context.setCurrentLanguage,
-        isLoading: context.isLoading
-    };
+    return context;
 }
