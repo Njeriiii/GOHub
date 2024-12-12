@@ -1,15 +1,16 @@
 from flask import Blueprint, jsonify, request
 from google.cloud import translate_v2 as translate
 import os
-import json
-from google.oauth2 import service_account
 from app import db
+from functools import lru_cache
+from datetime import datetime, timedelta
 
 from app.models import (
     User,
     SkillsNeeded,
     org_skills_connection,
     OrgProfile,
+    TranslationCache
 )
 
 main = Blueprint("main", __name__)
@@ -89,55 +90,186 @@ def match_volunteer_skills():
         return jsonify({"message": f"An error occurred: {str(e)}"}), 500
     
 
+def get_translate_client():
+    """
+    Create and return a Google Translate client using environment variables.
+    Provides more robust error handling and configuration.
+    """
+    try:
+        # Use environment variables
+        credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 
-# Initialize the client with your Google Cloud API key
-# os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/flawless-snow-443501-q3-85e4441a1dd7.json'
+        # Validate credentials
+        if not credentials_path:
+            raise ValueError("GOOGLE_APPLICATION_CREDENTIALS environment variable is not set")
+        
+        if not os.path.exists(credentials_path):
+            raise FileNotFoundError(f"Credentials file not found at: {credentials_path}")
 
-# # If using environment variable
-# if 'GOOGLE_CREDENTIALS' in os.environ:
-#     # Create credentials from JSON string
-#     credentials_info = json.loads(os.getenv['GOOGLE_CREDENTIALS'])
-#     credentials = service_account.Credentials.from_service_account_info(credentials_info)
-#     translate_client = translate.Client(credentials=credentials)
-# else:
-#     # Fall back to file-based credentials
-    # translate_client = translate.Client()
+        # Set the environment variable for Google Cloud authentication
+        os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
 
-@main.route('/main/translate', methods=['POST', 'OPTIONS'])
+        # Initialize the translate client
+        return translate.Client()
+
+    except Exception as e:
+        print(f"Error initializing Google Translate client: {e}")
+        return None
+
+# Initialize the client when the module is imported
+translate_client = get_translate_client()
+
+# Supported languages
+SUPPORTED_LANGUAGES = {
+    'en': 'English',
+    'sw': 'Kiswahili'
+}
+
+# Cache translations to reduce API calls
+@lru_cache(maxsize=1000)
+def get_cached_translation(text, target_language):
+    """Cache translation results to minimize API calls for repeated phrases."""
+    # Generate a unique cache key
+    cache_key = f"{text}_{target_language}"
+    
+    try:
+        # Check if translation exists in cache
+        cached_entry = (
+            db.session.query(TranslationCache)
+            .filter_by(key=cache_key)
+            .first()
+        )
+        
+        # Check if cache is still valid (less than 30 days old)
+        if (cached_entry and 
+            cached_entry.created_at > datetime.utcnow() - timedelta(days=30)):
+            return {
+                'translatedText': cached_entry.translated_text,
+                'fromCache': True
+            }
+        
+        # If no valid cache, perform translation
+        result = translate_client.translate(
+            text,
+            target_language=target_language,
+            source_language='en' if target_language == 'sw' else 'sw'
+        )
+        
+        # Create new cache entry
+        new_cache_entry = TranslationCache(
+            key=cache_key,
+            translated_text=result['translatedText'],
+            source_language='en',
+            target_language=target_language
+        )
+        
+        # Add and commit to database
+        db.session.add(new_cache_entry)
+        db.session.commit()
+        
+        return {
+            'translatedText': result['translatedText'],
+            'fromCache': False
+        }
+    
+    except Exception as e:
+        # Fallback mechanism
+        db.session.rollback()
+        print(f"Translation error: {str(e)}")
+        return {
+            'translatedText': text,
+            'fromCache': False
+        }
+
+
+@main.route("/main/translate", methods=["POST"])
 def translate_text():
-    print("Received translation request")  # Debug log
-    
-    if request.method == "OPTIONS":
-        return jsonify({"status": "ok"}), 200
-    
-    return jsonify({"message": "Translation endpoint"}), 200
-    
-    # try:
-    #     data = request.json
-    #     print("Request data:", data)  # Debug log
+    try:
+        data = request.get_json()
         
-    #     text = data.get('text')
-    #     target_language = data.get('target_language', 'sw')
-        
-    #     if not text:
-    #         return jsonify({'error': 'No text provided'}), 400
+        if not data or 'text' not in data or 'targetLanguage' not in data:
+            return jsonify({
+                'error': 'Missing required fields: text and targetLanguage'
+            }), 400
 
-    #     print("Calling Google Translate API")  # Debug log
+        text = data['text']
+        target_language = data['targetLanguage']
         
-    #     # Call Google Translate
-    #     result = translate_client.translate(
-    #         text,
-    #         target_language=target_language,
-    #         source_language='en'
-    #     )
-        
-    #     print("Translation result:", result)  # Debug log
-        
-    #     return jsonify({
-    #         'original_text': text,
-    #         'translated_text': result['translatedText']
-    #     })
+        # Validate target language
+        if target_language not in SUPPORTED_LANGUAGES:
+            return jsonify({
+                'error': 'Unsupported language. Only English (en) and Kiswahili (sw) are supported'
+            }), 400
             
-    # except Exception as e:
-    #     print("Error:", str(e))  # Debug log
-    #     return jsonify({'error': str(e)}), 500
+        # Skip translation if target language is English and text is in English
+        if target_language == 'en':
+            return jsonify({'translatedText': text})
+            
+        # Get cached translation
+        translated_text = get_cached_translation(text, target_language)
+        
+        return jsonify({
+            'translatedText': translated_text,
+            'sourceLanguage': 'en',
+            'targetLanguage': target_language
+        })
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'error': f'Server error: {str(e)}'
+        }), 500
+
+@main.route("/main/translate-batch", methods=["POST"])
+def translate_batch():
+    """Endpoint for translating multiple texts at once"""
+    try:
+        data = request.get_json()
+        
+        if not data or 'texts' not in data or 'targetLanguage' not in data:
+            return jsonify({
+                'error': 'Missing required fields: texts and targetLanguage'
+            }), 400
+
+        texts = data['texts']
+        target_language = data['targetLanguage']
+        
+        # Validate target language
+        if target_language not in SUPPORTED_LANGUAGES:
+            return jsonify({
+                'error': 'Unsupported language. Only English (en) and Kiswahili (sw) are supported'
+            }), 400
+        
+        # Skip translation if target language is English
+        if target_language == 'en':
+            return jsonify({'translatedTexts': texts})
+        
+        translated_texts = []
+        for text in texts:
+            if isinstance(text, str):
+                translated_text = get_cached_translation(text, target_language)
+                translated_texts.append(translated_text)
+            else:
+                translated_texts.append(text)
+
+        return jsonify({
+            'translatedTexts': translated_texts,
+            'sourceLanguage': 'en',
+            'targetLanguage': target_language
+        })
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'error': f'Server error: {str(e)}'
+        }), 500
+
+@main.route("/api/supported-languages", methods=["GET"])
+def get_supported_languages():
+    """Get list of supported languages (English and Kiswahili only)"""
+    return jsonify({
+        'languages': [
+            {'code': code, 'name': name}
+            for code, name in SUPPORTED_LANGUAGES.items()
+        ]
+    })
