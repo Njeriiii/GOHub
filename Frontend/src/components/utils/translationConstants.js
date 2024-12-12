@@ -92,6 +92,7 @@ export const STATIC_PHRASES = {
 
         // Volunteer 'how to increase matches' section
         "Here are some steps to increase your matches": "Here are some steps to increase your matches",
+        "Please sign up as a volunteer to access volunteering opportunities!": "Please sign up as a volunteer to access volunteering opportunities!",
         "Update your skills profile to include more areas you're interested in.": "Update your skills profile to include more areas you're interested in.",
         "Expand your search criteria, such as considering remote opportunities.": "Expand your search criteria, such as considering remote opportunities.",
         "Check back regularly, as new opportunities are added frequently.": "Check back regularly, as new opportunities are added frequently.",
@@ -195,6 +196,7 @@ export const STATIC_PHRASES = {
 
         // Volunteer 'how to increase matches' section
         "Here are some steps to increase your matches": "Hapa kuna hatua za kuongeza mashirika yanayolingana na ujuzi wako",
+        "Please sign up as a volunteer to access volunteering opportunities!": "Tafadhali jiandikishe kama mwanajitolea kupata fursa za kujitolea!",
         "Update your skills profile to include more areas you're interested in.": "Sasisha wasifu wako wa ujuzi ili ujumuishe maeneo zaidi unayovutiwa nayo.",
         "Expand your search criteria, such as considering remote opportunities.": "Panua vigezo vyako vya utaftaji, kama vile kuzingatia fursa za mbali.",
         "Check back regularly, as new opportunities are added frequently.": "Angalia mara kwa mara, kwani fursa mpya zinaongezwa mara kwa mara.",

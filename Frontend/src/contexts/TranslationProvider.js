@@ -22,14 +22,35 @@ export function DynamicTranslate({ children }) {
     const { currentLanguage } = useContext(TranslationContext);
     const [translatedText, setTranslatedText] = useState(children);
     const apiClient = useApi();
+
+    // Create a unique cache key
+    const cacheKey = `translation_${children}_${currentLanguage}`;
     
     useEffect(() => {
-        // Skip translation if language is English or content is not a string
-        if (currentLanguage === 'en' || !children || typeof children !== 'string') {
+
+        // Reset to original text when switching back to English
+        if (currentLanguage === 'en') {
+            setTranslatedText(children);
             return;
         }
 
-        // Debounce and API call for translation
+        // Skip translation for non-string content
+        if (!children || typeof children !== 'string') {
+            return;
+        }
+
+        // Check local storage first
+        const cachedTranslation = localStorage.getItem(cacheKey);
+        console.log('Cached translation:', cachedTranslation);
+        console.log('currentLanguage:', currentLanguage);
+        console.log('cacheKey:', cacheKey);
+        if (cachedTranslation) {
+            setTranslatedText(cachedTranslation);
+            console.log('used cached translation');
+            return;
+        }
+
+        // Perform translation if not in cache
         const translateText = async () => {
             try {
                 const response = await apiClient.post('/main/translate', {
@@ -41,6 +62,9 @@ export function DynamicTranslate({ children }) {
 
                 if (response.ok) {
                     setTranslatedText(response.body.translatedText.translatedText);
+
+                    // Store in local storage
+                    localStorage.setItem(cacheKey, response.body.translatedText.translatedText);
                 }
             } catch (error) {
                 console.error('Translation error:', error);
