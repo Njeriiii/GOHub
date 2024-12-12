@@ -17,6 +17,7 @@ google-auth>=2.23.0
 gunicorn==21.2.0
 itsdangerous==2.0.1
 python-dotenv==0.21.1
+psycopg2-binary==2.9.10
 SQLAlchemy==2.0.12
 Werkzeug==2.2.2
 WTForms==3.0.1

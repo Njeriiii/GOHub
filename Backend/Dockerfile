@@ -10,7 +10,6 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
-# Since we only have requirements.dev.txt
 COPY requirements.dev.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
@@ -24,6 +23,9 @@ ENV HOST=0.0.0.0
 
 # Create a directory for credentials
 RUN mkdir -p /app/credentials
+
+# Make sure create_db.py is executable
+RUN chmod +x create_db.py
 
 EXPOSE 5162
 
