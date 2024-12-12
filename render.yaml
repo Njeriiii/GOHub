@@ -1,3 +1,4 @@
+# render.yaml
 services:
   # Backend service
   - type: web
@@ -9,23 +10,30 @@ services:
     autoDeploy: true
     envVars:
       - key: FLASK_ENV
-        value: development
+        value: production
       - key: PORT
         value: 5162
       - key: GOOGLE_CLOUD_PROJECT
         value: flawless-snow-443501-q3
       - key: GOOGLE_APPLICATION_CREDENTIALS
-        value: /app/credentials/google-credentials.json
+        fromFile: ./credentials/google-credentials.json
     healthCheckPath: /health
+    disk:
+      name: credentials
+      mountPath: /app/credentials
+      sizeGB: 1
 
   # Frontend service
   - type: static
     name: gohub-frontend
-    buildCommand: cd frontend && npm install && npm run build
+    buildCommand: |
+      cd Frontend
+      npm install
+      REACT_APP_API_URL=$RENDER_EXTERNAL_URL npm run build
     publishPath: Frontend/build
     envVars:
       - key: REACT_APP_API_URL
-        value: https://gohub.onrender.com
+        sync: false
     routes:
       - type: rewrite
         source: /*
