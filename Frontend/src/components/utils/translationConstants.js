@@ -77,17 +77,33 @@ export const STATIC_PHRASES = {
         'Join Us': 'Join Us',
         'Learn More': 'Learn More',
         'View Profile': 'View Profile',
+        'Edit Profile': 'Edit Profile',
 
         // Skill Categories
         'Technical Skills': 'Technical Skills',
         'Non-Technical Skills': 'Non-Technical Skills',
+
+        // Volunteer Dashboard
+        'Matched Organizations': 'Matched Organizations',
+        'Volunteer Dashboard': 'Volunteer Dashboard',
+        'Volunteer': 'Volunteer',
+        'Admin': 'Admin',
+        'Your Skills': 'Your Skills',
+
+        // Volunteer 'how to increase matches' section
+        "Here are some steps to increase your matches": "Here are some steps to increase your matches",
+        "Update your skills profile to include more areas you're interested in.": "Update your skills profile to include more areas you're interested in.",
+        "Expand your search criteria, such as considering remote opportunities.": "Expand your search criteria, such as considering remote opportunities.",
+        "Check back regularly, as new opportunities are added frequently.": "Check back regularly, as new opportunities are added frequently.",
+        "Consider gaining new skills through online courses or workshops.": "Consider gaining new skills through online courses or workshops.",
+        "Reach out to our support team for personalized assistance in finding opportunities.": "Reach out to our support team for personalized assistance in finding opportunities.",
 
         },
 
     sw: {
         // Navigation
         'Home': 'Nyumbani',
-        'Find GOs': 'Tafuta GOs',
+        'Find GOs': 'Tafuta Mashirika',
         'Establishment Guide': 'Mwongozo wa Uanzishaji',
         'Volunteer': 'Kujitolea',
         'About': 'Kuhusu',
@@ -161,12 +177,28 @@ export const STATIC_PHRASES = {
         'Join Us': 'Jiunge Nasi',
         'Learn More': 'Jifunze Zaidi',
         'View Profile': 'Tazama Profaili',
+        'Edit Profile': 'Hariri Profaili',
 
         // Skill Categories
         'Technical Skills': 'Ujuzi wa Kiufundi',
         'Non-Technical Skills': 'Ujuzi wa Kawaida',
 
         // Results
-        'results': 'matokeo'
+        'results': 'matokeo',
+
+        // Volunteer Dashboard
+        'Matched Organizations': 'Mashirika Yanayolingana na ujuzi wako',
+        'Volunteer Dashboard': 'Dash bodi ya Kujitolea',
+        'Volunteer': 'Anaye Jitolea',
+        'Admin': 'Msimamizi',
+        'Your Skills': 'Ujuzi Wako',
+
+        // Volunteer 'how to increase matches' section
+        "Here are some steps to increase your matches": "Hapa kuna hatua za kuongeza mashirika yanayolingana na ujuzi wako",
+        "Update your skills profile to include more areas you're interested in.": "Sasisha wasifu wako wa ujuzi ili ujumuishe maeneo zaidi unayovutiwa nayo.",
+        "Expand your search criteria, such as considering remote opportunities.": "Panua vigezo vyako vya utaftaji, kama vile kuzingatia fursa za mbali.",
+        "Check back regularly, as new opportunities are added frequently.": "Angalia mara kwa mara, kwani fursa mpya zinaongezwa mara kwa mara.",
+        "Consider gaining new skills through online courses or workshops.": "Zingatia kupata ujuzi mpya kupitia kozi za mtandaoni au warsha.",
+        "Reach out to our support team for personalized assistance in finding opportunities.": "Wasiliana na timu yetu ya msaada kwa msaada wa kibinafsi katika kutafuta fursa."
     }
 };

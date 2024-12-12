@@ -69,7 +69,7 @@ export default function OrgProfile() {
                 <div className="hidden sm:block">
                 <div className="w-32 h-32 rounded-full bg-white flex items-center justify-center">
                     <span className="text-teal-500 text-xs text-center">
-                    {onboardingFormData.orgProfile.org_name} <Translate>Logo</Translate>
+                    <DynamicTranslate>{onboardingFormData.orgProfile.org_name}</DynamicTranslate> <Translate>Logo</Translate>
                     </span>
                 </div>
                 </div>
