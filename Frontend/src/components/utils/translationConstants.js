@@ -8,7 +8,7 @@ export const STATIC_PHRASES = {
         'Establishment Guide': 'Establishment Guide',
         'Volunteer': 'Volunteer',
         'About': 'About',
-        'Welcome,': 'Welcome,',
+        'Welcome!': 'Welcome!',
         'Log out': 'Log out',
         
         // Main content
@@ -108,7 +108,7 @@ export const STATIC_PHRASES = {
         'Establishment Guide': 'Mwongozo wa Uanzishaji',
         'Volunteer': 'Kujitolea',
         'About': 'Kuhusu',
-        'Welcome,': 'Karibu,',
+        'Welcome!': 'Karibu!',
         'Log out': 'Toka',
         'View Profile': 'Tazama Profaili',
         

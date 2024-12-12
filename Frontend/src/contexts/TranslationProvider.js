@@ -41,12 +41,8 @@ export function DynamicTranslate({ children }) {
 
         // Check local storage first
         const cachedTranslation = localStorage.getItem(cacheKey);
-        console.log('Cached translation:', cachedTranslation);
-        console.log('currentLanguage:', currentLanguage);
-        console.log('cacheKey:', cacheKey);
         if (cachedTranslation) {
             setTranslatedText(cachedTranslation);
-            console.log('used cached translation');
             return;
         }
 
@@ -57,8 +53,6 @@ export function DynamicTranslate({ children }) {
                     text: children,
                     targetLanguage: currentLanguage
                 });
-
-                console.log('Translation response:', response);
 
                 if (response.ok) {
                     setTranslatedText(response.body.translatedText.translatedText);
