@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import OrgDisplayCard from '../components/OrgDisplayCard';
 import { useApi } from '../contexts/ApiProvider';
 import { useAuth } from '../contexts/AuthProvider';
+import { Translate, DynamicTranslate } from '../contexts/TranslationProvider';
 
 export default function VolunteerPage() {
     const [matchedOrgs, setMatchedOrgs] = useState([]);
@@ -72,23 +73,23 @@ export default function VolunteerPage() {
                         <ul className="space-y-2 text-gray-600">
                             <li className="flex items-start">
                                 <span className="bg-teal-100 text-teal-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-1 flex-shrink-0">1</span>
-                                <span>Update your skills profile to include more areas you're interested in.</span>
+                                <span><Translate>Update your skills profile to include more areas you're interested in.</Translate></span>
                             </li>
                             <li className="flex items-start">
                                 <span className="bg-teal-100 text-teal-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-1 flex-shrink-0">2</span>
-                                <span>Expand your search criteria, such as considering remote opportunities.</span>
+                                <span><Translate>Expand your search criteria, such as considering remote opportunities.</Translate></span>
                             </li>
                             <li className="flex items-start">
                                 <span className="bg-teal-100 text-teal-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-1 flex-shrink-0">3</span>
-                                <span>Check back regularly, as new opportunities are added frequently.</span>
+                                <span><Translate>Check back regularly, as new opportunities are added frequently.</Translate></span>
                             </li>
                             <li className="flex items-start">
                                 <span className="bg-teal-100 text-teal-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-1 flex-shrink-0">4</span>
-                                <span>Consider gaining new skills through online courses or workshops.</span>
+                                <span><Translate>Consider gaining new skills through online courses or workshops.</Translate></span>
                             </li>
                             <li className="flex items-start">
                                 <span className="bg-teal-100 text-teal-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-1 flex-shrink-0">5</span>
-                                <span>Reach out to our support team for personalized assistance in finding opportunities.</span>
+                                <span><Translate>Reach out to our support team for personalized assistance in finding opportunities.</Translate></span>
                             </li>
                         </ul>
                     </div>
@@ -101,7 +102,7 @@ export default function VolunteerPage() {
         <div className="bg-gray-100 min-h-screen">
             <Header />
             <div className="container mx-auto px-4 py-8">
-                <h1 className="text-4xl font-bold text-gray-800 mb-8">Volunteer Dashboard</h1>
+                <h1 className="text-4xl font-bold text-gray-800 mb-8"><Translate>Volunteer Dashboard</Translate></h1>
                 
                 <div className="flex flex-col lg:flex-row gap-8">
                     {/* Left column: Volunteer Info */}
@@ -110,8 +111,8 @@ export default function VolunteerPage() {
                             <div className="bg-white shadow-lg rounded-lg overflow-hidden">
                                 <div className="bg-teal-600 text-white p-4">
                                     <h2 className="text-2xl font-semibold">{volunteerInfo.first_name} {volunteerInfo.last_name}</h2>
-                                    {volunteerInfo.is_admin && <p className="text-teal-100">Admin</p>}
-                                    {!volunteerInfo.is_admin && <p className="text-teal-100">Volunteer</p>}
+                                    {volunteerInfo.is_admin && <p className="text-teal-100"><Translate>Admin</Translate></p>}
+                                    {!volunteerInfo.is_admin && <p className="text-teal-100"><Translate>Volunteer</Translate></p>}
                                 </div>
                                 <div className="p-6">
                                     <div className="flex items-center mb-4">
@@ -125,12 +126,15 @@ export default function VolunteerPage() {
                                     <div className="mb-4">
                                         <h3 className="text-xl font-semibold mb-2 flex items-center">
                                             <BriefcaseIcon className="h-5 w-5 text-gray-400 mr-2" />
+                                            <Translate>
                                             Your Skills
-                                        </h3>
+                                            </Translate></h3>
                                         <ul className="space-y-2">
                                             {volunteerInfo.skills && volunteerInfo.skills.slice(0, showAllSkills ? undefined : 5).map((skill) => (
                                                 <li key={skill.skill_id} className="bg-teal-100 text-teal-800 rounded-full px-3 py-1 text-sm inline-block mr-2 mb-2">
+                                                <DynamicTranslate>
                                                     {skill.skill}
+                                                </DynamicTranslate>
                                                 </li>
                                             ))}
                                         </ul>
@@ -149,7 +153,9 @@ export default function VolunteerPage() {
                                     </div>
                                     <button className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-full flex items-center">
                                         <PencilIcon className="h-4 w-4 mr-2" />
+                                        <Translate>
                                         Edit Profile
+                                        </Translate>
                                     </button>
                                 </div>
                             </div>
@@ -158,7 +164,7 @@ export default function VolunteerPage() {
 
                     {/* Right column: Matched Organizations */}
                     <div className="lg:w-2/3">
-                        <h2 className="text-2xl font-bold text-gray-800 mb-4">Matched Organizations</h2>
+                        <h2 className="text-2xl font-bold text-gray-800 mb-4"><Translate>Matched Organizations</Translate></h2>
                         <div className="">
                             <div className="grid gap-6">
                                     {matchedOrgs.map((org) => (
@@ -167,27 +173,27 @@ export default function VolunteerPage() {
                             </div>
                         </div>
                             <div className="bg-white shadow-lg rounded-lg p-6">
-                                <h3 className="text-xl font-semibold mb-4 text-teal-600">Here are some steps to increase your matches</h3>
+                                <h3 className="text-xl font-semibold mb-4 text-teal-600"><Translate>Here are some steps to increase your matches</Translate></h3>
                                 <ul className="space-y-2 text-gray-600">
                                     <li className="flex items-start">
                                         <span className="bg-teal-100 text-teal-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-1 flex-shrink-0">1</span>
-                                        <span>Update your skills profile to include more areas you're interested in.</span>
+                                        <span><Translate>Update your skills profile to include more areas you're interested in.</Translate></span>
                                     </li>
                                     <li className="flex items-start">
                                         <span className="bg-teal-100 text-teal-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-1 flex-shrink-0">2</span>
-                                        <span>Expand your search criteria, such as considering remote opportunities.</span>
+                                        <span><Translate>Expand your search criteria, such as considering remote opportunities.</Translate></span>
                                     </li>
                                     <li className="flex items-start">
                                         <span className="bg-teal-100 text-teal-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-1 flex-shrink-0">3</span>
-                                        <span>Check back regularly, as new opportunities are added frequently.</span>
+                                        <span><Translate>Check back regularly, as new opportunities are added frequently.</Translate></span>
                                     </li>
                                     <li className="flex items-start">
                                         <span className="bg-teal-100 text-teal-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-1 flex-shrink-0">4</span>
-                                        <span>Consider gaining new skills through online courses or workshops.</span>
+                                        <span><Translate>Consider gaining new skills through online courses or workshops.</Translate></span>
                                     </li>
                                     <li className="flex items-start">
                                         <span className="bg-teal-100 text-teal-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-1 flex-shrink-0">5</span>
-                                        <span>Reach out to our support team for personalized assistance in finding opportunities.</span>
+                                        <span><Translate>Reach out to our support team for personalized assistance in finding opportunities.</Translate></span>
                                     </li>
                                 </ul>
                             </div>
