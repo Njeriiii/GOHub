@@ -1,12 +1,16 @@
 from flask import Blueprint, jsonify, request
-
+from google.cloud import translate_v2 as translate
+import os
 from app import db
+from functools import lru_cache
+from datetime import datetime, timedelta
 
 from app.models import (
     User,
     SkillsNeeded,
     org_skills_connection,
     OrgProfile,
+    TranslationCache
 )
 
 main = Blueprint("main", __name__)
@@ -84,3 +88,135 @@ def match_volunteer_skills():
     except Exception as e:
         db.session.rollback()
         return jsonify({"message": f"An error occurred: {str(e)}"}), 500
+    
+
+def get_translate_client():
+    """
+    Create and return a Google Translate client using environment variables.
+    Provides more robust error handling and configuration.
+    """
+    try:
+        # Use environment variables
+        credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+
+        # Validate credentials
+        if not credentials_path:
+            raise ValueError("GOOGLE_APPLICATION_CREDENTIALS environment variable is not set")
+        
+        if not os.path.exists(credentials_path):
+            raise FileNotFoundError(f"Credentials file not found at: {credentials_path}")
+
+        # Set the environment variable for Google Cloud authentication
+        os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
+
+        # Initialize the translate client
+        return translate.Client()
+
+    except Exception as e:
+        print(f"Error initializing Google Translate client: {e}")
+        return None
+
+# Initialize the client when the module is imported
+translate_client = get_translate_client()
+
+# Supported languages
+SUPPORTED_LANGUAGES = {
+    'en': 'English',
+    'sw': 'Kiswahili'
+}
+
+# Cache translations to reduce API calls
+@lru_cache(maxsize=1000)
+def get_cached_translation(text, target_language):
+    """Cache translation results to minimize API calls for repeated phrases."""
+    # Generate a unique cache key
+    cache_key = f"{text}_{target_language}"
+    
+    try:
+        # Check if translation exists in cache
+        cached_entry = (
+            db.session.query(TranslationCache)
+            .filter_by(key=cache_key)
+            .first()
+        )
+        
+        # Check if cache is still valid (less than 30 days old)
+        if (cached_entry and 
+            cached_entry.created_at > datetime.utcnow() - timedelta(days=30)):
+            return {
+                'translatedText': cached_entry.translated_text,
+                'fromCache': True
+            }
+        
+        # If no valid cache, perform translation
+        result = translate_client.translate(
+            text,
+            target_language=target_language,
+            source_language='en' if target_language == 'sw' else 'sw'
+        )
+        
+        # Create new cache entry
+        new_cache_entry = TranslationCache(
+            key=cache_key,
+            translated_text=result['translatedText'],
+            source_language='en',
+            target_language=target_language
+        )
+        
+        # Add and commit to database
+        db.session.add(new_cache_entry)
+        db.session.commit()
+        
+        return {
+            'translatedText': result['translatedText'],
+            'fromCache': False
+        }
+    
+    except Exception as e:
+        # Fallback mechanism
+        db.session.rollback()
+        print(f"Translation error: {str(e)}")
+        return {
+            'translatedText': text,
+            'fromCache': False
+        }
+
+
+@main.route("/main/translate", methods=["POST"])
+def translate_text():
+    try:
+        data = request.get_json()
+        
+        if not data or 'text' not in data or 'targetLanguage' not in data:
+            return jsonify({
+                'error': 'Missing required fields: text and targetLanguage'
+            }), 400
+
+        text = data['text']
+        target_language = data['targetLanguage']
+        
+        # Validate target language
+        if target_language not in SUPPORTED_LANGUAGES:
+            return jsonify({
+                'error': 'Unsupported language. Only English (en) and Kiswahili (sw) are supported'
+            }), 400
+            
+        # Skip translation if target language is English and text is in English
+        if target_language == 'en':
+            return jsonify({'translatedText': text})
+            
+        # Get cached translation
+        translated_text = get_cached_translation(text, target_language)
+        
+        return jsonify({
+            'translatedText': translated_text,
+            'sourceLanguage': 'en',
+            'targetLanguage': target_language
+        })
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'error': f'Server error: {str(e)}'
+        }), 500
+

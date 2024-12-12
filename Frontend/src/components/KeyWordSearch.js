@@ -1,7 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import Select from 'react-select';
 import { Search, X, ChevronDown } from 'lucide-react';
-
+import { Translate, DynamicTranslate, useTranslation } from '../contexts/TranslationProvider';
+import { STATIC_PHRASES } from './utils/translationConstants';
 
 /**
  * KeyWordSearch Component
@@ -15,59 +16,59 @@ import { Search, X, ChevronDown } from 'lucide-react';
  * @param {Array<Object>} props.orgData - Array of organization objects
  * @param {Function} props.onSearchResults - Callback function that receives filtered results
  */
-export default function KeyWordSearch({ orgData = [], onSearchResults }) {
+export default function KeyWordSearch({ orgData = [], onSearchResults }) {    
     // Predefined options for focus areas and skills
     const focusAreaOptions = [
-        { value: 'Education', label: 'Education' },
-        { value: 'Health', label: 'Health' },
-        { value: 'Environment', label: 'Environment' },
-        { value: 'Human Rights', label: 'Human Rights' },
-        { value: 'Poverty Alleviation', label: 'Poverty Alleviation' },
-        { value: 'Gender Equality', label: 'Gender Equality' },
-        { value: 'Children & Youth', label: 'Children & Youth' },
-        { value: 'Disaster Relief', label: 'Disaster Relief' },
-        { value: 'Community Development', label: 'Community Development' },
-        { value: 'Arts & Culture', label: 'Arts & Culture' }
+        { value: 'Education', label: <DynamicTranslate>Education</DynamicTranslate> },
+        { value: 'Health', label: <DynamicTranslate>Health</DynamicTranslate> },
+        { value: 'Environment', label: <DynamicTranslate>Environment</DynamicTranslate> },
+        { value: 'Human Rights', label: <DynamicTranslate>Human Rights</DynamicTranslate> },
+        { value: 'Poverty Alleviation', label: <DynamicTranslate>Poverty Alleviation</DynamicTranslate> },
+        { value: 'Gender Equality', label: <DynamicTranslate>Gender Equality</DynamicTranslate> },
+        { value: 'Children & Youth', label: <DynamicTranslate>Children & Youth</DynamicTranslate> },
+        { value: 'Disaster Relief', label: <DynamicTranslate>Disaster Relief</DynamicTranslate> },
+        { value: 'Community Development', label: <DynamicTranslate>Community Development</DynamicTranslate> },
+        { value: 'Arts & Culture', label: <DynamicTranslate>Arts & Culture</DynamicTranslate> }
     ];
 
     const techSkillOptions = [
-        { value: 'webdevelopment', label: 'Web Development' },
-        { value: 'photography', label: 'Photography' },
-        { value: 'graphicdesign', label: 'Graphic Design' },
-        { value: 'dataanalysis', label: 'Data Analysis' },
-        { value: 'videoproduction', label: 'Video Production' },
-        { value: 'digitalmarketing', label: 'Digital Marketing' },
-        { value: 'cybersecurity', label: 'Cybersecurity' },
-        { value: '3dmodeling', label: '3D Modeling' },
-        { value: 'soundengineering', label: 'Sound Engineering' },
-        { value: 'uxuidesign', label: 'UX/UI Design' }
+        { value: 'webdevelopment', label: <DynamicTranslate>Web Development</DynamicTranslate> },
+        { value: 'photography', label: <DynamicTranslate>Photography</DynamicTranslate> },
+        { value: 'graphicdesign', label: <DynamicTranslate>Graphic Design</DynamicTranslate> },
+        { value: 'dataanalysis', label: <DynamicTranslate>Data Analysis</DynamicTranslate> },
+        { value: 'videoproduction', label: <DynamicTranslate>Video Production</DynamicTranslate> },
+        { value: 'digitalmarketing', label: <DynamicTranslate>Digital Marketing</DynamicTranslate> },
+        { value: 'cybersecurity', label: <DynamicTranslate>Cybersecurity</DynamicTranslate> },
+        { value: '3dmodeling', label: <DynamicTranslate>3D Modeling</DynamicTranslate> },
+        { value: 'soundengineering', label: <DynamicTranslate>Sound Engineering</DynamicTranslate> },
+        { value: 'uxuidesign', label: <DynamicTranslate>UX/UI Design</DynamicTranslate> }
     ];
 
     const nonTechSkillOptions = [
-        { value: 'communication', label: 'Communication' },
-        { value: 'leadership', label: 'Leadership' },
-        { value: 'projectmanagement', label: 'Project Management' },
-        { value: 'publicspeaking', label: 'Public Speaking' },
-        { value: 'writing', label: 'Writing' },
-        { value: 'teamwork', label: 'Teamwork' },
-        { value: 'problemsolving', label: 'Problem Solving' },
-        { value: 'timemanagement', label: 'Time Management' },
-        { value: 'creativity', label: 'Creativity' },
-        { value: 'customerservice', label: 'Customer Service' },
-        { value: 'eventplanning', label: 'Event Planning' },
-        { value: 'fundraising', label: 'Fundraising' },
-        { value: 'mentoring', label: 'Mentoring' },
-        { value: 'conflictresolution', label: 'Conflict Resolution' }
+        { value: 'communication', label: <DynamicTranslate>Communication</DynamicTranslate> },
+        { value: 'leadership', label: <DynamicTranslate>Leadership</DynamicTranslate> },
+        { value: 'projectmanagement', label: <DynamicTranslate>Project Management</DynamicTranslate> },
+        { value: 'publicspeaking', label: <DynamicTranslate>Public Speaking</DynamicTranslate> },
+        { value: 'writing', label: <DynamicTranslate>Writing</DynamicTranslate> },
+        { value: 'teamwork', label: <DynamicTranslate>Teamwork</DynamicTranslate> },
+        { value: 'problemsolving', label: <DynamicTranslate>Problem Solving</DynamicTranslate> },
+        { value: 'timemanagement', label: <DynamicTranslate>Time Management</DynamicTranslate> },
+        { value: 'creativity', label: <DynamicTranslate>Creativity</DynamicTranslate> },
+        { value: 'customerservice', label: <DynamicTranslate>Customer Service</DynamicTranslate> },
+        { value: 'eventplanning', label: <DynamicTranslate>Event Planning</DynamicTranslate> },
+        { value: 'fundraising', label: <DynamicTranslate>Fundraising</DynamicTranslate> },
+        { value: 'mentoring', label: <DynamicTranslate>Mentoring</DynamicTranslate> },
+        { value: 'conflictresolution', label: <DynamicTranslate>Conflict Resolution</DynamicTranslate> }
     ];
 
     // Group all skills together for the select input
     const skillOptions = [
         {
-            label: "Technical Skills",
+            label: <Translate>Technical Skills</Translate>,
             options: techSkillOptions
         },
         {
-            label: "Non-Technical Skills",
+            label: <Translate>Non-Technical Skills</Translate>,
             options: nonTechSkillOptions
         }
     ];
@@ -77,6 +78,7 @@ export default function KeyWordSearch({ orgData = [], onSearchResults }) {
     const [selectedFocusArea, setSelectedFocusArea] = useState(null);
     const [selectedSkill, setSelectedSkill] = useState(null);
     const [isFiltersVisible, setIsFiltersVisible] = useState(false);
+    const { currentLanguage } = useTranslation();
 
     /**
      * Debounce helper function to limit the rate of search execution
@@ -201,11 +203,11 @@ export default function KeyWordSearch({ orgData = [], onSearchResults }) {
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                     <h2 className="text-2xl font-semibold text-white flex items-center gap-2">
-                        Find Organizations
+                        <Translate>Find Organizations</Translate>
                     </h2>
                     {searchResults.length > 0 && (
                         <span className="px-3 py-1 text-sm font-medium text-teal-800 bg-teal-50 rounded-full">
-                            {searchResults.length} result{searchResults.length === 1 ? '' : 's'}
+                            {searchResults.length} <Translate>{searchResults.length === 1 ? 'result' : 'results'}</Translate>
                         </span>
                     )}
                 </div>
@@ -221,8 +223,8 @@ export default function KeyWordSearch({ orgData = [], onSearchResults }) {
                                     bg-white/95 border-0 rounded-xl
                                     focus:outline-none focus:ring-2 focus:ring-teal-400
                                     hover:bg-white transition-colors shadow-sm"
-                        placeholder="Search organizations by name..."
-                        value={searchTerm}
+                                    placeholder={STATIC_PHRASES[currentLanguage]['Search organizations by name...']}
+                                    value={searchTerm}
                         onChange={handleSearchChange}
                     />
                     {(searchTerm || selectedFocusArea || selectedSkill) && (
@@ -245,7 +247,9 @@ export default function KeyWordSearch({ orgData = [], onSearchResults }) {
                             className={`h-4 w-4 transition-transform duration-200 
                                 ${isFiltersVisible ? 'rotate-180' : ''}`}
                         />
-                        <span className="font-bold text-xl">Advanced Filters</span>
+                        <span className="font-bold text-xl">
+                            <Translate>Advanced Filters</Translate>
+                        </span>
                     </button>
 
                     {/* Filter Content */}
@@ -256,7 +260,7 @@ export default function KeyWordSearch({ orgData = [], onSearchResults }) {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
                             <div>
                                 <label className="block text-l font-bold text-teal-50 mb-2">
-                                    Focus Area
+                                    <Translate>Focus Area</Translate>
                                 </label>
                                 <div className="relative backdrop-blur-sm">
                                     <Select
@@ -264,7 +268,8 @@ export default function KeyWordSearch({ orgData = [], onSearchResults }) {
                                         value={selectedFocusArea}
                                         onChange={handleFocusAreaChange}
                                         options={focusAreaOptions}
-                                        placeholder="Select focus area..."
+                                        placeholder={<Translate>Select focus area...</Translate>}
+                                        formatOptionLabel={(option) => option.label}
                                         styles={selectStyles}
                                         theme={(theme) => ({
                                             ...theme,
@@ -282,7 +287,7 @@ export default function KeyWordSearch({ orgData = [], onSearchResults }) {
 
                             <div>
                                 <label className="block text-l font-bold text-teal-50 mb-2">
-                                    Skills Needed
+                                    <Translate>Skills Needed</Translate>
                                 </label>
                                 <div className="relative backdrop-blur-sm">
                                     <Select
@@ -290,7 +295,9 @@ export default function KeyWordSearch({ orgData = [], onSearchResults }) {
                                         value={selectedSkill}
                                         onChange={handleSkillChange}
                                         options={skillOptions}
-                                        placeholder="Select skill..."
+                                        placeholder={<Translate>Select skill...</Translate>}
+                                        formatGroupLabel={(group) => group.label}
+                                        formatOptionLabel={(option) => option.label}
                                         styles={selectStyles}
                                         theme={(theme) => ({
                                             ...theme,

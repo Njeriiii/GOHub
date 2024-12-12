@@ -30,3 +30,6 @@ __pycache__/
 
 # Ignore flask_session
 flask_session/
+
+# Ignore Google Api Key
+flawless-snow-443501-q3-85e4441a1dd7.json

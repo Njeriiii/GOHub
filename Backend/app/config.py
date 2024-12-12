@@ -40,6 +40,9 @@ class AppConfig:
     JWT_HEADER_NAME = 'Authorization'
     JWT_ERROR_MESSAGE_KEY = 'msg'
 
+    GOOGLE_CLOUD_PROJECT = os.getenv("GOOGLE_CLOUD_PROJECT")
+    GOOGLE_APPLICATION_CREDENTIALS = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+
 class TestConfig(AppConfig):
     SQLALCHEMY_DATABASE_URI = "sqlite://"
     TESTING = True

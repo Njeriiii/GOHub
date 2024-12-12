@@ -3,27 +3,28 @@ import { ScrollText, CheckCircle, AlertCircle, FileText, Users, Building, Extern
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card';
 import { Alert, AlertDescription } from '../components/ui/alert';
 import Header from '../components/Header';
+import { DynamicTranslate } from '../contexts/TranslationProvider';
 
 // If you want to make the code more maintainable, you can define your constants:
 const REGISTRATION_STEPS = [
     {
-        title: "Formation meeting minutes",
+        title: <DynamicTranslate>Formation of meeting minutes</DynamicTranslate>,
         icon: FileText
     },
     {
-        title: "Complete member list with details",
+        title: <DynamicTranslate>Complete member list with details</DynamicTranslate>,
         icon: FileText
     },
     {
-        title: "CBO Constitution",
+        title: <DynamicTranslate>CBO Constitution</DynamicTranslate>,
         icon: FileText
     },
     {
-        title: "ID copies of all members",
+        title: <DynamicTranslate>ID copies of all members</DynamicTranslate>,
         icon: FileText
     },
     {
-        title: "MOU (if applicable)",
+        title: <DynamicTranslate>MOU (if applicable)</DynamicTranslate>,
         icon: FileText
     }
     ];
@@ -35,8 +36,8 @@ const REGISTRATION_STEPS = [
         {/* Header */}
         <header className="bg-teal-600 text-white py-8 px-4 shadow-lg">
             <div className="max-w-4xl mx-auto">
-            <h1 className="text-3xl font-bold mb-2">CBO Registration Guide Kenya</h1>
-            <p className="text-teal-100 text-lg">Complete guide to registering a Community Based Organization</p>
+            <h1 className="text-3xl font-bold mb-2"><DynamicTranslate>CBO Registration Guide Kenya</DynamicTranslate></h1>
+            <p className="text-teal-100 text-lg"><DynamicTranslate>Complete guide to registering a Community Based Organization</DynamicTranslate></p>
             </div>
         </header>
 
@@ -46,11 +47,14 @@ const REGISTRATION_STEPS = [
             <AlertDescription className="space-y-4">
                 <h3 className="font-semibold text-xl text-teal-800 flex items-center">
                 <ExternalLink className="mr-2" />
-                Quick Links - Registration Portals
+                <DynamicTranslate>Quick Links - Registration Portals</DynamicTranslate>
                 </h3>
                 <div className="space-y-2">
                 <div>
-                    <p className="font-medium text-lg text-teal-800">Step 1: Access eCitizen Portal's Registration of Community Based Organizations (CBOs)
+                    <p className="font-medium text-lg text-teal-800">
+                    <DynamicTranslate>
+                        Step 1: Access eCitizen Portal's Registration of Community Based Organizations (CBOs)
+                    </DynamicTranslate>
                     </p>
                     <a 
                     href="https://accounts.ecitizen.go.ke/en/services/national/promotion-portal"
@@ -58,18 +62,21 @@ const REGISTRATION_STEPS = [
                     rel="noopener noreferrer"
                     className="text-teal-600 text-lg hover:text-teal-800 underline flex items-center"
                     >
-                    eCitizen Portal <ExternalLink className="ml-1" size={16} />
+                    <DynamicTranslate>
+                    eCitizen Portal 
+                    </DynamicTranslate>
+                    <ExternalLink className="ml-1" size={16} />
                     </a>
                 </div>
                 <div>
-                    <p className="font-medium text-lg text-teal-800">Step 2: Community Group Registration Form</p>
+                    <p className="font-medium text-lg text-teal-800"><DynamicTranslate>Step 2: Community Group Registration Form</DynamicTranslate></p>
                     <a 
                     href="https://cdmis.socialprotection.go.ke:8002/selfregistration/communitygroupregistration"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-teal-600 text-lg hover:text-teal-800 underline flex items-center"
-                    >
-                    Registration Portal <ExternalLink className="ml-1" size={16} />
+                    ><DynamicTranslate>
+                    Registration Portal </DynamicTranslate><ExternalLink className="ml-1" size={16} />
                     </a>
                 </div>
                 </div>
@@ -83,20 +90,20 @@ const REGISTRATION_STEPS = [
             <Card>
             <CardHeader>
                 <CardTitle className="flex items-center text-teal-600">
-                <Building className="mr-2" />
+                <Building className="mr-2" /><DynamicTranslate>
                 What is a CBO?
-                </CardTitle>
+                </DynamicTranslate></CardTitle>
             </CardHeader>
             <CardContent>
-                <p className="text-gray-700 mb-4">
+                <p className="text-gray-700 mb-4"><DynamicTranslate>
                 A Community Based Organization (CBO) is a registered non-governmental, non-profit, and 
                 non-political organization working at the local level to address community needs and interests.
-                </p>
+                </DynamicTranslate></p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {['Formally registered', 'Independent from government', 'Non-profit focused', 'Community-driven'].map((item, index) => (
                     <div key={index} className="flex items-start">
                     <CheckCircle className="text-teal-600 mr-2 mt-1 flex-shrink-0" size={20} />
-                    <span>{item}</span>
+                    <span><DynamicTranslate>{item}</DynamicTranslate></span>
                     </div>
                 ))}
                 </div>
@@ -108,7 +115,9 @@ const REGISTRATION_STEPS = [
             <CardHeader>
                 <CardTitle className="flex items-center text-teal-600">
                 <ScrollText className="mr-2" />
+                <DynamicTranslate>
                 Registration Process
+                </DynamicTranslate>
                 </CardTitle>
             </CardHeader>
             <CardContent>
@@ -116,41 +125,41 @@ const REGISTRATION_STEPS = [
                 {/* Steps */}
                 <div className="space-y-6">
                     <div className="border-l-4 border-teal-600 pl-4">
-                    <h3 className="font-semibold text-lg mb-2">Step 1: eCitizen Account Setup</h3>
+                    <h3 className="font-semibold text-lg mb-2"><DynamicTranslate>Step 1: eCitizen Account Setup</DynamicTranslate></h3>
                     <ol className="list-decimal ml-4 space-y-2">
-                        <li>Visit the eCitizen portal</li>
-                        <li>Create an account if you don't have one</li>
-                        <li>Click "Proceed to Service"</li>
-                        <li>Navigate to Community Group Registration</li>
+                        <li><DynamicTranslate>Visit the eCitizen portal</DynamicTranslate></li>
+                        <li><DynamicTranslate>Create an account if you don't have one</DynamicTranslate></li>
+                        <li><DynamicTranslate>Click "Proceed to Service"</DynamicTranslate></li>
+                        <li><DynamicTranslate>Navigate to Community Group Registration</DynamicTranslate></li>
                     </ol>
                     </div>
 
                     <div className="border-l-4 border-teal-600 pl-4">
-                    <h3 className="font-semibold text-lg mb-2">Step 2: Document Preparation</h3>
+                    <h3 className="font-semibold text-lg mb-2"><DynamicTranslate>Step 2: Document Preparation</DynamicTranslate></h3>
                     <ul className="space-y-2">
                         {REGISTRATION_STEPS.map((step, index) => (
-                        <li key={index} className="flex items-center">
+                        <li key={index} className="flex items-center"><DynamicTranslate>
                             <step.icon className="text-teal-600 mr-2" size={16} />
                             {step.title}
-                        </li>
+                        </DynamicTranslate></li>
                         ))}
                     </ul>
                     </div>
 
                     <div className="border-l-4 border-teal-600 pl-4">
-                    <h3 className="font-semibold text-lg mb-2">Step 3: Payment and Submission</h3>
+                    <h3 className="font-semibold text-lg mb-2"><DynamicTranslate>Step 3: Payment and Submission</DynamicTranslate></h3>
                     <ul className="space-y-2">
                         <li className="flex items-center">
                         <CheckCircle className="text-teal-600 mr-2" size={16} />
-                        Pay registration fee (Ksh 5,000)
+                        <DynamicTranslate>Pay registration fee (Ksh 5,000)</DynamicTranslate>
                         </li>
                         <li className="flex items-center">
                         <CheckCircle className="text-teal-600 mr-2" size={16} />
-                        Submit all required documents
+                        <DynamicTranslate>Submit all required documents</DynamicTranslate>
                         </li>
                         <li className="flex items-center">
                         <CheckCircle className="text-teal-600 mr-2" size={16} />
-                        Attend mandatory training
+                        <DynamicTranslate>Attend mandatory training</DynamicTranslate>
                         </li>
                     </ul>
                     </div>
@@ -164,7 +173,7 @@ const REGISTRATION_STEPS = [
             <CardHeader>
                 <CardTitle className="flex items-center text-teal-600">
                 <AlertCircle className="mr-2" />
-                Post-Registration Requirements
+                <DynamicTranslate>Post-Registration Requirements</DynamicTranslate>
                 </CardTitle>
             </CardHeader>
             <CardContent>
@@ -177,8 +186,8 @@ const REGISTRATION_STEPS = [
                     <div key={index} className="flex items-start">
                     <CheckCircle className="text-teal-600 mr-2 mt-1" size={20} />
                     <div>
-                        <h4 className="font-semibold">{item.title}</h4>
-                        <p className="text-gray-600">{item.desc}</p>
+                        <h4 className="font-semibold"><DynamicTranslate>{item.title}</DynamicTranslate></h4>
+                        <p className="text-gray-600"><DynamicTranslate>{item.desc}</DynamicTranslate></p>
                     </div>
                     </div>
                 ))}
@@ -191,7 +200,9 @@ const REGISTRATION_STEPS = [
             <CardHeader>
                 <CardTitle className="flex items-center text-teal-600">
                 <Users className="mr-2" />
+                <DynamicTranslate>
                 Important Notes
+                </DynamicTranslate>
                 </CardTitle>
             </CardHeader>
             <CardContent>
@@ -204,7 +215,7 @@ const REGISTRATION_STEPS = [
                     ].map((note, index) => (
                     <li key={index} className="flex items-start">
                         <AlertCircle className="text-teal-600 mr-2 mt-1" size={16} />
-                        <span>{note}</span>
+                        <span><DynamicTranslate>{note}</DynamicTranslate></span>
                     </li>
                     ))}
                 </ul>
@@ -217,34 +228,36 @@ const REGISTRATION_STEPS = [
             <CardHeader>
                 <CardTitle className="flex items-center text-teal-600">
                 <FileText className="mr-2" />
+                <DynamicTranslate>
                 Detailed Document Requirements
+                </DynamicTranslate>
                 </CardTitle>
             </CardHeader>
             <CardContent>
                 <div className="space-y-4">
                 <div>
-                    <h4 className="font-semibold text-teal-800 mb-2">Constitution Requirements</h4>
+                    <h4 className="font-semibold text-teal-800 mb-2"><DynamicTranslate>Constitution Requirements</DynamicTranslate></h4>
                     <ul className="space-y-2 ml-6 list-disc">
-                    <li>Organization's name and physical address</li>
-                    <li>Aims and objectives</li>
-                    <li>Membership criteria and fees</li>
-                    <li>Leadership structure and election procedures</li>
-                    <li>Financial management procedures</li>
-                    <li>Dispute resolution mechanisms</li>
-                    <li>Asset management policies</li>
-                    <li>Dissolution procedures</li>
+                    <li><DynamicTranslate>Organization's name and physical address</DynamicTranslate></li>
+                    <li><DynamicTranslate>Aims and objectives</DynamicTranslate></li>
+                    <li><DynamicTranslate>Membership criteria and fees</DynamicTranslate></li>
+                    <li><DynamicTranslate>Leadership structure and election procedures</DynamicTranslate></li>
+                    <li><DynamicTranslate>Financial management procedures</DynamicTranslate></li>
+                    <li><DynamicTranslate>Dispute resolution mechanisms</DynamicTranslate></li>
+                    <li><DynamicTranslate>Asset management policies</DynamicTranslate></li>
+                    <li><DynamicTranslate>Dissolution procedures</DynamicTranslate></li>
                     </ul>
                 </div>
                 
                 <div>
-                    <h4 className="font-semibold text-teal-800 mb-2">Meeting Minutes Requirements</h4>
+                    <h4 className="font-semibold text-teal-800 mb-2"><DynamicTranslate>Meeting Minutes Requirements</DynamicTranslate></h4>
                     <ul className="space-y-2 ml-6 list-disc">
-                    <li>Date, time, and venue of the meeting</li>
-                    <li>List of attendees with signatures</li>
-                    <li>Agenda items discussed</li>
-                    <li>Election results (if applicable)</li>
-                    <li>Resolution to register as a CBO</li>
-                    <li>Appointed signatories for bank accounts</li>
+                    <li><DynamicTranslate>Date, time, and venue of the meeting</DynamicTranslate></li>
+                    <li><DynamicTranslate>List of attendees with signatures</DynamicTranslate></li>
+                    <li><DynamicTranslate>Agenda items discussed</DynamicTranslate></li>
+                    <li><DynamicTranslate>Election results (if applicable)</DynamicTranslate></li>
+                    <li><DynamicTranslate>Resolution to register as a CBO</DynamicTranslate></li>
+                    <li><DynamicTranslate>Appointed signatories for bank accounts</DynamicTranslate></li>
                     </ul>
                 </div>
                 </div>
@@ -256,47 +269,49 @@ const REGISTRATION_STEPS = [
             <CardHeader>
                 <CardTitle className="flex items-center text-teal-600">
                 <AlertCircle className="mr-2" />
+                <DynamicTranslate>
                 Financial Management
+                </DynamicTranslate>
                 </CardTitle>
             </CardHeader>
             <CardContent>
                 <div className="space-y-4">
                 <div className="bg-teal-50 p-4 rounded-lg">
-                    <h4 className="font-semibold text-teal-800 mb-2">Banking Requirements</h4>
+                    <h4 className="font-semibold text-teal-800 mb-2"><DynamicTranslate>Banking Requirements</DynamicTranslate></h4>
                     <ul className="space-y-2">
                     <li className="flex items-start">
                         <CheckCircle className="text-teal-600 mr-2 mt-1" size={16} />
-                        <span>Open a bank account in the CBO's name</span>
+                        <span><DynamicTranslate>Open a bank account in the CBO's name</DynamicTranslate></span>
                     </li>
                     <li className="flex items-start">
                         <CheckCircle className="text-teal-600 mr-2 mt-1" size={16} />
-                        <span>Minimum of three signatories required</span>
+                        <span><DynamicTranslate>Minimum of three signatories required</DynamicTranslate></span>
                     </li>
                     <li className="flex items-start">
                         <CheckCircle className="text-teal-600 mr-2 mt-1" size={16} />
-                        <span>Annual financial reports must be maintained</span>
+                        <span><DynamicTranslate>Annual financial reports must be maintained</DynamicTranslate></span>
                     </li>
                     </ul>
                 </div>
                 
                 <div className="bg-teal-50 p-4 rounded-lg">
-                    <h4 className="font-semibold text-teal-800 mb-2">Required Financial Records</h4>
+                    <h4 className="font-semibold text-teal-800 mb-2"><DynamicTranslate>Required Financial Records</DynamicTranslate></h4>
                     <ul className="space-y-2">
                     <li className="flex items-start">
                         <CheckCircle className="text-teal-600 mr-2 mt-1" size={16} />
-                        <span>Cash book</span>
+                        <span><DynamicTranslate>Cash book</DynamicTranslate></span>
                     </li>
                     <li className="flex items-start">
                         <CheckCircle className="text-teal-600 mr-2 mt-1" size={16} />
-                        <span>Receipt book</span>
+                        <span><DynamicTranslate>Receipt book</DynamicTranslate></span>
                     </li>
                     <li className="flex items-start">
                         <CheckCircle className="text-teal-600 mr-2 mt-1" size={16} />
-                        <span>Payment vouchers</span>
+                        <span><DynamicTranslate>Payment vouchers</DynamicTranslate></span>
                     </li>
                     <li className="flex items-start">
                         <CheckCircle className="text-teal-600 mr-2 mt-1" size={16} />
-                        <span>Bank statements</span>
+                        <span><DynamicTranslate>Bank statements</DynamicTranslate></span>
                     </li>
                     </ul>
                 </div>
@@ -309,33 +324,35 @@ const REGISTRATION_STEPS = [
             <CardHeader>
                 <CardTitle className="flex items-center text-teal-600">
                 <Users className="mr-2" />
+                <DynamicTranslate>
                 Required Governance Structure
+                </DynamicTranslate>
                 </CardTitle>
             </CardHeader>
             <CardContent>
                 <div className="space-y-4">
                 <div>
-                    <h4 className="font-semibold text-teal-800 mb-2">Mandatory Positions</h4>
+                    <h4 className="font-semibold text-teal-800 mb-2"><DynamicTranslate>Mandatory Positions</DynamicTranslate></h4>
                     <ul className="space-y-2">
                     <li className="flex items-start">
                         <CheckCircle className="text-teal-600 mr-2 mt-1" size={16} />
                         <div>
-                        <span className="font-medium">Chairperson</span>
-                        <p className="text-sm text-gray-600">Overall leadership and external representation</p>
+                        <span className="font-medium"><DynamicTranslate>Chairperson</DynamicTranslate></span>
+                        <p className="text-sm text-gray-600"><DynamicTranslate>Overall leadership and external representation</DynamicTranslate></p>
                         </div>
                     </li>
                     <li className="flex items-start">
                         <CheckCircle className="text-teal-600 mr-2 mt-1" size={16} />
                         <div>
-                        <span className="font-medium">Secretary</span>
-                        <p className="text-sm text-gray-600">Record keeping and communication</p>
+                        <span className="font-medium"><DynamicTranslate>Secretary</DynamicTranslate></span>
+                        <p className="text-sm text-gray-600"><DynamicTranslate>Record keeping and communication</DynamicTranslate></p>
                         </div>
                     </li>
                     <li className="flex items-start">
                         <CheckCircle className="text-teal-600 mr-2 mt-1" size={16} />
                         <div>
-                        <span className="font-medium">Treasurer</span>
-                        <p className="text-sm text-gray-600">Financial management and reporting</p>
+                        <span className="font-medium"><DynamicTranslate>Treasurer</DynamicTranslate></span>
+                        <p className="text-sm text-gray-600"><DynamicTranslate>Financial management and reporting</DynamicTranslate></p>
                         </div>
                     </li>
                     </ul>
@@ -349,32 +366,34 @@ const REGISTRATION_STEPS = [
             <CardHeader>
                 <CardTitle className="flex items-center text-teal-600">
                 <FileText className="mr-2" />
+                <DynamicTranslate>
                 Compliance and Reporting
+                </DynamicTranslate>
                 </CardTitle>
             </CardHeader>
             <CardContent>
                 <div className="space-y-4">
                 <div>
-                    <h4 className="font-semibold text-teal-800 mb-2">Quarterly Reports Must Include:</h4>
+                    <h4 className="font-semibold text-teal-800 mb-2"><DynamicTranslate>Quarterly Reports Must Include:</DynamicTranslate></h4>
                     <ul className="space-y-2 ml-6 list-disc">
-                    <li>Activities undertaken during the quarter</li>
-                    <li>Financial statements</li>
-                    <li>Challenges faced and solutions implemented</li>
-                    <li>Planned activities for next quarter</li>
-                    <li>Changes in leadership (if any)</li>
-                    <li>Member participation records</li>
+                    <li><DynamicTranslate>Activities undertaken during the quarter</DynamicTranslate></li>
+                    <li><DynamicTranslate>Financial statements</DynamicTranslate></li>
+                    <li><DynamicTranslate>Challenges faced and solutions implemented</DynamicTranslate></li>
+                    <li><DynamicTranslate>Planned activities for next quarter</DynamicTranslate></li>
+                    <li><DynamicTranslate>Changes in leadership (if any)</DynamicTranslate></li>
+                    <li><DynamicTranslate>Member participation records</DynamicTranslate></li>
                     </ul>
                 </div>
                 
                 <div className="mt-4">
-                    <h4 className="font-semibold text-teal-800 mb-2">Annual Compliance Requirements:</h4>
+                    <h4 className="font-semibold text-teal-800 mb-2"><DynamicTranslate>Annual Compliance Requirements:</DynamicTranslate></h4>
                     <ul className="space-y-2 ml-6 list-disc">
-                    <li>Annual General Meeting (AGM) minutes</li>
-                    <li>Updated member register</li>
-                    <li>Annual financial statements</li>
-                    <li>Activity reports</li>
-                    <li>Leadership changes documentation</li>
-                    <li>Asset register updates</li>
+                    <li><DynamicTranslate>Annual General Meeting (AGM) minutes</DynamicTranslate></li>
+                    <li><DynamicTranslate>Updated member register</DynamicTranslate></li>
+                    <li><DynamicTranslate>Annual financial statements</DynamicTranslate></li>
+                    <li><DynamicTranslate>Activity reports</DynamicTranslate></li>
+                    <li><DynamicTranslate>Leadership changes documentation</DynamicTranslate></li>
+                    <li><DynamicTranslate>Asset register updates</DynamicTranslate></li>
                     </ul>
                 </div>
                 </div>
@@ -385,64 +404,66 @@ const REGISTRATION_STEPS = [
                 <CardHeader>
                     <CardTitle className="flex items-center text-teal-600">
                     <Users className="mr-2" />
+                    <DynamicTranslate>
                     Best Practices for Your Organization's Success
+                    </DynamicTranslate>
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-6">
-                    <p className="text-gray-700">Here are some helpful practices that can contribute to the success and sustainability of your organization:</p>
+                    <p className="text-gray-700"><DynamicTranslate>Here are some helpful practices that can contribute to the success and sustainability of your organization:</DynamicTranslate></p>
 
                     <div>
-                        <h4 className="font-semibold text-teal-800 mb-2">1. Regular Meetings Keep Your Organization Active</h4>
-                        <p className="text-gray-600 mb-2">Consider maintaining this meeting schedule:</p>
+                        <h4 className="font-semibold text-teal-800 mb-2"><DynamicTranslate>1. Regular Meetings Keep Your Organization Active</DynamicTranslate></h4>
+                        <p className="text-gray-600 mb-2"><DynamicTranslate>Consider maintaining this meeting schedule:</DynamicTranslate></p>
                         <ul className="space-y-2 ml-6 list-disc">
-                        <li>Annual General Meeting (AGM) - Once per year for major decisions and elections</li>
-                        <li>Executive Committee - Quarterly to review progress and plan activities</li>
-                        <li>Member Meetings - Monthly or bi-monthly to maintain engagement</li>
-                        <li>Special Meetings - As needed for urgent matters</li>
-                        <li>Document all meetings with signed minutes for good record-keeping</li>
+                        <li><DynamicTranslate>Annual General Meeting (AGM) - Once per year for major decisions and elections</DynamicTranslate></li>
+                        <li><DynamicTranslate>Executive Committee - Quarterly to review progress and plan activities</DynamicTranslate></li>
+                        <li><DynamicTranslate>Member Meetings - Monthly or bi-monthly to maintain engagement</DynamicTranslate></li>
+                        <li><DynamicTranslate>Special Meetings - As needed for urgent matters</DynamicTranslate></li>
+                        <li><DynamicTranslate>Document all meetings with signed minutes for good record-keeping</DynamicTranslate></li>
                         </ul>
                     </div>
 
                     <div>
-                        <h4 className="font-semibold text-teal-800 mb-2">2. Fair and Transparent Decision Making</h4>
-                        <p className="text-gray-600 mb-2">Establish clear voting procedures such as:</p>
+                        <h4 className="font-semibold text-teal-800 mb-2"><DynamicTranslate>2. Fair and Transparent Decision Making</DynamicTranslate></h4>
+                        <p className="text-gray-600 mb-2"><DynamicTranslate>Establish clear voting procedures such as:</DynamicTranslate></p>
                         <ul className="space-y-2 ml-6 list-disc">
-                        <li>Each member gets one vote to ensure equality</li>
-                        <li>Use secret ballots for sensitive decisions like leadership elections</li>
-                        <li>Aim for consensus on major decisions when possible</li>
-                        <li>Keep proper records of all decisions made</li>
-                        <li>Allow members to vote by proxy when they cannot attend</li>
+                        <li><DynamicTranslate>Each member gets one vote to ensure equality</DynamicTranslate></li>
+                        <li><DynamicTranslate>Use secret ballots for sensitive decisions like leadership elections</DynamicTranslate></li>
+                        <li><DynamicTranslate>Aim for consensus on major decisions when possible</DynamicTranslate></li>
+                        <li><DynamicTranslate>Keep proper records of all decisions made</DynamicTranslate></li>
+                        <li><DynamicTranslate>Allow members to vote by proxy when they cannot attend</DynamicTranslate></li>
                         </ul>
                     </div>
 
                     <div>
-                        <h4 className="font-semibold text-teal-800 mb-2">3. Leadership Rotation for Fresh Ideas</h4>
-                        <p className="text-gray-600 mb-2">Consider these leadership practices:</p>
+                        <h4 className="font-semibold text-teal-800 mb-2"><DynamicTranslate>3. Leadership Rotation for Fresh Ideas</DynamicTranslate></h4>
+                        <p className="text-gray-600 mb-2"><DynamicTranslate>Consider these leadership practices:</DynamicTranslate></p>
                         <ul className="space-y-2 ml-6 list-disc">
-                        <li>Set reasonable term lengths (2-3 years recommended)</li>
-                        <li>Encourage new leaders to step up regularly</li>
-                        <li>Plan for leadership transition and mentoring</li>
-                        <li>Maintain some experienced leaders while bringing in new ones</li>
+                        <li><DynamicTranslate>Set reasonable term lengths (2-3 years recommended)</DynamicTranslate></li>
+                        <li><DynamicTranslate>Encourage new leaders to step up regularly</DynamicTranslate></li>
+                        <li><DynamicTranslate>Plan for leadership transition and mentoring</DynamicTranslate></li>
+                        <li><DynamicTranslate>Maintain some experienced leaders while bringing in new ones</DynamicTranslate></li>
                         </ul>
                     </div>
 
                     <div>
-                        <h4 className="font-semibold text-teal-800 mb-2">4. Managing Conflicts of Interest</h4>
-                        <p className="text-gray-600 mb-2">Protect your organization's integrity by:</p>
+                        <h4 className="font-semibold text-teal-800 mb-2"><DynamicTranslate>4. Managing Conflicts of Interest</DynamicTranslate></h4>
+                        <p className="text-gray-600 mb-2"><DynamicTranslate>Protect your organization's integrity by:</DynamicTranslate></p>
                         <ul className="space-y-2 ml-6 list-disc">
-                        <li>Encouraging open discussion about potential conflicts</li>
-                        <li>Having members declare any business interests related to the organization</li>
-                        <li>Creating clear procedures for handling conflicts when they arise</li>
-                        <li>Documenting how conflicts were resolved</li>
-                        <li>Reviewing conflict of interest policies annually</li>
+                        <li><DynamicTranslate>Encouraging open discussion about potential conflicts</DynamicTranslate></li>
+                        <li><DynamicTranslate>Having members declare any business interests related to the organization</DynamicTranslate></li>
+                        <li><DynamicTranslate>Creating clear procedures for handling conflicts when they arise</DynamicTranslate></li>
+                        <li><DynamicTranslate>Documenting how conflicts were resolved</DynamicTranslate></li>
+                        <li><DynamicTranslate>Reviewing conflict of interest policies annually</DynamicTranslate></li>
                         </ul>
                     </div>
 
                     <div className="bg-teal-50 p-4 rounded-lg mt-4">
-                        <p className="text-gray-700 italic">
+                        <p className="text-gray-700 italic"><DynamicTranslate>
                         Remember: These are suggestions based on best practices. Your organization can adapt them to better suit your specific needs and circumstances while staying within the legal requirements.
-                        </p>
+                        </DynamicTranslate></p>
                     </div>
                     </div>
                 </CardContent>
@@ -452,12 +473,14 @@ const REGISTRATION_STEPS = [
                 <CardHeader>
                     <CardTitle className="flex items-center text-teal-600">
                     <FileText className="mr-2" />
+                    <DynamicTranslate>
                     Sources
+                    </DynamicTranslate>
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-4">
-                    <p className="text-gray-700">This guide has been compiled using information from official government sources and professional registrars:</p>
+                    <p className="text-gray-700"><DynamicTranslate>This guide has been compiled using information from official government sources and professional registrars:</DynamicTranslate></p>
                     
                     <ul className="space-y-2">
                         <li className="flex items-start">
@@ -469,9 +492,11 @@ const REGISTRATION_STEPS = [
                             rel="noopener noreferrer"
                             className="text-teal-600 hover:text-teal-800 underline"
                             >
+                            <DynamicTranslate>
                             Ministry of Labour and Social Protection - Group Registration Services
+                            </DynamicTranslate>
                             </a>
-                            <p className="text-gray-600 text-sm mt-1">Official government portal for CBO and group registration</p>
+                            <p className="text-gray-600 text-sm mt-1"><DynamicTranslate>Official government portal for CBO and group registration</DynamicTranslate></p>
                         </div>
                         </li>
                         
@@ -484,16 +509,18 @@ const REGISTRATION_STEPS = [
                             rel="noopener noreferrer"
                             className="text-teal-600 hover:text-teal-800 underline"
                             >
+                            <DynamicTranslate>
                             Company Secretaries Africa - CBO Registration Guide
+                            </DynamicTranslate>
                             </a>
-                            <p className="text-gray-600 text-sm mt-1">Professional guidance on CBO registration process</p>
+                            <p className="text-gray-600 text-sm mt-1"><DynamicTranslate>Professional guidance on CBO registration process</DynamicTranslate></p>
                         </div>
                         </li>
                     </ul>
 
-                    <p className="text-sm text-gray-600 mt-4 italic">
+                    <p className="text-sm text-gray-600 mt-4 italic"><DynamicTranslate>
                         Note: While we strive to keep this information up-to-date, requirements may change. Please verify current requirements with your local Social Development Office.
-                    </p>
+                    </DynamicTranslate></p>
                     </div>
                 </CardContent>
             </Card>
