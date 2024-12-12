@@ -1,5 +1,6 @@
 import logging
 from sqlalchemy import inspect
+from flask_migrate import Migrate, upgrade
 from app import create_app, db
 from app.models import User, OrgProfile, OrgInitiatives, OrgProjects, SkillsNeeded, FocusArea, SocialMediaLink
 
@@ -25,10 +26,10 @@ def verify_db_connection():
 def reset_db():
     try:
         with app.app_context():
-            logger.info("Starting database initialization...")
+            logger.info("Starting database migration...")
             
-            # Create all tables
-            db.create_all()
+            # Run migrations
+            upgrade()
             logger.info("Database tables created successfully.")
             
             # Verify tables using inspector
@@ -39,7 +40,7 @@ def reset_db():
             # Additional verification
             logger.info("Verifying key tables...")
             expected_tables = ['user', 'org_profile', 'org_initiatives', 'org_projects', 
-                                'skills_needed', 'focus_area', 'social_media_link']
+                                'skills_needed', 'focus_area', 'social_media_link', 'translation_cache']
             missing_tables = [table for table in expected_tables if table not in tables]
             
             if missing_tables:

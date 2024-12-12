@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { Globe } from 'lucide-react';
 import { STATIC_PHRASES } from '../components/utils/translationConstants';
+import { useApi } from './ApiProvider';
 
 const TranslationContext = createContext();
 
@@ -19,12 +20,39 @@ export function Translate({ children }) {
 // Dynamic content translation component
 export function DynamicTranslate({ children }) {
     const { currentLanguage } = useContext(TranslationContext);
+    const [translatedText, setTranslatedText] = useState(children);
+    const apiClient = useApi();
     
-    if (currentLanguage === 'en' || !children || typeof children !== 'string') {
-        return children;
-    }
-    
-    return children; // TODO: Will integrate with backend translation API
+    useEffect(() => {
+        // Skip translation if language is English or content is not a string
+        if (currentLanguage === 'en' || !children || typeof children !== 'string') {
+            return;
+        }
+
+        // Debounce and API call for translation
+        const translateText = async () => {
+            try {
+                const response = await apiClient.post('/main/translate', {
+                    text: children,
+                    targetLanguage: currentLanguage
+                });
+
+                console.log('Translation response:', response);
+
+                if (response.ok) {
+                    setTranslatedText(response.body.translatedText.translatedText);
+                }
+            } catch (error) {
+                console.error('Translation error:', error);
+                // Fallback to original text if translation fails
+                setTranslatedText(children);
+            }
+        };
+
+        translateText();
+    }, [children, currentLanguage, apiClient]);
+
+    return translatedText;
 }
 
 export function LanguageSwitch() {

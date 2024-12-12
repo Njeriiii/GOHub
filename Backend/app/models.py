@@ -259,3 +259,21 @@ class SocialMediaLink(db.Model):
             "platform": self.platform,
             "url": self.url,
         }
+
+class TranslationCache(db.Model):
+    __tablename__ = 'translation_cache'
+    
+    # Unique identifier combining text and target language
+    key = db.Column(db.String(500), primary_key=True)
+    
+    # Actual translated text
+    translated_text = db.Column(db.Text, nullable=False)
+    
+    # Source language
+    source_language = db.Column(db.String(10), nullable=False)
+    
+    # Target language
+    target_language = db.Column(db.String(10), nullable=False)
+    
+    # When this translation was cached
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)

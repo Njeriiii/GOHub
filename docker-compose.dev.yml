@@ -27,6 +27,7 @@ services:
       - FLASK_APP=run.py
       - PORT=5162
       - DEBUG=True
-      - GOOGLE_CREDENTIALS=${GOOGLE_CREDENTIALS}
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/credentials/google-credentials.json
     volumes:
       - ./backend:/app
+      - ./Backend/flawless-snow-443501-q3-85e4441a1dd7.json:/app/credentials/google-credentials.json

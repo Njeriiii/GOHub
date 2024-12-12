@@ -35,6 +35,7 @@ def create_app(config_class=AppConfig):
     app.config.from_object(config_class)
 
     Session(app)
+    migrate.init_app(app, db)
     
     # Initialize JWT with the app
     jwt.init_app(app)
