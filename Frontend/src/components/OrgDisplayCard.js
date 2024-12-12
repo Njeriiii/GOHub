@@ -30,7 +30,7 @@ export default function OrgDisplayCard({ org }) {
             <div className="p-6">
                 <div className="flex justify-between items-start mb-4">
                     <h2 className="text-2xl font-bold text-teal-900 mb-2">
-                        <DynamicTranslate>{org.org_name}</DynamicTranslate>
+                        {org.org_name}
                     </h2>
                     <span className={`px-3 py-1 ${categoryColor} text-sm font-semibold rounded-full`}>
                     <div className="flex flex-wrap items-center">

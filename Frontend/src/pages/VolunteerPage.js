@@ -69,7 +69,7 @@ export default function VolunteerPage() {
                     </div> */}
 
                     <div className="bg-white shadow-lg rounded-lg p-6">
-                        <h3 className="text-xl font-semibold mb-4 text-teal-600">Please sign up as a volunteer to access volunteering opportunities!</h3>
+                        <h3 className="text-xl font-semibold mb-4 text-teal-600"><Translate>Please sign up as a volunteer to access volunteering opportunities!</Translate></h3>
                         <ul className="space-y-2 text-gray-600">
                             <li className="flex items-start">
                                 <span className="bg-teal-100 text-teal-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-1 flex-shrink-0">1</span>

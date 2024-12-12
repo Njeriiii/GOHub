@@ -59,7 +59,7 @@ export default function OrgProfile() {
             <div className="bg-gradient-to-r from-teal-400 via-cyan-500 to-sky-500 rounded-lg shadow-xl overflow-hidden">
             <div className="p-8 sm:p-12 flex justify-between items-center">
                 <div>
-                <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4"><DynamicTranslate>{onboardingFormData.orgProfile.org_name}</DynamicTranslate></h1>
+                <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4">{onboardingFormData.orgProfile.org_name}</h1>
                 <p className="text-xl text-white max-w-2xl mb-8"><DynamicTranslate>{onboardingFormData.orgProfile.org_overview}</DynamicTranslate></p>
                 <div className="flex space-x-4">
                     <a href="#" className="bg-orange-400 text-white px-6 py-3 rounded-full font-bold text-lg hover:bg-orange-500 transition duration-300"><Translate>Join Us</Translate></a>
@@ -69,7 +69,7 @@ export default function OrgProfile() {
                 <div className="hidden sm:block">
                 <div className="w-32 h-32 rounded-full bg-white flex items-center justify-center">
                     <span className="text-teal-500 text-xs text-center">
-                    <DynamicTranslate>{onboardingFormData.orgProfile.org_name}</DynamicTranslate> <Translate>Logo</Translate>
+                    {onboardingFormData.orgProfile.org_name} Logo
                     </span>
                 </div>
                 </div>
