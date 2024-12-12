@@ -13,6 +13,13 @@ services:
         value: production
       - key: PORT
         value: 5162
+      - key: DATABASE_URL
+        fromService:
+          type: postgresql
+          name: gohub-db
+          property: connectionString
+      - key: JWT_SECRET_KEY
+        generateValue: true
       - key: GOOGLE_CLOUD_PROJECT
         value: flawless-snow-443501-q3
       - key: GOOGLE_APPLICATION_CREDENTIALS
@@ -22,6 +29,9 @@ services:
       name: credentials
       mountPath: /app/credentials
       sizeGB: 1
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT run:app
+    preDeployCommand: python create_db.py
 
   # Frontend service
   - type: static
