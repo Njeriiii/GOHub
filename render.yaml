@@ -1,29 +1,31 @@
 services:
   # Backend service
   - type: web
-    name: gohub-backend
+    name: gohub
     env: docker
     plan: free
-    dockerfilePath: ./backend/Dockerfile
+    rootDir: Backend
+    dockerfilePath: Dockerfile
     autoDeploy: true
     envVars:
       - key: FLASK_ENV
-        value: production
+        value: development
       - key: PORT
         value: 5162
-    healthCheckPath: /api/health
+      - key: GOOGLE_CLOUD_PROJECT
+        value: flawless-snow-443501-q3
+      - key: GOOGLE_APPLICATION_CREDENTIALS
+        value: /app/credentials/google-credentials.json
+    healthCheckPath: /health
 
   # Frontend service
   - type: static
     name: gohub-frontend
-    env: docker
-    plan: free
-    dockerfilePath: ./frontend/Dockerfile
+    buildCommand: cd frontend && npm install && npm run build
     publishPath: Frontend/build
-    autoDeploy: true
     envVars:
       - key: REACT_APP_API_URL
-        value: http://localhost:5162
+        value: https://gohub.onrender.com
     routes:
       - type: rewrite
         source: /*
