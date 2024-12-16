@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, json, jsonify, request
 from google.cloud import translate_v2 as translate
 import os
 from app import db
@@ -99,12 +99,15 @@ def get_translate_client():
         # Use environment variables
         credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 
-        # Validate credentials
-        if not credentials_path:
-            raise ValueError("GOOGLE_APPLICATION_CREDENTIALS environment variable is not set")
+        # # Validate credentials
+        # if not credentials_path:
+        #     raise ValueError("GOOGLE_APPLICATION_CREDENTIALS environment variable is not set")
         
-        if not os.path.exists(credentials_path):
-            raise FileNotFoundError(f"Credentials file not found at: {credentials_path}")
+        # if not os.path.exists(credentials_path):
+        #     raise FileNotFoundError(f"Credentials file not found at: {credentials_path}")
+        
+        # convert to json
+        credentials_path = json.loads(credentials_path)
 
         # Set the environment variable for Google Cloud authentication
         os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
