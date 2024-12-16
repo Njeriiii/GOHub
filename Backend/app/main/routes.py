@@ -113,7 +113,7 @@ def get_translate_client():
         os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
 
         # Initialize the translate client
-        return translate.Client()
+        return translate.Client(credentials=credentials_path)
 
     except Exception as e:
         print(f"Error initializing Google Translate client: {e}")
