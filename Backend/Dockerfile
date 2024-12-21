@@ -29,4 +29,4 @@ RUN chmod +x create_db.py
 
 EXPOSE 5162
 
-CMD ["gunicorn", "--bind", "0.0.0.0:5162", "run:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5162", "--access-logfile", "-", "--error-logfile", "-", "--log-level", "debug", "run:app"]
