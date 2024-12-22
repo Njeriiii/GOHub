@@ -1,6 +1,6 @@
 # Backend Dockerfile
 # ./backend/Dockerfile
-FROM python:3.12-slim
+FROM --platform=linux/amd64 python:3.12-slim
 
 WORKDIR /app
 
@@ -16,17 +16,16 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the application first (better layer caching)
 COPY . .
 
-# Set environment variables
-ENV FLASK_APP=run.py
-ENV PORT=5162
-ENV HOST=0.0.0.0
-
-# Create a directory for credentials
+# Create necessary directories
 RUN mkdir -p /app/credentials
+RUN mkdir -p /app/uploads
+RUN mkdir -p /app/flask_session
 
 # Make sure create_db.py is executable
 RUN chmod +x create_db.py
 
-EXPOSE 5162
+# Set essential environment variables
+ENV PYTHONUNBUFFERED=1
 
-CMD ["gunicorn", "--bind", "0.0.0.0:5162", "--access-logfile", "-", "--error-logfile", "-", "--log-level", "debug", "run:app"]
+# Now that we know basic Flask works, let's use gunicorn for better production performance
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "1", "--preload", "run:app"]
