@@ -7,6 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 from datetime import timedelta
 import os
+from google.oauth2 import service_account
 
 from app.config import AppConfig
 from flask_session import Session
@@ -35,7 +36,6 @@ def create_app(config_class=AppConfig):
     app.config.from_object(config_class)
 
     Session(app)
-    migrate.init_app(app, db)
     
     # Initialize JWT with the app
     jwt.init_app(app)
@@ -71,9 +71,15 @@ def create_app(config_class=AppConfig):
             'error_details': str(error_string)
         }), 401
 
+    app.logger.info(f"Initializing database with URI: {app.config['SQLALCHEMY_DATABASE_URI']}")
     # initialising db
     with app.app_context():
-        db.create_all()
+        try:
+            db.create_all()
+            app.logger.info("Database tables created successfully")
+        except Exception as e:
+            app.logger.error(f"Failed to create database tables: {str(e)}")
+            raise
 
     # registering blueprints
     from app.auth.routes import auth as auth_blueprint
