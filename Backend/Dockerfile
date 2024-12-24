@@ -16,16 +16,36 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the application first (better layer caching)
 COPY . .
 
+# In your Dockerfile, ensure you're copying migrations
+COPY migrations ./migrations
+
 # Create necessary directories
 RUN mkdir -p /app/credentials
 RUN mkdir -p /app/uploads
 RUN mkdir -p /app/flask_session
 
-# Make sure create_db.py is executable
-RUN chmod +x create_db.py
+RUN pip install "cloud-sql-python-connector[pg8000]>=1.15.0"
+RUN mkdir -p /cloudsql
+
+# Make sure verify_db.py is executable
+COPY verify_db.py .
+RUN chmod +x verify_db.py
 
 # Set essential environment variables
 ENV PYTHONUNBUFFERED=1
 
-# Now that we know basic Flask works, let's use gunicorn for better production performance
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "1", "--preload", "run:app"]
+# Expose the port
+EXPOSE 8080
+
+RUN echo "#!/bin/sh" > /startup-check.sh && \
+    echo "if [ ! -f \$GOOGLE_APPLICATION_CREDENTIALS ]; then" >> /startup-check.sh && \
+    echo "  echo 'Google credentials file not found!'" >> /startup-check.sh && \
+    echo "  ls -la /secrets/google-creds/" >> /startup-check.sh && \
+    echo "fi" >> /startup-check.sh && \
+    chmod +x /startup-check.sh
+
+ENV PORT 8080
+CMD /startup-check.sh && \
+    python verify_db.py && \
+    sleep 5 && \
+    gunicorn --bind :8080 --workers 1 --threads 8 --timeout 0 run:app
