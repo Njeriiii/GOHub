@@ -23,15 +23,23 @@ def create_app(config_class=AppConfig):
     # Define allowed origins based on environment
     origins = [
         'http://localhost:3000',  # Local frontend
-        'https://gohub-frontend.onrender.com'  # Production frontend
+        'http://localhost:5000',  # Firebase local testing
+        'http://localhost:5002',  # Additional local testing port
+        'https://gohub-92b6b.web.app',  # Firebase hosting domain
+        'https://gohub-92b6b.firebaseapp.com',  # Alternative Firebase domain
+        'https://ngo-connect-backend-607773298065.us-west1.run.app'  # Cloud Run backend
     ]
     
+
     CORS(app, 
-        origins=origins,
-        supports_credentials=True,
-        expose_headers=['Set-Cookie'],
-        allow_headers=['Content-Type', 'Authorization'],
-        methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])
+        resources={r"/*": {
+            "origins": origins,
+            "allow_credentials": True,  # Make sure this is True
+            "expose_headers": ["Set-Cookie"],
+            "allow_headers": ["Content-Type", "Authorization", "Accept", "Origin", "X-Requested-With"],
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "supports_credentials": True  # Add this line
+        }})
 
     app.config.from_object(config_class)
 
