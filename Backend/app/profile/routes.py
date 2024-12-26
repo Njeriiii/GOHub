@@ -12,7 +12,6 @@ from app.models import (
     OrgProjects,
     SkillsNeeded,
     FocusArea,
-    SocialMediaLink,
     org_skills_connection,
 )
 
@@ -31,7 +30,6 @@ def create_org_profile():
     org_details = data.get("Organization Details", {})
     contact_info = data.get("Contact Info", {})
     org_address = data.get("Address", {})
-    additional_details = data.get("Additional Details", {})
     social_media = data.get("Social Media", {})
 
     # Create new OrgProfile instance
@@ -39,6 +37,8 @@ def create_org_profile():
         user_id=user_id,
         org_name=org_details.get("orgName"),
         org_overview=org_details.get("aboutOrg"),
+        org_registration_number=org_details.get("orgRegistrationNumber"),
+        org_year_established=org_details.get("orgYearEstablished"),
         org_mission_statement=data.get("Mission Statement"),
         org_logo=data.get("orgLogo"),
         org_cover_photo=data.get("coverImage"),
@@ -48,9 +48,14 @@ def create_org_profile():
         org_county=org_address.get("county"),
         org_po_box=org_address.get("poBox"),
         org_country=org_address.get("country"),
+        org_physical_description=org_address.get("physicalDescription"),
+        org_google_maps_link=org_address.get("googleMapsLink"),
         org_website=social_media.get("website"),
-        org_registration_number=additional_details.get("org_registration_number"),
-        org_year_established=additional_details.get("org_year_established"),
+        org_facebook=social_media.get("facebook"),
+        org_instagram=social_media.get("instagram"),
+        org_linkedin=social_media.get("linkedin"),
+        org_youtube=social_media.get("youtube"),
+        org_x=social_media.get("x"),
     )
 
     # Add and commit the new profile to the database
@@ -58,27 +63,13 @@ def create_org_profile():
     db.session.commit()
 
     # Handle focus areas
-    focus_areas = additional_details.get("focus_areas", [])
+    focus_areas = org_details.get("focusAreas", [])
     for area in focus_areas:
         focus_area = FocusArea.query.filter_by(name=area).first()
         if not focus_area:
             focus_area = FocusArea(name=area)
             db.session.add(focus_area)
         new_org_profile.focus_areas.append(focus_area)
-
-    # Handle social media links - TODO - fix this 
-    social_media = social_media.get("socialMedia", [])
-    for link in social_media:
-
-        # // remove website
-        if link.get("platform") == "website":
-            continue
-        new_link = SocialMediaLink(
-            org_id=new_org_profile.id,
-            platform=link.get("platform"),
-            url=link.get("url")
-        )
-        db.session.add(new_link)
 
     db.session.commit()
 
