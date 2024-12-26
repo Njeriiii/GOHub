@@ -100,7 +100,8 @@ export default function Header() {
                                 <Translate>Log out</Translate>
                             </button>
                         </div>
-                    ) : (
+                    ) : (<div className="flex items-center gap-4">
+                        <LanguageSwitch />
                         <a
                             href="/login"
                             className="text-sm font-semibold leading-6 text-white bg-teal-600 hover:bg-teal-700 px-4 py-2 rounded-md transition duration-150 ease-in-out flex items-center"
@@ -108,6 +109,7 @@ export default function Header() {
                             <UserCircleIcon className="h-5 w-5 mr-2" />
                             <Translate>Login</Translate>
                         </a>
+                        </div>
                     )}
             </div>
         </nav>
