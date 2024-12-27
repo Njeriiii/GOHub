@@ -1,14 +1,13 @@
-Create database tables:
+Verify creation of database tables:
 ```
-cd backend
-python create_db.py
+cd Backend
+python verify_db.py
 ```
 
 # Local migration with model changes
 ```
 cd Backend
-flask db migrate -m "Description of changes"
-flask db upgrade
+python manage_db.py
 
 # Commit the migration files
 git add migrations/

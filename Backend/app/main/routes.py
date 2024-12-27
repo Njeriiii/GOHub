@@ -1,10 +1,12 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, json, jsonify, request
 from google.cloud import translate_v2 as translate
 import os
 from app import db
 from functools import lru_cache
 from datetime import datetime, timedelta
-
+from google.oauth2 import service_account
+import logging
+from sqlalchemy.sql import text
 from app.models import (
     User,
     SkillsNeeded,
@@ -14,6 +16,23 @@ from app.models import (
 )
 
 main = Blueprint("main", __name__)
+
+# Add a simple health check endpoint to your Flask app
+@main.route('/main/health')
+def health_check():
+    try:
+        # Test database connection
+        db.session.execute(text('SELECT 1'))
+        return jsonify({
+            "status": "healthy",
+            "database": "connected",
+            "timestamp": datetime.now().isoformat()
+        })
+    except Exception as e:
+        return jsonify({
+            "status": "unhealthy",
+            "error": str(e)
+        }), 500
 
 
 # Get all organisations
@@ -89,31 +108,26 @@ def match_volunteer_skills():
         db.session.rollback()
         return jsonify({"message": f"An error occurred: {str(e)}"}), 500
     
+logger = logging.getLogger(__name__)
 
 def get_translate_client():
     """
-    Create and return a Google Translate client using environment variables.
-    Provides more robust error handling and configuration.
+    Create and return a Google Translate client using mounted credentials in Cloud Run
+    or local credentials for development.
     """
     try:
-        # Use environment variables
-        credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-
-        # Validate credentials
-        if not credentials_path:
-            raise ValueError("GOOGLE_APPLICATION_CREDENTIALS environment variable is not set")
-        
-        if not os.path.exists(credentials_path):
-            raise FileNotFoundError(f"Credentials file not found at: {credentials_path}")
-
-        # Set the environment variable for Google Cloud authentication
-        os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
-
-        # Initialize the translate client
-        return translate.Client()
-
+        if os.getenv('K_SERVICE'):  # Running in Cloud Run
+            # Use the mounted secret path directly
+            credentials = service_account.Credentials.from_service_account_file(
+                '/secrets/google-creds/key.json',
+                scopes=['https://www.googleapis.com/auth/cloud-translation']
+            )
+            return translate.Client(credentials=credentials)
+        else:
+            # Local development
+            return translate.Client()
     except Exception as e:
-        print(f"Error initializing Google Translate client: {e}")
+        logger.error(f"Error initializing Google Translate client: {str(e)}")
         return None
 
 # Initialize the client when the module is imported

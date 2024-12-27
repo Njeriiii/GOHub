@@ -5,17 +5,18 @@ set -o errexit
 echo "Installing Python dependencies..."
 pip install -r Backend/requirements.prod.txt
 
-echo "Initializing database..."
 cd Backend
-python create_db.py
 
-# Run migrations if they exist
-if [ -d "migrations" ]; then
-    echo "Running database migrations..."
+echo "Verifying database connection..."
+python verify_db.py
+
+# Run migrations using the new manage_db script
+if [ -d "migrations" ] && [ -d "migrations/versions" ] && [ "$(ls -A migrations/versions)" ]; then
+    echo "Found existing migrations. Running database migrations..."
     export FLASK_APP=run.py
-    flask db upgrade
+    python manage_db.py
 else
-    echo "No migrations directory found. Skipping migrations."
+    echo "No migrations found or versions directory is empty. Skipping migrations."
 fi
 cd ..
 
@@ -29,10 +30,5 @@ cd ..
 
 echo "Creating logs directory..."
 mkdir -p logs
-
-echo "Running database migrations..."
-cd Backend
-flask db upgrade
-cd ..
 
 echo "Build completed successfully!"

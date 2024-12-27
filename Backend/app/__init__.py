@@ -7,6 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 from datetime import timedelta
 import os
+from google.oauth2 import service_account
 
 from app.config import AppConfig
 from flask_session import Session
@@ -22,20 +23,27 @@ def create_app(config_class=AppConfig):
     # Define allowed origins based on environment
     origins = [
         'http://localhost:3000',  # Local frontend
-        'https://gohub-frontend.onrender.com'  # Production frontend
+        'http://localhost:5000',  # Firebase local testing
+        'http://localhost:5002',  # Additional local testing port
+        'https://gohub-92b6b.web.app',  # Firebase hosting domain
+        'https://gohub-92b6b.firebaseapp.com',  # Alternative Firebase domain
+        'https://ngo-connect-backend-607773298065.us-west1.run.app'  # Cloud Run backend
     ]
     
+
     CORS(app, 
-        origins=origins,
-        supports_credentials=True,
-        expose_headers=['Set-Cookie'],
-        allow_headers=['Content-Type', 'Authorization'],
-        methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])
+        resources={r"/*": {
+            "origins": origins,
+            "allow_credentials": True,  # Make sure this is True
+            "expose_headers": ["Set-Cookie"],
+            "allow_headers": ["Content-Type", "Authorization", "Accept", "Origin", "X-Requested-With"],
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "supports_credentials": True  # Add this line
+        }})
 
     app.config.from_object(config_class)
 
     Session(app)
-    migrate.init_app(app, db)
     
     # Initialize JWT with the app
     jwt.init_app(app)
@@ -71,9 +79,15 @@ def create_app(config_class=AppConfig):
             'error_details': str(error_string)
         }), 401
 
+    app.logger.info(f"Initializing database with URI: {app.config['SQLALCHEMY_DATABASE_URI']}")
     # initialising db
     with app.app_context():
-        db.create_all()
+        try:
+            db.create_all()
+            app.logger.info("Database tables created successfully")
+        except Exception as e:
+            app.logger.error(f"Failed to create database tables: {str(e)}")
+            raise
 
     # registering blueprints
     from app.auth.routes import auth as auth_blueprint
