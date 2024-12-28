@@ -1,20 +1,125 @@
-import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
+import React, { useState, forwardRef, useImperativeHandle, useEffect, useRef } from 'react';
 import CreatableSelect from "react-select/creatable";
 import { useApi } from '../../contexts/ApiProvider';
+import { techSkillOptions, nonTechSkillOptions } from '../utils/supportNeedsFocusAreaEntries';
 // This component represents the support needs section of the organization onboarding form.
 // It includes fields for technical and non-technical skills needed by the organization.
 
-// Query db for tech and non-tech skills
+// Dynamic textarea component with auto-resize
+const AutoResizeTextarea = ({ value, onChange, placeholder, name }) => {
+    const textareaRef = useRef(null);
+    const mirrorRef = useRef(null);
+
+    useEffect(() => {
+        const textarea = textareaRef.current;
+        const mirror = mirrorRef.current;
+
+        if (textarea && mirror) {
+            // Copy styles to mirror
+            const styles = window.getComputedStyle(textarea);
+            mirror.style.width = styles.width;
+            mirror.style.padding = styles.padding;
+            mirror.style.borderStyle = styles.borderStyle;
+            mirror.style.borderWidth = styles.borderWidth;
+            mirror.style.boxSizing = styles.boxSizing;
+            mirror.style.fontFamily = styles.fontFamily;
+            mirror.style.fontSize = styles.fontSize;
+            
+            // Set mirror content and adjust height
+            mirror.textContent = value || placeholder;
+            textarea.style.height = `${mirror.scrollHeight}px`;
+        }
+    }, [value, placeholder]);
+
+    return (
+        <div className="relative w-full">
+            <textarea
+                ref={textareaRef}
+                name={name}
+                value={value}
+                onChange={onChange}
+                placeholder={placeholder}
+                rows={1}
+                className="w-full rounded-md border border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-2 resize-none overflow-hidden"
+                style={{ 
+                    minHeight: '100px',
+                    height: 'auto',
+                    overflow: 'hidden'
+                }}
+            />
+            <div 
+                ref={mirrorRef} 
+                className="absolute left-[-9999px] top-0 whitespace-pre-wrap break-words"
+                style={{
+                    visibility: 'hidden',
+                    position: 'absolute',
+                    wordWrap: 'break-word'
+                }}
+            />
+        </div>
+    );
+};
+
 const fetchSkills = async (apiClient) => {
-    const response = await apiClient.get('/all_skills');
-    
-    if (response.status === 200) {
-        const skills = response.body.skills;
-        const techSkillList = skills.filter(skill => skill.status === 'tech');
-        const nonTechSkillList = skills.filter(skill => skill.status === 'non-tech');
+    try {
+        // Query db for tech and non-tech skills
+        const response = await apiClient.get('/all_skills');
+
+        let skills = [];
+        if (response.status === 200) {
+            skills = response.body.skills;
+        }
+
+        // Combine queried skills with predefined skills
+        const combinedTechSkills = [
+            ...skills.filter(skill => skill.status === 'tech'),
+            ...techSkillOptions
+        ];
+        console.log('combinedTechSkills:', combinedTechSkills);
+
+        const combinedNonTechSkills = [
+            ...skills.filter(skill => skill.status === 'non-tech'),
+            ...nonTechSkillOptions
+        ];
+
+        const techSkillList = [
+            ...new Set(
+                combinedTechSkills
+                    .map(skill => skill.value) // Extract skill values
+                    .filter(skillValue => typeof skillValue === "string" && skillValue.trim() !== "") // Keep only valid non-empty strings
+            )
+        ].map(skillValue => {
+        
+            const existingSkill = techSkillOptions.find(s => s.value === skillValue);        
+            return existingSkill || { 
+                value: skillValue, 
+                label: skillValue.charAt(0).toUpperCase() + skillValue.slice(1) 
+            };
+        });
+
+        const nonTechSkillList = [
+            ...new Set(
+                ...combinedNonTechSkills
+                .map(skill => skill.value)
+                .filter(skillValue => typeof skillValue === "string" && skillValue.trim() !== "") // Keep only valid non-empty strings
+            )
+        ].map(skillValue => {
+            const existingSkill = nonTechSkillOptions.find(s => s.value === skillValue);
+            return existingSkill || { 
+                value: skillValue, 
+                label: skillValue.charAt(0).toUpperCase() + skillValue.slice(1) 
+            };
+        });
+
         return { techSkillList, nonTechSkillList };
-    } else {
-        throw new Error('Error fetching skills');
+    } catch (error) {
+        console.error('Error fetching skills:', error);
+        
+        // Fallback to predefined skills if API call fails
+        return {
+            techSkillList: techSkillOptions,
+            nonTechSkillList: nonTechSkillOptions
+        };
     }
 };
 
@@ -31,11 +136,8 @@ const SupportNeeds = forwardRef((props, ref) => {
             try {
                 const skills = await fetchSkills(apiClient);
                 
-                const techSkillsOptions = skills.techSkillList.map(skill => ({ value: skill.skill, label: skill.skill }));
-                setTechSkillOptions(techSkillsOptions);
-                
-                const nonTechSkillsOptions = skills.nonTechSkillList.map(skill => ({ value: skill.skill, label: skill.skill }));
-                setNonTechSkillOptions(nonTechSkillsOptions);
+                setTechSkillOptions(skills.techSkillList);
+                setNonTechSkillOptions(skills.nonTechSkillList);
             } catch (error) {
                 console.error('Error fetching skills:', error);
             }
@@ -49,11 +151,29 @@ const SupportNeeds = forwardRef((props, ref) => {
     };
 
     const handleTechSkillChange = (newSelectedSkills) => {
-        setTechSkills(newSelectedSkills.map(skill => ({...skill, description: ''})));
+        setTechSkills(prevSkills => {
+            // Create a map of existing skills by their value
+            const existingSkillsMap = new Map(prevSkills.map(skill => [skill.value, skill]));
+    
+            // Map new skills, preserving existing descriptions if available
+            return newSelectedSkills.map(skill => ({
+                ...skill,
+                description: existingSkillsMap.get(skill.value)?.description || ''
+            }));
+        });
     };
-
+    
     const handleNonTechSkillChange = (newSelectedSkills) => {
-        setNonTechSkills(newSelectedSkills.map(skill => ({...skill, description: ''})));
+        setNonTechSkills(prevSkills => {
+            // Create a map of existing skills by their value
+            const existingSkillsMap = new Map(prevSkills.map(skill => [skill.value, skill]));
+    
+            // Map new skills, preserving existing descriptions if available
+            return newSelectedSkills.map(skill => ({
+                ...skill,
+                description: existingSkillsMap.get(skill.value)?.description || ''
+            }));
+        });
     };
 
     const handleSkillDescriptionChange = (index, description, istech) => {
@@ -81,9 +201,9 @@ const SupportNeeds = forwardRef((props, ref) => {
                     type="checkbox"
                     checked={needVolunteers}
                     onChange={handleVolunteerCheck}
-                    className="checked:bg-teal-500 checked:border-transparent bg-gray-100 border border-gray-300 rounded focus:ring focus:ring-offset-2 focus:ring-teal-500"
+                    className="checked:bg-teal-500 checked:border-transparent bg-gray-100 border border-gray-300 rounded focus:ring focus:ring-offset-2 focus:ring-teal-500 size-10"
                 />
-                <label> We would like Volunteers</label>
+                <label className='text-2xl font-semibold'> We would like Volunteers</label>
             </div>
             {needVolunteers && (
                 <div>
@@ -100,11 +220,10 @@ const SupportNeeds = forwardRef((props, ref) => {
                         {techSkills.map((skill, index) => (
                             <div key={index} className="mt-2">
                                 <label>{skill.label} Description:</label>
-                                <textarea
+                                <AutoResizeTextarea
                                     value={skill.description}
                                     onChange={(e) => handleSkillDescriptionChange(index, e.target.value, true)}
-                                    className="w-full p-2 border rounded"
-                                    placeholder={`Describe what you need for ${skill.label}`}
+                                    placeholder={`Describe what you need`}
                                 />
                             </div>
                         ))}
@@ -123,11 +242,10 @@ const SupportNeeds = forwardRef((props, ref) => {
                         {nonTechSkills.map((skill, index) => (
                             <div key={index} className="mt-2">
                                 <label>{skill.label} Description:</label>
-                                <textarea
+                                <AutoResizeTextarea
                                     value={skill.description}
                                     onChange={(e) => handleSkillDescriptionChange(index, e.target.value, false)}
-                                    className="w-full p-2 border rounded"
-                                    placeholder={`Describe what you need for ${skill.label}`}
+                                    placeholder={`Describe what you need`}
                                 />
                             </div>
                         ))}
