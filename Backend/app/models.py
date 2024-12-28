@@ -97,7 +97,7 @@ class OrgProfile(db.Model):
     # Social Media Links
     org_website = db.Column(db.String(200), nullable=True)
     org_facebook = db.Column(db.String(200), nullable=True)
-    org_x = db.Column(db.String(200), nullable=True):
+    org_x = db.Column(db.String(200), nullable=True)
     org_instagram = db.Column(db.String(200), nullable=True)
     org_linkedin = db.Column(db.String(200), nullable=True)
     org_youtube = db.Column(db.String(200), nullable=True)
