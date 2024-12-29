@@ -98,7 +98,7 @@ const OnboardingForm = () => {
 
         try {
             console.log('completeFormData:', completeFormData);
-            const response = 22 // await apiClient.post('/profile/org', completeFormData);
+            const response = await apiClient.post('/profile/org', completeFormData);
             if (response.status === 201) {
                 const orgId = response.body.org_id;
                 if (!orgId) {
