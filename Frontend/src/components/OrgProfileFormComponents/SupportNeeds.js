@@ -89,7 +89,6 @@ const fetchSkills = async (apiClient) => {
                     .filter(skillValue => typeof skillValue === "string" && skillValue.trim() !== "") // Keep only valid non-empty strings
             )
         ].map(skillValue => {
-        
             const existingSkill = techSkillOptions.find(s => s.value === skillValue);        
             return existingSkill || { 
                 value: skillValue, 
@@ -99,9 +98,9 @@ const fetchSkills = async (apiClient) => {
 
         const nonTechSkillList = [
             ...new Set(
-                ...combinedNonTechSkills
-                .map(skill => skill.value)
-                .filter(skillValue => typeof skillValue === "string" && skillValue.trim() !== "") // Keep only valid non-empty strings
+                combinedNonTechSkills
+                    .map(skill => skill.value)
+                    .filter(skillValue => typeof skillValue === "string" && skillValue.trim() !== "") // Keep only valid non-empty strings
             )
         ].map(skillValue => {
             const existingSkill = nonTechSkillOptions.find(s => s.value === skillValue);

@@ -40,8 +40,8 @@ def create_org_profile():
         org_registration_number=org_details.get("orgRegistrationNumber"),
         org_year_established=org_details.get("orgYearEstablished"),
         org_mission_statement=data.get("Mission Statement"),
-        org_logo=data.get("orgLogo"),
-        org_cover_photo=data.get("coverImage"),
+        # org_logo=data.get("orgLogo"),
+        # org_cover_photo=data.get("coverImage"),
         org_email=contact_info.get("email"),
         org_phone=contact_info.get("phone"),
         org_district_town=org_address.get("districtTown"),
@@ -109,10 +109,10 @@ def store_org_projects_initiatives():
     if not org_id:
         return jsonify({"status": "failed", "message": "Organization ID is required"}), 400
 
-    org_initiatives = data.get("Programs & Initiatives")
-    ongoing_projects = data.get("Ongoing Projects")
-    previous_projects = data.get("Previous Projects")
-    support_needs = data.get("Support Needs")
+    org_initiatives = data.get("programInitiatives")
+    ongoing_projects = data.get("ongoingProjects")
+    previous_projects = data.get("previousProjects")
+    support_needs = data.get("supportNeeds")
 
     for project in ongoing_projects:
         new_project = OrgProjects(
