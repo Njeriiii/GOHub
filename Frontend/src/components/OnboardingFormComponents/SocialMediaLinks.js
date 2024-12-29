@@ -17,7 +17,7 @@ const SocialMediaLinks = forwardRef((props, ref) => {
     const [links, setLinks] = useState({
         website: '',
         facebook: '',
-        x: '',  // Changed from twitter to x
+        x: '',
         instagram: '',
         linkedin: '',
         youtube: ''
