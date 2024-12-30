@@ -1,65 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Translate } from '../contexts/TranslationProvider';
 import { useLocation } from 'react-router-dom';
 import { 
     BuildingOfficeIcon, 
     DocumentIcon,
-    PencilIcon,
-    XMarkIcon,
-    CheckIcon,
     TrashIcon,
     PlusIcon
 } from '@heroicons/react/24/outline';
-import { techSkillOptions, nonTechSkillOptions } from '../components/utils/supportNeedsFocusAreaEntries';
-import CreatableSelect from "react-select/creatable";
-
-// Section wrapper component
-function EditSection({ 
-    title, 
-    children, 
-    isEditing, 
-    onEdit, 
-    onSave, 
-    onCancel,
-    showEditButton = true 
-}) {
-    return (
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
-                {showEditButton && !isEditing && (
-                    <button
-                        onClick={onEdit}
-                        className="text-teal-600 hover:text-teal-700 flex items-center gap-2"
-                    >
-                        <PencilIcon className="h-4 w-4" />
-                        <Translate>Edit</Translate>
-                    </button>
-                )}
-            </div>
-            {children}
-            {isEditing && (
-                <div className="flex justify-end gap-3 mt-4">
-                    <button
-                        onClick={onCancel}
-                        className="flex items-center px-3 py-2 border-gray-300 focus:border-teal-500 focus:ring-teal-500 rounded-md text-sm text-gray-700 hover:bg-gray-50"
-                    >
-                        <XMarkIcon className="h-4 w-4 mr-2" />
-                        <Translate>Cancel</Translate>
-                    </button>
-                    <button
-                        onClick={onSave}
-                        className="flex items-center px-3 py-2 bg-teal-600 text-white rounded-md text-sm hover:bg-teal-700"
-                    >
-                        <CheckIcon className="h-4 w-4 mr-2" />
-                        <Translate>Save Changes</Translate>
-                    </button>
-                </div>
-            )}
-        </div>
-    );
-}
-
+import EditSection from '../components/EditingComponents/EditSection.js';
+import EditSupportNeeds from '../components/EditingComponents/EditSupportNeeds.js';
+import EditOrgDetails from '../components/EditingComponents/EditOrgDetails.js';
+import EditMission from '../components/EditingComponents/EditMission.js';
 
 export default function EditProfile({  }) {
     const location = useLocation();
@@ -68,7 +19,10 @@ export default function EditProfile({  }) {
     const [localData, setLocalData] = useState(location.state.orgData);
     const [formData, setFormData] = useState(location.state.orgData);
 
-    console.log('formData', formData);
+    // Function to handle completion of save operations
+    const handleSaveComplete = (section) => {
+        setEditingSections(prev => ({ ...prev, [section]: false }));
+    };
 
     const tabs = [
         { id: 'basic', label: 'Basic Information', icon: BuildingOfficeIcon },
@@ -139,8 +93,31 @@ export default function EditProfile({  }) {
 
             {/* Tab Content */}
             {activeTab === 'basic' && (
+                <div className="">
+                    <EditMission
+                        formData={formData}
+                        localData={localData}
+                        setLocalData={setLocalData}
+                        isEditing={editingSections.mission}
+                        onEdit={() => handleEdit('mission')}
+                        onSave={() => handleSave('mission')}
+                        onCancel={() => handleCancel('mission')}
+                    />
+                    
+                    <EditOrgDetails
+                        formData={formData}
+                        localData={localData}
+                        setLocalData={setLocalData}
+                        isEditing={editingSections.details}
+                        onEdit={() => handleEdit('details')}
+                        onSave={() => handleSave('details')}
+                        onCancel={() => handleCancel('details')}
+                    />
+                </div>
+            )}
+            {activeTab === 'basic' && (
                 <div>
-                    <EditSection
+                    {/* <EditSection
                         title="Mission & Overview"
                         isEditing={editingSections.mission}
                         onEdit={() => handleEdit('mission')}
@@ -196,7 +173,7 @@ export default function EditProfile({  }) {
                                 </div>
                             </div>
                         )}
-                    </EditSection>
+                    </EditSection> */}
 
                     {/* Add more sections here for contact info, location, social media */}
                     <EditSection
@@ -810,120 +787,14 @@ export default function EditProfile({  }) {
 
             {/* Skills editing sections */}
             {activeTab === 'skills' && (
-    <div className="space-y-6">
-        <EditSection
-            title="Skills Needed"
-            isEditing={editingSections.skills}
-            onEdit={() => handleEdit('skills')}
-            onSave={() => handleSave('skills')}
-            onCancel={() => handleCancel('skills')}
-        >
-            {editingSections.skills ? (
-                <div className="space-y-6">
-                    <h2 className="text-l font-medium mb-3"> Technical Skills </h2>
-                    <CreatableSelect
-                        isMulti
-                        options={techSkillOptions}
-                        // {nonTechSkillOptions.find(option => option.value === skill.skill)?.label || skill.skill}
-                        value={localData.orgSkillsNeeded
-                            .filter(skill => skill.status === 'tech')
-                            .map(skill => ({ value: skill.skill, label: techSkillOptions.find(option => option.value === skill.skill)?.label || skill.skill }))}
-                        onChange={(newValue) => {
-                            // Handle null or empty selection
-                            const selectedSkills = newValue || [];
-                            
-                            // Convert to proper format
-                            const techSkills = selectedSkills.map(v => ({
-                                skill: v.value,
-                                status: 'tech'
-                            }));
-
-                            // Keep existing non-tech skills
-                            const nonTechSkills = localData.orgSkillsNeeded
-                                .filter(skill => skill.status === 'non-tech');
-
-                            // Update state
-                            setLocalData({
-                                ...localData,
-                                orgSkillsNeeded: [...techSkills, ...nonTechSkills]
-                            });
-                        }}
-                        className="mb-4"
-                    />
-
-                    <h2 className="text-l font-medium mb-3"> Non-Technical Skills </h2>
-
-                    <CreatableSelect
-                        isMulti
-                        options={nonTechSkillOptions}
-                        value={localData.orgSkillsNeeded
-                            .filter(skill => skill.status === 'non-tech')
-                            .map(skill => ({ value: skill.skill, label: nonTechSkillOptions.find(option => option.value === skill.skill)?.label || skill.skill }))}
-                        onChange={(newValue) => {
-                            // Handle null or empty selection
-                            const selectedSkills = newValue || [];
-                            
-                            // Convert to proper format
-                            const nonTechSkills = selectedSkills.map(v => ({
-                                skill: v.value,
-                                status: 'non-tech'
-                            }));
-
-                            // Keep existing tech skills
-                            const techSkills = localData.orgSkillsNeeded
-                                .filter(skill => skill.status === 'tech');
-
-                            // Update state
-                            setLocalData({
-                                ...localData,
-                                orgSkillsNeeded: [...techSkills, ...nonTechSkills]
-                            });
-                        }}
-                        className="mb-4"
-                    />
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div>
-                        <h4 className="text-sm font-medium text-gray-700 mb-3">
-                            <Translate>Technical Skills</Translate>
-                        </h4>
-                        <div className="space-y-2">
-                            {formData.orgSkillsNeeded
-                                .filter(skill => skill.status === 'tech')
-                                .map(skill => (
-                                    <div 
-                                        key={skill.id}
-                                        className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm inline-block mr-2"
-                                    >
-                                        {techSkillOptions.find(option => option.value === skill.skill)?.label || skill.skill}
-                                    </div>
-                                ))
-                            }
-                        </div>
-                    </div>
-                    <div>
-                        <h4 className="text-sm font-medium text-gray-700 mb-3">
-                            <Translate>Non-Technical Skills</Translate>
-                        </h4>
-                        <div className="space-y-2">
-                            {formData.orgSkillsNeeded
-                                .filter(skill => skill.status === 'non-tech')
-                                .map(skill => (
-                                    <div 
-                                        key={skill.id}
-                                        className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm inline-block mr-2"
-                                    >
-                                        {nonTechSkillOptions.find(option => option.value === skill.skill)?.label || skill.skill}
-                                    </div>
-                                ))
-                            }
-                        </div>
-                    </div>
-                </div>
-            )}
-        </EditSection>
-    </div>
+            <EditSupportNeeds
+                formData={formData}
+                isEditing={editingSections.skills}
+                onEdit={() => handleEdit('skills')}
+                onSaveComplete={handleSaveComplete}
+                onCancel={() => handleCancel('skills')}
+                setLocalData={setLocalData}
+            />
 )}
         </div>
 )};

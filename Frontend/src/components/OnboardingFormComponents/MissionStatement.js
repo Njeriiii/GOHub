@@ -1,9 +1,14 @@
-import React, { useState, forwardRef, useImperativeHandle, useRef, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
-const MissionStatement = forwardRef((props, ref) => {
-    const [statement, setStatement] = useState('');
-    const [charCount, setCharCount] = useState(0);
+const MissionStatement = ({ initialValue = '', onChange }) => {
+    const [statement, setStatement] = useState(initialValue);
+    const [charCount, setCharCount] = useState(initialValue.length);
     const textAreaRef = useRef(null);
+
+    useEffect(() => {
+        setStatement(initialValue);
+        setCharCount(initialValue.length);
+    }, [initialValue]);
 
     const adjustTextAreaHeight = () => {
         const textArea = textAreaRef.current;
@@ -27,36 +32,28 @@ const MissionStatement = forwardRef((props, ref) => {
     }, []);
 
     const handleInputChange = (event) => {
-        setStatement(event.target.value);
-        setCharCount(event.target.value.length);
+        const newValue = event.target.value;
+        setStatement(newValue);
+        setCharCount(newValue.length);
+        onChange(newValue);
     };
-
-    const getData = () => {
-        return statement;
-    };
-
-    useImperativeHandle(ref, () => ({ getData }));
 
     return (
-        <div className="p-6">
-            <div className="relative">
-                <h2 className="text-xl font-medium mb-4 text-gray-900">Mission Statement</h2>
-                
-                <textarea
-                    ref={textAreaRef}
-                    value={statement}
-                    onChange={handleInputChange}
-                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 
-                            focus:ring-teal-500 sm:text-base min-h-[100px] transition-height duration-200"
-                    placeholder="Enter your organization's mission statement..."
-                    style={{ resize: 'none', overflow: 'hidden' }}
-                />
-                <div className="absolute bottom-2 right-2 text-sm text-gray-500">
-                    {charCount} characters
-                </div>
+        <div className="relative">
+            <textarea
+                ref={textAreaRef}
+                value={statement}
+                onChange={handleInputChange}
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 
+                        focus:ring-teal-500 sm:text-base min-h-[100px] transition-height duration-200"
+                placeholder="Enter your organization's mission statement..."
+                style={{ resize: 'none', overflow: 'hidden' }}
+            />
+            <div className="absolute bottom-2 right-2 text-sm text-gray-500">
+                {charCount} characters
             </div>
         </div>
     );
-});
+};
 
 export default MissionStatement;
