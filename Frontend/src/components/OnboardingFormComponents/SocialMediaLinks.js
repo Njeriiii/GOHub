@@ -1,4 +1,4 @@
-import React, { useState, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import { Globe, Facebook, Instagram, Linkedin, Youtube } from 'lucide-react';
 
 // Custom X (Twitter) icon since Lucide might not have the new X logo
@@ -13,15 +13,27 @@ const XIcon = () => (
     </svg>
 );
 
-const SocialMediaLinks = forwardRef((props, ref) => {
+const SocialMediaLinks = forwardRef(({ initialValues = {} }, ref) => {
     const [links, setLinks] = useState({
-        website: '',
-        facebook: '',
-        x: '',
-        instagram: '',
-        linkedin: '',
-        youtube: ''
+        website: initialValues.website || '',
+        facebook: initialValues.facebook || '',
+        x: initialValues.x || '',
+        instagram: initialValues.instagram || '',
+        linkedin: initialValues.linkedin || '',
+        youtube: initialValues.youtube || ''
     });
+
+    // Update state when initialValues change
+    useEffect(() => {
+        setLinks({
+            website: initialValues.website || '',
+            facebook: initialValues.facebook || '',
+            x: initialValues.x || '',
+            instagram: initialValues.instagram || '',
+            linkedin: initialValues.linkedin || '',
+            youtube: initialValues.youtube || ''
+        });
+    }, [initialValues]);
 
     const [errors, setErrors] = useState({
         website: '',
@@ -125,10 +137,7 @@ const SocialMediaLinks = forwardRef((props, ref) => {
     useImperativeHandle(ref, () => ({ getData }), [links]);
 
     return (
-        <div className="space-y-6 p-6">
-            <h2 className="text-xl font-medium text-gray-900">Social Media Links</h2>
-            <p className="text-sm text-gray-500">Add your organization's social media links (optional)</p>
-            
+        <div className="space-y-6">
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 {Object.keys(links).map(platform => {
                     const Icon = socialIcons[platform];

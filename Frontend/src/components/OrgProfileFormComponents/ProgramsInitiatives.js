@@ -1,6 +1,8 @@
 import React, { useState, forwardRef, useImperativeHandle, useRef, useEffect } from 'react';
 // This component represents the initiatives section of the organization profile form.
 // It includes fields for the initiative name and description.
+
+// AutoResizeTextarea component
 const AutoResizeTextarea = ({ value, onChange, placeholder, name }) => {
     const textareaRef = useRef(null);
     const mirrorRef = useRef(null);
@@ -55,10 +57,37 @@ const AutoResizeTextarea = ({ value, onChange, placeholder, name }) => {
     );
 };
 
-const ProgramInitiativesList = forwardRef((props, ref) => {
-    const [initiatives, setInitiatives] = useState([
-        { initiativeName: "", description: "" }
-    ]);
+const ProgramInitiativesList = forwardRef(({ 
+    initialInitiatives = [], 
+    hideTitle = false,
+    onInitiativesChange // New prop for data sync
+}, ref) => {
+    // Initialize with provided initiatives or default empty one
+    const [initiatives, setInitiatives] = useState(() => {
+        if (initialInitiatives.length > 0) {
+            // Transform incoming data to match component format
+            return initialInitiatives.map(initiative => ({
+                initiativeName: initiative.initiative_name || "",
+                description: initiative.initiative_description || "",
+                id: initiative.id,
+                org_id: initiative.org_id
+            }));
+        }
+        return [{ initiativeName: "", description: "" }];
+    });
+
+    // Effect to handle data changes
+    useEffect(() => {
+        if (onInitiativesChange) {
+            const transformedData = initiatives.map(initiative => ({
+                id: initiative.id,
+                initiative_name: initiative.initiativeName,
+                initiative_description: initiative.description,
+                org_id: initiative.org_id
+            }));
+            onInitiativesChange(transformedData);
+        }
+    }, [initiatives]);
 
     // Add a new initiative object to the array
     const handleAddInitiative = () => {
@@ -71,7 +100,10 @@ const ProgramInitiativesList = forwardRef((props, ref) => {
     // Update the initiative object at the given index
     const handleInputChange = (index, event) => {
         const values = [...initiatives];
-        values[index][event.target.name] = event.target.value;
+        values[index] = {
+            ...values[index],
+            [event.target.name]: event.target.value
+        };
         setInitiatives(values);
     };
 
@@ -82,20 +114,26 @@ const ProgramInitiativesList = forwardRef((props, ref) => {
         setInitiatives(values.length > 0 ? values : [{ initiativeName: "", description: "" }]);
     };
 
-    console.log('initiatives', initiatives);
-
-    // Expose the getInitiativesData function to parent components
+    // Transform data back to API format when getting data
     useImperativeHandle(ref, () => ({
-        getData: () => initiatives, // Return the array of initiatives
+        getData: () => initiatives.map(initiative => ({
+            id: initiative.id,
+            initiative_name: initiative.initiativeName,
+            initiative_description: initiative.description,
+            org_id: initiative.org_id
+        }))
     }));
 
     return (
         <div className="flex flex-col justify-center">
             <div id="initiatives-container" className="mt-4 text-xl font-medium text-gray-700">
-                <h2 className="text-3xl font-semibold mb-5 text-gray-900">
-                    Programs & Initiatives
-                </h2>
-
+                {!hideTitle && (
+                    <>
+                        <h2 className="text-3xl font-semibold mb-5 text-gray-900">
+                            Programs & Initiatives
+                        </h2>
+                    </>
+                )}
                 <div className="bg-teal-50 border-l-4 border-teal-500 p-4 mb-6">
                     <p className="text-m text-teal-700">
                         Describe your organization's strategic, ongoing efforts that define its core mission. 
@@ -105,7 +143,7 @@ const ProgramInitiativesList = forwardRef((props, ref) => {
                 </div>
 
                 {initiatives.map((initiative, index) => (
-                    <div key={index} className="mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
+                    <div key={initiative.id || index} className="mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
                         <div className="mb-4">
                             <label 
                                 htmlFor={`initiativeName-${index}`} 
