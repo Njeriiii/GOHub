@@ -1,0 +1,332 @@
+import React, { useEffect, useRef, useState } from 'react';
+import { Translate } from '../../contexts/TranslationProvider';
+import EditSection from './EditSection';
+import MissionStatement from '../OnboardingFormComponents/MissionStatement';
+import ContactInfo from '../OnboardingFormComponents/ContactInfo';
+import OrgAddress from '../OnboardingFormComponents/OrgAddress';
+import SocialMediaLinks from '../OnboardingFormComponents/SocialMediaLinks';
+import { MapPin } from 'lucide-react';
+
+const EditBasicInfo = ({
+    formData,
+    localData,
+    setLocalData,
+    onEdit,
+    onSave,
+    onCancel,
+}) => {
+    const overviewTextAreaRef = useRef(null);
+    const contactInfoRef = useRef(null);
+    const addressRef = useRef(null);
+    const socialMediaRef = useRef(null);
+    const [editingSections, setEditingSections] = useState({
+        mission: false,
+        overview: false,
+        contact: false,
+        address: false,
+        social: false
+    });
+
+    const adjustTextAreaHeight = () => {
+        const textArea = overviewTextAreaRef.current;
+        if (textArea) {
+            textArea.style.height = 'auto';
+            textArea.style.height = `${textArea.scrollHeight}px`;
+        }
+    };
+
+    useEffect(() => {
+        adjustTextAreaHeight();
+    }, [localData.orgProfile.org_overview]);
+
+    useEffect(() => {
+        window.addEventListener('resize', adjustTextAreaHeight);
+        return () => window.removeEventListener('resize', adjustTextAreaHeight);
+    }, []);
+
+    const handleSectionEdit = (section) => {
+        setEditingSections(prev => ({ ...prev, [section]: true }));
+        onEdit();
+    };
+
+    const handleSectionSave = async (section) => {
+        if (section === 'contact' && contactInfoRef.current) {
+            const contactData = contactInfoRef.current.getData();
+            if (!contactData) return;
+            setLocalData({
+                ...localData,
+                orgProfile: {
+                    ...localData.orgProfile,
+                    org_email: contactData.email,
+                    org_phone: contactData.phone
+                }
+            });
+        } else if (section === 'address' && addressRef.current) {
+            const addressData = addressRef.current.getData();
+            if (!addressData) return;
+            setLocalData({
+                ...localData,
+                orgProfile: {
+                    ...localData.orgProfile,
+                    org_district_town: addressData.districtTown,
+                    org_county: addressData.org_county,
+                    org_po_box: addressData.poBox,
+                    org_physical_description: addressData.physicalDescription,
+                    org_google_maps_link: addressData.googleMapsLink
+                }
+            });
+        } else if (section === 'social' && socialMediaRef.current) {
+            const socialData = socialMediaRef.current.getData();
+            if (!socialData) return;
+            setLocalData({
+                ...localData,
+                orgProfile: {
+                    ...localData.orgProfile,
+                    org_website: socialData.website,
+                    org_facebook: socialData.facebook,
+                    org_x: socialData.x,
+                    org_instagram: socialData.instagram,
+                    org_linkedin: socialData.linkedin,
+                    org_youtube: socialData.youtube
+                }
+            });
+        }
+
+        await onSave();
+        setEditingSections(prev => ({ ...prev, [section]: false }));
+    };
+
+    const handleSectionCancel = (section) => {
+        setEditingSections(prev => ({ ...prev, [section]: false }));
+        onCancel();
+    };
+
+    const handleOverviewChange = (e) => {
+        const value = e.target.value;
+        if (value.length <= 200) {
+            setLocalData({
+                ...localData,
+                orgProfile: {
+                    ...localData.orgProfile,
+                    org_overview: value
+                }
+            });
+        }
+    };
+
+    return (
+        <div className="space-y-6">
+            {/* Mission Section */}
+            <div>
+                <EditSection
+                title="Mission"
+                isEditing={editingSections.mission}
+                onEdit={() => handleSectionEdit('mission')}
+                onSave={() => handleSectionSave('mission')}
+                onCancel={() => handleSectionCancel('mission')}
+            >
+                {editingSections.mission ? (
+                    <div className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <Translate>Mission Statement</Translate>
+                            </label>
+                            <MissionStatement
+                                initialValue={localData.orgProfile.org_mission_statement}
+                                onChange={(value) => setLocalData({
+                                    ...localData,
+                                    orgProfile: {
+                                        ...localData.orgProfile,
+                                        org_mission_statement: value
+                                    }
+                                })}
+                            />
+                        </div>
+                    </div>
+                ) : (
+                    <div className="space-y-4">
+                        <div>
+                            <h4 className="text-sm font-medium text-gray-700">Mission Statement</h4>
+                            <p className="mt-1 text-gray-600">{formData.orgProfile.org_mission_statement}</p>
+                        </div>
+                    </div>
+                )}
+                </EditSection>
+            </div>
+
+            {/* Overview Section */}
+            <div>
+                <EditSection
+                title="Organization Overview"
+                isEditing={editingSections.overview}
+                onEdit={() => handleSectionEdit('overview')}
+                onSave={() => handleSectionSave('overview')}
+                onCancel={() => handleSectionCancel('overview')}
+            >
+                {editingSections.overview ? (
+                    <div className="p-6 relative">
+                        <textarea
+                            ref={overviewTextAreaRef}
+                            value={localData.orgProfile.org_overview}
+                            onChange={handleOverviewChange}
+                            className="block w-full rounded-md border-gray-300 shadow-sm 
+                                    focus:border-teal-500 focus:ring-teal-500 sm:text-base 
+                                    min-h-[100px] transition-height duration-200"
+                            placeholder="Provide a brief description of your organization"
+                            maxLength={200}
+                            style={{ resize: 'none', overflow: 'hidden' }}
+                        />
+                        <div className="absolute bottom-2 right-2 text-sm text-gray-500">
+                            {localData.orgProfile.org_overview.length}/200
+                        </div>
+                    </div>
+                ) : (
+                    <div>
+                        <p className="text-gray-600">{formData.orgProfile.org_overview}</p>
+                    </div>
+                )}
+                </EditSection>
+            </div>
+            
+            <div>
+            {/* Contact Info Section */}
+            <EditSection
+                title="Contact Information"
+                isEditing={editingSections.contact}
+                onEdit={() => handleSectionEdit('contact')}
+                onSave={() => handleSectionSave('contact')}
+                onCancel={() => handleSectionCancel('contact')}
+            >
+                {editingSections.contact ? (
+                    <ContactInfo
+                        ref={contactInfoRef}
+                        initialValues={{
+                            email: localData.orgProfile.org_email || '',
+                            phone: localData.orgProfile.org_phone || ''
+                        }}
+                    />
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <h4 className="text-sm font-medium text-gray-700">Email</h4>
+                            <p className="mt-1 text-gray-600">{formData.orgProfile.org_email}</p>
+                        </div>
+                        <div>
+                            <h4 className="text-sm font-medium text-gray-700">Phone</h4>
+                            <p className="mt-1 text-gray-600">{formData.orgProfile.org_phone}</p>
+                        </div>
+                    </div>
+                )}
+                </EditSection>
+            </div>
+
+            {/* Address Section */}
+            <div>
+                <EditSection
+                    title="Location"
+                    isEditing={editingSections.address}
+                    onEdit={() => handleSectionEdit('address')}
+                    onSave={() => handleSectionSave('address')}
+                    onCancel={() => handleSectionCancel('address')}
+                >
+                    {editingSections.address ? (
+                        <OrgAddress
+                            ref={addressRef}
+                            initialValues={{
+                                districtTown: localData.orgProfile.org_district_town,
+                                org_county: localData.orgProfile.org_county,
+                                poBox: localData.orgProfile.org_po_box,
+                                physicalDescription: localData.orgProfile.org_physical_description,
+                                googleMapsLink: localData.orgProfile.org_google_maps_link
+                            }}
+                        />
+                    ) : (
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <h4 className="text-sm font-medium text-gray-700">District/Town</h4>
+                                    <p className="mt-1 text-gray-600">{formData.orgProfile.org_district_town}</p>
+                                </div>
+                                <div>
+                                    <h4 className="text-sm font-medium text-gray-700">org_county</h4>
+                                    <p className="mt-1 text-gray-600">{formData.orgProfile.org_county}</p>
+                                </div>
+                                <div>
+                                    <h4 className="text-sm font-medium text-gray-700">P.O. Box</h4>
+                                    <p className="mt-1 text-gray-600">{formData.orgProfile.org_po_box}</p>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 className="text-sm font-medium text-gray-700">Physical Description</h4>
+                                <p className="mt-1 text-gray-600">{formData.orgProfile.org_physical_description}</p>
+                            </div>
+                            {formData.orgProfile.org_google_maps_link && (
+                                <div>
+                                    <a 
+                                        href={formData.orgProfile.org_google_maps_link}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-teal-600 hover:text-teal-700 flex items-center gap-1"
+                                    >
+                                        <MapPin className="h-4 w-4" />
+                                        View on Google Maps
+                                    </a>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </EditSection>
+            </div>
+
+            <div>
+                {/* Social Media Section */}
+                <EditSection
+                    title="Social Media"
+                    isEditing={editingSections.social}
+                    onEdit={() => handleSectionEdit('social')}
+                    onSave={() => handleSectionSave('social')}
+                    onCancel={() => handleSectionCancel('social')}
+                >
+                    {editingSections.social ? (
+                        <SocialMediaLinks
+                            ref={socialMediaRef}
+                            initialValues={{
+                                website: localData.orgProfile.org_website || '',
+                                facebook: localData.orgProfile.org_facebook || '',
+                                x: localData.orgProfile.org_x || '',
+                                instagram: localData.orgProfile.org_instagram || '',
+                                linkedin: localData.orgProfile.org_linkedin || '',
+                                youtube: localData.orgProfile.org_youtube || ''
+                            }}
+                        />
+                    ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                            {[
+                                { key: 'website', label: 'Website', value: formData.orgProfile.org_website },
+                                { key: 'facebook', label: 'Facebook', value: formData.orgProfile.org_facebook },
+                                { key: 'x', label: 'X (Twitter)', value: formData.orgProfile.org_x },
+                                { key: 'instagram', label: 'Instagram', value: formData.orgProfile.org_instagram },
+                                { key: 'linkedin', label: 'LinkedIn', value: formData.orgProfile.org_linkedin },
+                                { key: 'youtube', label: 'YouTube', value: formData.orgProfile.org_youtube }
+                            ].map(platform => platform.value && (
+                                <div key={platform.key}>
+                                    <h4 className="text-sm font-medium text-gray-700">{platform.label}</h4>
+                                    <a 
+                                        href={platform.value}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="mt-1 text-teal-600 hover:text-teal-700 text-sm block truncate"
+                                    >
+                                        {new URL(platform.value).hostname}
+                                    </a>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </EditSection>
+            </div>
+        </div>
+    );
+};
+
+export default EditBasicInfo;

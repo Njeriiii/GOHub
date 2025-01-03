@@ -3,16 +3,34 @@ import Select from 'react-select';
 import { MapPin } from 'lucide-react';
 // This component represents the address section of the organization onboarding form.
 
-const OrgAddress = forwardRef((props, ref) => {
-    const [state, setState] = useState({
+const OrgAddress = forwardRef(({ initialValues = {
         districtTown: '',
         county: null,
         poBox: '',
         country: { value: 'Kenya', label: 'Kenya' },
         physicalDescription: '',
         googleMapsLink: ''
+} }, ref) => {
+    const [state, setState] = useState({
+        districtTown: initialValues.districtTown || '',
+        county: initialValues.county ? { value: initialValues.county, label: initialValues.county } : null,
+        poBox: initialValues.poBox || '',
+        country: { value: 'Kenya', label: 'Kenya' },
+        physicalDescription: initialValues.physicalDescription || '',
+        googleMapsLink: initialValues.googleMapsLink || ''
     });
-
+    // Update state when initialValues change
+    useEffect(() => {
+        setState({
+            districtTown: initialValues.districtTown || '',
+            county: initialValues.county ? { value: initialValues.county, label: initialValues.county } : null,
+            poBox: initialValues.poBox || '',
+            country: { value: 'Kenya', label: 'Kenya' },
+            physicalDescription: initialValues.physicalDescription || '',
+            googleMapsLink: initialValues.googleMapsLink || ''
+        });
+    }, [initialValues]);
+    
     const [errors, setErrors] = useState({
         districtTown: '',
         county: '',

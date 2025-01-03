@@ -1,15 +1,17 @@
-import React, { useState, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 
-const ContactInfo = forwardRef((props, ref) => {
-    const [state, setState] = useState({
-        email: '',
-        phone: ''
-    });
+const ContactInfo = forwardRef(({ initialValues = { email: '', phone: '' } }, ref) => {
+    const [state, setState] = useState(initialValues);
 
     const [errors, setErrors] = useState({
         email: '',
         phone: ''
     });
+
+    // Update state when initialValues change
+    useEffect(() => {
+        setState(initialValues);
+    }, [initialValues]);
 
     const validateEmail = (email) => {
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -73,8 +75,6 @@ const ContactInfo = forwardRef((props, ref) => {
 
     return (
         <div className="mt-6 mx-auto p-6">
-            <h2 className="text-xl font-medium text-gray-900">Contact Information</h2>
-            
             <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 gap-x-4">
                 {/* Email Input */}
                 <div className="w-full">
@@ -124,5 +124,7 @@ const ContactInfo = forwardRef((props, ref) => {
         </div>
     );
 });
+
+ContactInfo.displayName = 'ContactInfo';
 
 export default ContactInfo;
