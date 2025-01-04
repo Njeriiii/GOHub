@@ -5,20 +5,39 @@ import MissionStatement from '../OnboardingFormComponents/MissionStatement';
 import ContactInfo from '../OnboardingFormComponents/ContactInfo';
 import OrgAddress from '../OnboardingFormComponents/OrgAddress';
 import SocialMediaLinks from '../OnboardingFormComponents/SocialMediaLinks';
+import { useApi } from '../../contexts/ApiProvider';
 import { MapPin } from 'lucide-react';
 
+
+/**
+ * EditBasicInfo component for managing organization's basic information
+ * @param {Object} props
+ * @param {Object} props.formData - Original form data
+ * @param {Object} props.localData - Current local state of the form
+ * @param {Function} props.setLocalData - Function to update local state
+ * @param {Function} props.onEdit - Callback when editing begins
+ * @param {Function} props.onSaveComplete - Callback when save is complete
+ * @param {Function} props.onCancel - Callback when editing is cancelled
+ */
 const EditBasicInfo = ({
     formData,
     localData,
     setLocalData,
     onEdit,
-    onSave,
+    onSaveComplete,
     onCancel,
 }) => {
+
+    // API client
+    const apiClient = useApi();
+
+    // Refs for child components
     const overviewTextAreaRef = useRef(null);
     const contactInfoRef = useRef(null);
     const addressRef = useRef(null);
     const socialMediaRef = useRef(null);
+
+    // State management
     const [editingSections, setEditingSections] = useState({
         mission: false,
         overview: false,
@@ -26,78 +45,120 @@ const EditBasicInfo = ({
         address: false,
         social: false
     });
+    const [savingSection, setSavingSection] = useState(null);
+    const [error, setError] = useState(null);
 
-    const adjustTextAreaHeight = () => {
-        const textArea = overviewTextAreaRef.current;
-        if (textArea) {
-            textArea.style.height = 'auto';
-            textArea.style.height = `${textArea.scrollHeight}px`;
-        }
-    };
-
+    // Textarea height adjustment
     useEffect(() => {
+        const adjustTextAreaHeight = () => {
+            const textArea = overviewTextAreaRef.current;
+            if (textArea) {
+                textArea.style.height = 'auto';
+                textArea.style.height = `${textArea.scrollHeight}px`;
+            }
+        };
+
         adjustTextAreaHeight();
-    }, [localData.orgProfile.org_overview]);
-
-    useEffect(() => {
         window.addEventListener('resize', adjustTextAreaHeight);
         return () => window.removeEventListener('resize', adjustTextAreaHeight);
-    }, []);
+    }, [localData.orgProfile.org_overview]);
 
+    // Section management handlers
     const handleSectionEdit = (section) => {
         setEditingSections(prev => ({ ...prev, [section]: true }));
+        setError(null);
         onEdit();
     };
 
     const handleSectionSave = async (section) => {
-        if (section === 'contact' && contactInfoRef.current) {
-            const contactData = contactInfoRef.current.getData();
-            if (!contactData) return;
-            setLocalData({
-                ...localData,
-                orgProfile: {
-                    ...localData.orgProfile,
-                    org_email: contactData.email,
-                    org_phone: contactData.phone
-                }
-            });
-        } else if (section === 'address' && addressRef.current) {
-            const addressData = addressRef.current.getData();
-            if (!addressData) return;
-            setLocalData({
-                ...localData,
-                orgProfile: {
-                    ...localData.orgProfile,
-                    org_district_town: addressData.districtTown,
-                    org_county: addressData.org_county,
-                    org_po_box: addressData.poBox,
-                    org_physical_description: addressData.physicalDescription,
-                    org_google_maps_link: addressData.googleMapsLink
-                }
-            });
-        } else if (section === 'social' && socialMediaRef.current) {
-            const socialData = socialMediaRef.current.getData();
-            if (!socialData) return;
-            setLocalData({
-                ...localData,
-                orgProfile: {
-                    ...localData.orgProfile,
-                    org_website: socialData.website,
-                    org_facebook: socialData.facebook,
-                    org_x: socialData.x,
-                    org_instagram: socialData.instagram,
-                    org_linkedin: socialData.linkedin,
-                    org_youtube: socialData.youtube
-                }
-            });
-        }
+        try {
+            setSavingSection(section);
+            setError(null);
 
-        await onSave();
-        setEditingSections(prev => ({ ...prev, [section]: false }));
+            // Collect and validate data based on section
+            let sectionData = {};
+            
+            switch(section) {
+                case 'contact':
+                    if (!contactInfoRef.current) return;
+                    const contactData = contactInfoRef.current.getData();
+                    if (!contactData) throw new Error('Invalid contact data');
+                    sectionData = {
+                        org_email: contactData.email,
+                        org_phone: contactData.phone
+                    };
+                    break;
+
+                case 'address':
+                    if (!addressRef.current) return;
+                    const addressData = addressRef.current.getData();
+                    if (!addressData) throw new Error('Invalid address data');
+                    sectionData = {
+                        org_district_town: addressData.districtTown,
+                        org_county: addressData.org_county,
+                        org_po_box: addressData.poBox,
+                        org_physical_description: addressData.physicalDescription,
+                        org_google_maps_link: addressData.googleMapsLink
+                    };
+                    break;
+
+                case 'social':
+                    if (!socialMediaRef.current) return;
+                    const socialData = socialMediaRef.current.getData();
+                    if (!socialData) throw new Error('Invalid social media data');
+                    sectionData = {
+                        org_website: socialData.website,
+                        org_facebook: socialData.facebook,
+                        org_x: socialData.x,
+                        org_instagram: socialData.instagram,
+                        org_linkedin: socialData.linkedin,
+                        org_youtube: socialData.youtube
+                    };
+                    break;
+
+                case 'mission':
+                case 'overview':
+                    // These sections' data is already in localData
+                    sectionData = {};
+                    break;
+
+                default:
+                    throw new Error('Unknown section');
+            }
+
+            // Update local data with section changes
+            const updatedProfile = {
+                ...localData.orgProfile,
+                ...sectionData
+            };
+            console.log('updatedProfile', updatedProfile);
+
+            // Make API call to save the section
+            const response = await apiClient.post('/profile/edit_profile', updatedProfile);
+
+            if (!response.ok) {
+                throw new Error('Failed to save changes');
+            }
+
+            // Update local state and notify parent
+            setLocalData({
+                ...localData,
+                orgProfile: updatedProfile
+            });
+
+            setEditingSections(prev => ({ ...prev, [section]: false }));
+            onSaveComplete();
+
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setSavingSection(null);
+        }
     };
 
     const handleSectionCancel = (section) => {
         setEditingSections(prev => ({ ...prev, [section]: false }));
+        setError(null);
         onCancel();
     };
 
@@ -124,6 +185,7 @@ const EditBasicInfo = ({
                 onEdit={() => handleSectionEdit('mission')}
                 onSave={() => handleSectionSave('mission')}
                 onCancel={() => handleSectionCancel('mission')}
+                isSaving={savingSection === 'mission'}
             >
                 {editingSections.mission ? (
                     <div className="space-y-4">
@@ -162,6 +224,7 @@ const EditBasicInfo = ({
                 onEdit={() => handleSectionEdit('overview')}
                 onSave={() => handleSectionSave('overview')}
                 onCancel={() => handleSectionCancel('overview')}
+                isSaving={savingSection === 'overview'}
             >
                 {editingSections.overview ? (
                     <div className="p-6 relative">
@@ -196,6 +259,7 @@ const EditBasicInfo = ({
                 onEdit={() => handleSectionEdit('contact')}
                 onSave={() => handleSectionSave('contact')}
                 onCancel={() => handleSectionCancel('contact')}
+                isSaving={savingSection === 'contact'}
             >
                 {editingSections.contact ? (
                     <ContactInfo
@@ -228,6 +292,7 @@ const EditBasicInfo = ({
                     onEdit={() => handleSectionEdit('address')}
                     onSave={() => handleSectionSave('address')}
                     onCancel={() => handleSectionCancel('address')}
+                    isSaving={savingSection === 'address'}
                 >
                     {editingSections.address ? (
                         <OrgAddress
@@ -286,6 +351,7 @@ const EditBasicInfo = ({
                     onEdit={() => handleSectionEdit('social')}
                     onSave={() => handleSectionSave('social')}
                     onCancel={() => handleSectionCancel('social')}
+                    isSaving={savingSection === 'social'}
                 >
                     {editingSections.social ? (
                         <SocialMediaLinks
