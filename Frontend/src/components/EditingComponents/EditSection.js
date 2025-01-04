@@ -18,7 +18,7 @@ export default function EditSection({
     return (
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
             <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+                <h3 className="text-lg font-semibold text-gray-900"><Translate>{title}</Translate></h3>
                 {showEditButton && !isEditing && (
                     <button
                         onClick={onEdit}
