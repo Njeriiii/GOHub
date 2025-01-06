@@ -1,12 +1,14 @@
 from flask import Blueprint, jsonify, request
 from flask_login import login_required, current_user
 from sqlalchemy.orm.exc import NoResultFound
-from app.models import User, SkillsNeeded
-
-
+from sqlalchemy.exc import SQLAlchemyError
+from datetime import datetime
+import logging
+import sys
 from app import db
 
 from app.models import (
+    User,
     OrgProfile,
     OrgInitiatives,
     OrgProjects,
@@ -17,6 +19,13 @@ from app.models import (
 
 profile = Blueprint("profile", __name__)
 
+# Configure logging
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s %(levelname)s: %(message)s',
+    stream=sys.stderr
+)
+logger = logging.getLogger(__name__)
 
 # Create a new organisation profile
 @profile.route("/profile/org", methods=["POST"])
@@ -337,3 +346,117 @@ def get_volunteer_profile():
 def get_all_skills():
     skills = SkillsNeeded.query.all()
     return jsonify([skill.serialize() for skill in skills]), 200
+
+
+# Edit basic organization profile information
+@profile.route("/profile/edit_basic_info", methods=["POST"])
+def edit_org_profile():
+    """Update organization profile information"""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"status": "error", "message": "No data provided"}), 400
+
+        # Get user_id from the request data
+        user_id = data.get('user_id')
+        if not user_id:
+            return jsonify({"status": "error", "message": "User ID is required"}), 400
+
+        org_profile = OrgProfile.query.filter_by(user_id=user_id).first()
+        if not org_profile:
+            return jsonify({"status": "error", "message": "Organization profile not found"}), 404
+
+        # Update fields that are present in the request
+        updatable_fields = [
+            'org_name', 'org_overview', 'org_mission_statement',
+            'org_email', 'org_phone', 'org_district_town', 'org_county',
+            'org_po_box', 'org_physical_description', 'org_google_maps_link',
+            'org_website', 'org_facebook', 'org_x', 'org_instagram',
+            'org_linkedin', 'org_youtube'
+        ]
+
+        for field in updatable_fields:
+            if field in data:
+                setattr(org_profile, field, data[field])
+
+        org_profile.updated_at = datetime.utcnow()
+        db.session.commit()
+
+        return jsonify({
+            "status": "success",
+            "message": "Profile updated successfully"
+        }), 200
+
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return jsonify({"status": "error", "message": str(e)}), 500
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+# Edit projects
+@profile.route("/profile/edit_projects", methods=["POST"])
+def edit_org_projects():
+    """Update organization projects intelligently"""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"status": "error", "message": "No data provided"}), 400
+
+        user_id = data[0].get('user_id')
+        if not user_id:
+            return jsonify({"status": "error", "message": "User ID is required"}), 400
+
+        org_profile = OrgProfile.query.filter_by(user_id=user_id).first()
+        if not org_profile:
+            return jsonify({"status": "error", "message": "Organization profile not found"}), 404
+
+        # Get existing projects
+        existing_projects = OrgProjects.query.filter_by(org_id=org_profile.id).all()
+        existing_projects_dict = {project.id: project for project in existing_projects}
+
+        # Track which projects were updated
+        updated_project_ids = set()
+
+        # Update or create projects
+        for project_data in data:
+            project_id = project_data.get('id')
+            
+            if project_id and project_id in existing_projects_dict:
+                # Update existing project
+                project = existing_projects_dict[project_id]
+                project.project_name = project_data['project_name']
+                project.project_description = project_data['project_description']
+                project.project_status = project_data['project_status']
+                updated_project_ids.add(project_id)
+            else:
+                # Create new project
+                new_project = OrgProjects(
+                    org_id=org_profile.id,
+                    project_name=project_data['project_name'],
+                    project_description=project_data['project_description'],
+                    project_status=project_data['project_status']
+                )
+                db.session.add(new_project)
+
+        # Delete projects that weren't in the update
+        projects_to_delete = [
+            project for project_id, project in existing_projects_dict.items()
+            if project_id not in updated_project_ids
+        ]
+        for project in projects_to_delete:
+            db.session.delete(project)
+
+        db.session.commit()
+        return jsonify({
+            "status": "success",
+            "message": "Projects updated successfully"
+        }), 200
+
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return jsonify({"status": "error", "message": str(e)}), 500
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+

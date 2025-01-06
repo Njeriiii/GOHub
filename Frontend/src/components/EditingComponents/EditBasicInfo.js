@@ -92,10 +92,11 @@ const EditBasicInfo = ({
                 case 'address':
                     if (!addressRef.current) return;
                     const addressData = addressRef.current.getData();
+                    console.log('addressData', addressData);
                     if (!addressData) throw new Error('Invalid address data');
                     sectionData = {
                         org_district_town: addressData.districtTown,
-                        org_county: addressData.org_county,
+                        org_county: addressData.county,
                         org_po_box: addressData.poBox,
                         org_physical_description: addressData.physicalDescription,
                         org_google_maps_link: addressData.googleMapsLink
@@ -134,7 +135,9 @@ const EditBasicInfo = ({
             console.log('updatedProfile', updatedProfile);
 
             // Make API call to save the section
-            const response = await apiClient.post('/profile/edit_profile', updatedProfile);
+            const response = await apiClient.post('/profile/edit_basic_info', updatedProfile);
+
+            console.log('response', response);
 
             if (!response.ok) {
                 throw new Error('Failed to save changes');
@@ -145,6 +148,8 @@ const EditBasicInfo = ({
                 ...localData,
                 orgProfile: updatedProfile
             });
+
+            console.log('localData', localData);
 
             setEditingSections(prev => ({ ...prev, [section]: false }));
             onSaveComplete();
@@ -174,6 +179,8 @@ const EditBasicInfo = ({
             });
         }
     };
+
+    console.log('localData.orgProfile', localData.orgProfile);
 
     return (
         <div className="space-y-6">
@@ -209,7 +216,7 @@ const EditBasicInfo = ({
                     <div className="space-y-4">
                         <div>
                             <h4 className="text-sm font-medium text-gray-700">Mission Statement</h4>
-                            <p className="mt-1 text-gray-600">{formData.orgProfile.org_mission_statement}</p>
+                            <p className="mt-1 text-gray-600">{localData.orgProfile.org_mission_statement}</p>
                         </div>
                     </div>
                 )}
@@ -245,7 +252,7 @@ const EditBasicInfo = ({
                     </div>
                 ) : (
                     <div>
-                        <p className="text-gray-600">{formData.orgProfile.org_overview}</p>
+                        <p className="text-gray-600">{localData.orgProfile.org_overview}</p>
                     </div>
                 )}
                 </EditSection>
@@ -273,11 +280,11 @@ const EditBasicInfo = ({
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <h4 className="text-sm font-medium text-gray-700">Email</h4>
-                            <p className="mt-1 text-gray-600">{formData.orgProfile.org_email}</p>
+                            <p className="mt-1 text-gray-600">{localData.orgProfile.org_email}</p>
                         </div>
                         <div>
                             <h4 className="text-sm font-medium text-gray-700">Phone</h4>
-                            <p className="mt-1 text-gray-600">{formData.orgProfile.org_phone}</p>
+                            <p className="mt-1 text-gray-600">{localData.orgProfile.org_phone}</p>
                         </div>
                     </div>
                 )}
@@ -310,25 +317,25 @@ const EditBasicInfo = ({
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <h4 className="text-sm font-medium text-gray-700">District/Town</h4>
-                                    <p className="mt-1 text-gray-600">{formData.orgProfile.org_district_town}</p>
+                                    <p className="mt-1 text-gray-600">{localData.orgProfile.org_district_town}</p>
                                 </div>
                                 <div>
                                     <h4 className="text-sm font-medium text-gray-700">org_county</h4>
-                                    <p className="mt-1 text-gray-600">{formData.orgProfile.org_county}</p>
+                                    <p className="mt-1 text-gray-600">{localData.orgProfile.org_county}</p>
                                 </div>
                                 <div>
                                     <h4 className="text-sm font-medium text-gray-700">P.O. Box</h4>
-                                    <p className="mt-1 text-gray-600">{formData.orgProfile.org_po_box}</p>
+                                    <p className="mt-1 text-gray-600">{localData.orgProfile.org_po_box}</p>
                                 </div>
                             </div>
                             <div>
                                 <h4 className="text-sm font-medium text-gray-700">Physical Description</h4>
-                                <p className="mt-1 text-gray-600">{formData.orgProfile.org_physical_description}</p>
+                                <p className="mt-1 text-gray-600">{localData.orgProfile.org_physical_description}</p>
                             </div>
-                            {formData.orgProfile.org_google_maps_link && (
+                            {localData.orgProfile.org_google_maps_link && (
                                 <div>
                                     <a 
-                                        href={formData.orgProfile.org_google_maps_link}
+                                        href={localData.orgProfile.org_google_maps_link}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="text-teal-600 hover:text-teal-700 flex items-center gap-1"
@@ -368,12 +375,12 @@ const EditBasicInfo = ({
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                             {[
-                                { key: 'website', label: 'Website', value: formData.orgProfile.org_website },
-                                { key: 'facebook', label: 'Facebook', value: formData.orgProfile.org_facebook },
-                                { key: 'x', label: 'X (Twitter)', value: formData.orgProfile.org_x },
-                                { key: 'instagram', label: 'Instagram', value: formData.orgProfile.org_instagram },
-                                { key: 'linkedin', label: 'LinkedIn', value: formData.orgProfile.org_linkedin },
-                                { key: 'youtube', label: 'YouTube', value: formData.orgProfile.org_youtube }
+                                { key: 'website', label: 'Website', value: localData.orgProfile.org_website },
+                                { key: 'facebook', label: 'Facebook', value: localData.orgProfile.org_facebook },
+                                { key: 'x', label: 'X (Twitter)', value: localData.orgProfile.org_x },
+                                { key: 'instagram', label: 'Instagram', value: localData.orgProfile.org_instagram },
+                                { key: 'linkedin', label: 'LinkedIn', value: localData.orgProfile.org_linkedin },
+                                { key: 'youtube', label: 'YouTube', value: localData.orgProfile.org_youtube }
                             ].map(platform => platform.value && (
                                 <div key={platform.key}>
                                     <h4 className="text-sm font-medium text-gray-700">{platform.label}</h4>
