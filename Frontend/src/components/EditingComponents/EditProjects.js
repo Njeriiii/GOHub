@@ -72,13 +72,14 @@ const EditProjects = ({
 
             // Validate all projects
             if (!validateAllProjects(projects)) {
-                return false;
+                return;
             }
 
-            // Prepare projects data - ensure all projects have org_id
+            // Prepare projects data
             const projectsToSave = projects.map(project => ({
                 ...project,
-                org_id: formData.orgProfile.id
+                org_id: formData.orgProfile.id,
+                user_id: formData.orgProfile.user_id
             }));
 
             console.log('Saving projects:', projectsToSave);
@@ -87,16 +88,19 @@ const EditProjects = ({
             const response = await apiClient.post('/profile/edit_projects', projectsToSave);
 
             if (!response.ok) {
-                const data = await response.json();
-                throw new Error(data.message || 'Failed to save projects');
+                throw new Error('Failed to save changes');
             }
 
-            // Update was successful
+            // Update local state
+            setLocalData({
+                ...localData,
+                orgProjects: projectsToSave
+            });
+
             onSaveComplete();
 
         } catch (err) {
             setError(err.message);
-            return false;
         } finally {
             setIsSaving(false);
         }
@@ -158,15 +162,18 @@ const EditProjects = ({
     return (
         <div className="space-y-4">
             <EditSection
-                title={"Projects"}
+                title="Projects"
                 isEditing={isEditing}
                 onEdit={onEdit}
                 onSave={handleSave}
                 onCancel={() => {
                     setError(null);
+                    setLocalData({
+                        ...localData,
+                        orgProjects: [...formData.orgProjects]
+                    });
                     onCancel();
                 }}
-                isSaving={isSaving}
             >
                 {isEditing ? (
                     <div className="space-y-6">
@@ -243,12 +250,12 @@ const EditProjects = ({
                     </div>
                 ) : (
                     <div className="space-y-6">
-                        {formData.orgProjects.length === 0 ? (
+                        {localData.orgProjects.length === 0 ? (
                             <p className="text-gray-500 italic">
                                 <Translate>No projects added yet</Translate>
                             </p>
                         ) : (
-                            formData.orgProjects.map((project) => (
+                            localData.orgProjects.map((project) => (
                                 <div 
                                     key={project.id} 
                                     className="border border-gray-200 rounded-lg p-4 transition-colors hover:border-gray-300"

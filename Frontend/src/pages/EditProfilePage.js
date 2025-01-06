@@ -110,7 +110,7 @@ export default function EditProfile({  }) {
                     setLocalData={setLocalData}
                     isEditing={editingSections.initiatives}
                     onEdit={() => handleEdit('initiatives')}
-                    onSave={() => handleSave('initiatives')}
+                    onSaveComplete={() => handleSave('initiatives')}
                     onCancel={() => handleCancel('initiatives')}
                 />
             )}
@@ -123,7 +123,7 @@ export default function EditProfile({  }) {
                     setLocalData={setLocalData}
                     isEditing={editingSections.projects}
                     onEdit={() => handleEdit('projects')}
-                    onSave={() => handleSave('projects')}
+                    onSaveComplete={() => handleSave('projects')}
                     onCancel={() => handleCancel('projects')}
                 />
             )}
