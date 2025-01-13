@@ -72,20 +72,32 @@ const EditInitiatives = ({
             if (!validateInitiatives(initiatives)) {
                 throw new Error('Please ensure all initiatives have a name and description');
             }
-
-            console.log('Saving initiatives:', initiatives);
-
+    
+            // Prepare initiatives data
+            const initiativesToSave = initiatives.map(initiative => ({
+                ...initiative,
+                org_id: formData.orgProfile.id,
+                user_id: formData.orgProfile.user_id
+            }));
+    
+            console.log('Saving initiatives:', initiativesToSave);
+    
             // Make API call to save initiatives
-            const response = await apiClient.post('/profile/edit_initiatives', {
-                initiatives
-            });
-
-            if (!response.ok) {
-                const data = await response.json();
-                throw new Error(data.message || 'Failed to save initiatives');
+            // Add request debugging
+            try {
+                const response = await apiClient.post('/profile/edit_initiatives', initiativesToSave);
+                console.log('Response:', response);
+            } catch (err) {
+                console.error('API Error:', err);
+                throw err;
             }
-
-            // Update was successful
+    
+            // Update local state
+            setLocalData({
+                ...localData,
+                orgInitiatives: initiativesToSave
+            });
+    
             onSaveComplete();
 
         } catch (err) {
@@ -124,12 +136,12 @@ const EditInitiatives = ({
                     />
                 ) : (
                     <div className="space-y-6">
-                        {formData.orgInitiatives.length === 0 ? (
+                        {localData.orgInitiatives.length === 0 ? (
                             <p className="text-gray-500 italic">
                                 <Translate>No programs or initiatives added yet</Translate>
                             </p>
                         ) : (
-                            formData.orgInitiatives.map((initiative) => (
+                            localData.orgInitiatives.map((initiative) => (
                                 <div 
                                     key={initiative.id} 
                                     className="border border-gray-200 rounded-lg p-4 hover:border-gray-300 transition-colors"

@@ -91,11 +91,11 @@ export default class ApiClient {
             console.error("Request failed:", error);
             return {
                 ok: false,
-                status: error.response.status || 500,
+                status: error.response?.status || 500,
                 body: {
-                    code: error.response.status || 500,
+                    code: error.response?.status || 500,
                     message:
-                        error.response.data.message ||
+                        error.response?.data.message ||
                         "The server is unresponsive",
                     description: error.toString(),
                 },

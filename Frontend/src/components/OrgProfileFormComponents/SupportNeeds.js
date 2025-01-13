@@ -2,6 +2,7 @@ import React, { useState, forwardRef, useImperativeHandle, useEffect, useRef } f
 import CreatableSelect from "react-select/creatable";
 import { useApi } from '../../contexts/ApiProvider';
 import { techSkillOptions, nonTechSkillOptions } from '../utils/supportNeedsFocusAreaEntries';
+import { XCircleIcon } from '@heroicons/react/24/outline';
 // This component represents the support needs section of the organization onboarding form.
 // It includes fields for technical and non-technical skills needed by the organization.
 
@@ -50,6 +51,7 @@ const AutoResizeTextarea = ({ value, onChange, placeholder, name }) => {
             <div 
                 ref={mirrorRef} 
                 className="absolute left-[-9999px] top-0 whitespace-pre-wrap break-words"
+                aria-hidden="true"
                 style={{
                     visibility: 'hidden',
                     position: 'absolute',
@@ -60,194 +62,232 @@ const AutoResizeTextarea = ({ value, onChange, placeholder, name }) => {
     );
 };
 
-const fetchSkills = async (apiClient) => {
-    try {
-        // Query db for tech and non-tech skills
-        const response = await apiClient.get('/all_skills');
-
-        let skills = [];
-        if (response.status === 200) {
-            skills = response.body.skills;
-        }
-
-        // Combine queried skills with predefined skills
-        const combinedTechSkills = [
-            ...skills.filter(skill => skill.status === 'tech'),
-            ...techSkillOptions
-        ];
-        console.log('combinedTechSkills:', combinedTechSkills);
-
-        const combinedNonTechSkills = [
-            ...skills.filter(skill => skill.status === 'non-tech'),
-            ...nonTechSkillOptions
-        ];
-
-        const techSkillList = [
-            ...new Set(
-                combinedTechSkills
-                    .map(skill => skill.value) // Extract skill values
-                    .filter(skillValue => typeof skillValue === "string" && skillValue.trim() !== "") // Keep only valid non-empty strings
-            )
-        ].map(skillValue => {
-            const existingSkill = techSkillOptions.find(s => s.value === skillValue);        
-            return existingSkill || { 
-                value: skillValue, 
-                label: skillValue.charAt(0).toUpperCase() + skillValue.slice(1) 
-            };
-        });
-
-        const nonTechSkillList = [
-            ...new Set(
-                combinedNonTechSkills
-                    .map(skill => skill.value)
-                    .filter(skillValue => typeof skillValue === "string" && skillValue.trim() !== "") // Keep only valid non-empty strings
-            )
-        ].map(skillValue => {
-            const existingSkill = nonTechSkillOptions.find(s => s.value === skillValue);
-            return existingSkill || { 
-                value: skillValue, 
-                label: skillValue.charAt(0).toUpperCase() + skillValue.slice(1) 
-            };
-        });
-
-        return { techSkillList, nonTechSkillList };
-    } catch (error) {
-        console.error('Error fetching skills:', error);
-        
-        // Fallback to predefined skills if API call fails
-        return {
-            techSkillList: techSkillOptions,
-            nonTechSkillList: nonTechSkillOptions
-        };
-    }
-};
-
-const SupportNeeds = forwardRef((props, ref) => {
-    const [techSkills, setTechSkills] = useState([]);
+const SupportNeeds = forwardRef(({ initialTechSkills = [], initialNonTechSkills = [] }, ref) => {
+    // State for current skills
+    const [techSkills, setTechSkills] = useState(initialTechSkills);
+    const [nonTechSkills, setNonTechSkills] = useState(initialNonTechSkills);
+    
+    // State for available options
     const [techSkillsOptions, setTechSkillOptions] = useState([]);
-    const [nonTechSkills, setNonTechSkills] = useState([]);
     const [nonTechSkillsOptions, setNonTechSkillOptions] = useState([]);
-    const [needVolunteers, setNeedVolunteers] = useState(false);
+    
+    // State for tracking original skills (for comparison)
+    const [originalTechSkills] = useState(new Set(initialTechSkills.map(skill => skill.value)));
+    const [originalNonTechSkills] = useState(new Set(initialNonTechSkills.map(skill => skill.value)));
+    
+    const [needVolunteers, setNeedVolunteers] = useState(
+        initialTechSkills.length > 0 || initialNonTechSkills.length > 0
+    );
+    
     const apiClient = useApi();
 
+    // Fetch available skills on component mount
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchSkillOptions = async () => {
             try {
-                const skills = await fetchSkills(apiClient);
-                
-                setTechSkillOptions(skills.techSkillList);
-                setNonTechSkillOptions(skills.nonTechSkillList);
+                const response = await apiClient.get('/all_skills');
+                const skills = response.ok ? response.body.skills : [];
+
+                // Combine and deduplicate skills
+                const techList = Array.from(new Set([
+                    ...skills.filter(s => s.status === 'tech').map(s => s.value),
+                    ...techSkillOptions.map(s => s.value)
+                ])).map(value => ({
+                    value,
+                    label: value.charAt(0).toUpperCase() + value.slice(1)
+                }));
+
+                const nonTechList = Array.from(new Set([
+                    ...skills.filter(s => s.status === 'non-tech').map(s => s.value),
+                    ...nonTechSkillOptions.map(s => s.value)
+                ])).map(value => ({
+                    value,
+                    label: value.charAt(0).toUpperCase() + value.slice(1)
+                }));
+
+                setTechSkillOptions(techList);
+                setNonTechSkillOptions(nonTechList);
             } catch (error) {
                 console.error('Error fetching skills:', error);
+                // Fallback to predefined options
+                setTechSkillOptions(techSkillOptions);
+                setNonTechSkillOptions(nonTechSkillOptions);
             }
         };
-        
-        fetchData();
+
+        fetchSkillOptions();
     }, [apiClient]);
 
     const handleVolunteerCheck = (event) => {
-        setNeedVolunteers(event.target.checked);
+        const newValue = event.target.checked;
+        setNeedVolunteers(newValue);
+        if (!newValue) {
+            setTechSkills([]);
+            setNonTechSkills([]);
+        }
     };
 
-    const handleTechSkillChange = (newSelectedSkills) => {
+    const handleTechSkillChange = (newSkills) => {
         setTechSkills(prevSkills => {
-            // Create a map of existing skills by their value
-            const existingSkillsMap = new Map(prevSkills.map(skill => [skill.value, skill]));
-    
-            // Map new skills, preserving existing descriptions if available
-            return newSelectedSkills.map(skill => ({
+            const existingSkills = new Map(prevSkills.map(skill => [skill.value, skill]));
+            return newSkills.map(skill => ({
                 ...skill,
-                description: existingSkillsMap.get(skill.value)?.description || ''
+                description: existingSkills.get(skill.value)?.description || ''
             }));
         });
     };
-    
-    const handleNonTechSkillChange = (newSelectedSkills) => {
+
+    const handleNonTechSkillChange = (newSkills) => {
         setNonTechSkills(prevSkills => {
-            // Create a map of existing skills by their value
-            const existingSkillsMap = new Map(prevSkills.map(skill => [skill.value, skill]));
-    
-            // Map new skills, preserving existing descriptions if available
-            return newSelectedSkills.map(skill => ({
+            const existingSkills = new Map(prevSkills.map(skill => [skill.value, skill]));
+            return newSkills.map(skill => ({
                 ...skill,
-                description: existingSkillsMap.get(skill.value)?.description || ''
+                description: existingSkills.get(skill.value)?.description || ''
             }));
         });
     };
 
     const handleSkillDescriptionChange = (index, description, istech) => {
         if (istech) {
-            const newTechSkills = [...techSkills];
-            newTechSkills[index].description = description;
-            setTechSkills(newTechSkills);
+            setTechSkills(prev => {
+                const updated = [...prev];
+                updated[index] = { ...updated[index], description };
+                return updated;
+            });
         } else {
-            const newNonTechSkills = [...nonTechSkills];
-            newNonTechSkills[index].description = description;
-            setNonTechSkills(newNonTechSkills);
+            setNonTechSkills(prev => {
+                const updated = [...prev];
+                updated[index] = { ...updated[index], description };
+                return updated;
+            });
         }
     };
 
-    const getData = () => {
-        return { techSkills, nonTechSkills };
-    }
+    const removeSkill = (index, istech) => {
+        if (istech) {
+            setTechSkills(prev => prev.filter((_, i) => i !== index));
+        } else {
+            setNonTechSkills(prev => prev.filter((_, i) => i !== index));
+        }
+    };
 
-    useImperativeHandle(ref, () => ({ getData }));
+    // Expose data and change tracking methods
+    useImperativeHandle(ref, () => ({
+        getData: () => ({ 
+            techSkills, 
+            nonTechSkills,
+            // Track which skills were removed from the original set
+            removedSkills: {
+                tech: Array.from(originalTechSkills).filter(
+                    skill => !techSkills.some(s => s.value === skill)
+                ),
+                nonTech: Array.from(originalNonTechSkills).filter(
+                    skill => !nonTechSkills.some(s => s.value === skill)
+                )
+            }
+        }),
+        hasChanges: () => {
+            const currentTechSet = new Set(techSkills.map(s => s.value));
+            const currentNonTechSet = new Set(nonTechSkills.map(s => s.value));
+            return !setsEqual(currentTechSet, originalTechSkills) || 
+                    !setsEqual(currentNonTechSet, originalNonTechSkills);
+        }
+    }));
+
+    // Utility function to compare sets
+    const setsEqual = (a, b) => 
+        a.size === b.size && [...a].every(value => b.has(value));
 
     return (
-        <div>
-            <div className="mb-8 my-6 ">
+        <div className="space-y-6">
+            <div className="flex items-center space-x-3">
                 <input
                     type="checkbox"
                     checked={needVolunteers}
                     onChange={handleVolunteerCheck}
-                    className="checked:bg-teal-500 checked:border-transparent bg-gray-100 border border-gray-300 rounded focus:ring focus:ring-offset-2 focus:ring-teal-500 size-10"
+                    className="h-5 w-5 rounded border-gray-300 text-teal-600 focus:ring-teal-500"
+                    id="volunteerNeeded"
                 />
-                <label className='text-2xl font-semibold'> We would like Volunteers</label>
+                <label 
+                    htmlFor="volunteerNeeded"
+                    className="text-lg font-medium text-gray-900"
+                >
+                    We would like Volunteers
+                </label>
             </div>
+
             {needVolunteers && (
-                <div>
-                    <div className="mb-4">
-                        <label>Technical Skills Needed:</label>
+                <div className="space-y-6">
+                    <div className="space-y-4">
+                        <label className="block text-sm font-medium text-gray-700">
+                            Technical Skills Needed:
+                        </label>
                         <CreatableSelect
-                            id="techSkills"
                             isMulti
                             options={techSkillsOptions}
                             value={techSkills}
                             onChange={handleTechSkillChange}
-                            placeholder="Select or type to add"
+                            placeholder="Select or type to add technical skills"
+                            className="react-select-container"
+                            classNamePrefix="react-select"
                         />
-                        {techSkills.map((skill, index) => (
-                            <div key={index} className="mt-2">
-                                <label>{skill.label} Description:</label>
-                                <AutoResizeTextarea
-                                    value={skill.description}
-                                    onChange={(e) => handleSkillDescriptionChange(index, e.target.value, true)}
-                                    placeholder={`Describe what you need`}
-                                />
-                            </div>
-                        ))}
+                        <div className="space-y-4">
+                            {techSkills.map((skill, index) => (
+                                <div key={index} className="relative p-4 border rounded-lg bg-gray-50">
+                                    <button
+                                        onClick={() => removeSkill(index, true)}
+                                        className="absolute top-2 right-2 text-gray-400 hover:text-red-500"
+                                        aria-label="Remove skill"
+                                    >
+                                        <XCircleIcon className="h-5 w-5" />
+                                    </button>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        {skill.label} Description:
+                                    </label>
+                                    <AutoResizeTextarea
+                                        value={skill.description}
+                                        onChange={(e) => handleSkillDescriptionChange(index, e.target.value, true)}
+                                        placeholder={'Describe what you need for this skill'}
+                                    />
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                    
-                    <div className="mb-4">
-                        <label>Non-Technical Skills Needed:</label>
+
+                    <div className="space-y-4">
+                        <label className="block text-sm font-medium text-gray-700">
+                            Non-Technical Skills Needed:
+                        </label>
                         <CreatableSelect
-                            id="nonTechSkills"
                             isMulti
                             options={nonTechSkillsOptions}
                             value={nonTechSkills}
                             onChange={handleNonTechSkillChange}
-                            placeholder="Select or type to add"
+                            placeholder="Select or type to add non-technical skills"
+                            className="react-select-container"
+                            classNamePrefix="react-select"
                         />
-                        {nonTechSkills.map((skill, index) => (
-                            <div key={index} className="mt-2">
-                                <label>{skill.label} Description:</label>
-                                <AutoResizeTextarea
-                                    value={skill.description}
-                                    onChange={(e) => handleSkillDescriptionChange(index, e.target.value, false)}
-                                    placeholder={`Describe what you need`}
-                                />
-                            </div>
-                        ))}
+                        <div className="space-y-4">
+                            {nonTechSkills.map((skill, index) => (
+                                <div key={index} className="relative p-4 border rounded-lg bg-gray-50">
+                                    <button
+                                        onClick={() => removeSkill(index, false)}
+                                        className="absolute top-2 right-2 text-gray-400 hover:text-red-500"
+                                        aria-label="Remove skill"
+                                    >
+                                        <XCircleIcon className="h-5 w-5" />
+                                    </button>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        {skill.label} Description:
+                                    </label>
+                                    <AutoResizeTextarea
+                                        value={skill.description}
+                                        onChange={(e) => handleSkillDescriptionChange(index, e.target.value, false)}
+                                        placeholder={'Describe what you need for this skill'}
+                                    />
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             )}

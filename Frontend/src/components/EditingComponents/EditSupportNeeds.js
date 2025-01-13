@@ -4,7 +4,6 @@ import SupportNeeds from '../OrgProfileFormComponents/SupportNeeds';
 import EditSection from './EditSection';
 import { techSkillOptions, nonTechSkillOptions } from '../utils/supportNeedsFocusAreaEntries';
 import { useApi } from '../../contexts/ApiProvider';
-import ApiClient from '../../ApiClient';
 /**
  * EditSupportNeeds component for managing organization's required skills
  * @param {Object} props
@@ -37,14 +36,13 @@ const EditSupportNeeds = forwardRef(({
         if (!skillsData) return 'Invalid skills data';
         if (!Array.isArray(skillsData.techSkills)) return 'Invalid technical skills format';
         if (!Array.isArray(skillsData.nonTechSkills)) return 'Invalid non-technical skills format';
+        if (!Array.isArray(skillsData.removedSkills?.tech)) return 'Invalid removed tech skills format';
+        if (!Array.isArray(skillsData.removedSkills?.nonTech)) return 'Invalid removed non-tech skills format';
 
         // Validate technical skills
         for (const skill of skillsData.techSkills) {
             if (!skill.value || typeof skill.value !== 'string') {
                 return 'Invalid technical skill value';
-            }
-            if (!techSkillOptions.some(option => option.value === skill.value)) {
-                return `Invalid technical skill: ${skill.value}`;
             }
             if (skill.description && typeof skill.description !== 'string') {
                 return 'Invalid technical skill description format';
@@ -56,9 +54,6 @@ const EditSupportNeeds = forwardRef(({
             if (!skill.value || typeof skill.value !== 'string') {
                 return 'Invalid non-technical skill value';
             }
-            if (!nonTechSkillOptions.some(option => option.value === skill.value)) {
-                return `Invalid non-technical skill: ${skill.value}`;
-            }
             if (skill.description && typeof skill.description !== 'string') {
                 return 'Invalid non-technical skill description format';
             }
@@ -68,7 +63,48 @@ const EditSupportNeeds = forwardRef(({
     };
 
     /**
+     * Transforms skills data for API submission
+     * @param {Object} skillsData - Raw skills data
+     * @returns {Array} Transformed skills array for API
+     */
+    const transformSkillsForApi = (skillsData) => {
+        const { techSkills, nonTechSkills, removedSkills } = skillsData;
+        
+        // Transform current skills
+        const transformedSkills = [
+            ...techSkills.map(skill => ({
+                skill: skill.value,
+                status: 'tech',
+                description: skill.description || '',
+                action: 'add'
+            })),
+            ...nonTechSkills.map(skill => ({
+                skill: skill.value,
+                status: 'non-tech',
+                description: skill.description || '',
+                action: 'add'
+            })),
+            // Add removed skills with 'remove' action
+            ...removedSkills.tech.map(skill => ({
+                skill,
+                status: 'tech',
+                description: '',
+                action: 'remove'
+            })),
+            ...removedSkills.nonTech.map(skill => ({
+                skill,
+                status: 'non-tech',
+                description: '',
+                action: 'remove'
+            }))
+        ];
+
+        return [...transformedSkills];
+    };
+
+    /**
      * Handles the save operation for skills
+     * @returns {Promise<boolean>} Success status
      */
     const handleSave = async () => {
         try {
@@ -84,40 +120,34 @@ const EditSupportNeeds = forwardRef(({
                 throw new Error(validationError);
             }
 
-            // Transform the data to match the API format
-            const transformedSkills = [
-                ...skillsData.techSkills.map(skill => ({
-                    skill: skill.value,
-                    status: 'tech',
-                    description: skill.description || ''
-                })),
-                ...skillsData.nonTechSkills.map(skill => ({
-                    skill: skill.value,
-                    status: 'non-tech',
-                    description: skill.description || ''
-                }))
-            ];
+            // Transform the data for API submission
+            const transformedSkills = transformSkillsForApi(skillsData);
 
             console.log('Saving skills:', transformedSkills);
 
-            // // Make API call to save skills
-            // const response = await apiClient.post('/profile/edit_skills', transformedSkills);
+            // Make API call to save skills
+            const response = await apiClient.post("/profile/edit_skills", {...transformedSkills, user_id: formData.orgProfile.user_id });
+            console.log('Response:', response);
 
-            // if (!response.ok) {
-            //     const data = await response.json();
-            //     throw new Error(data.message || 'Failed to save skills');
-            // }
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.message || 'Failed to save skills');
+            }
 
-            // Update local data
+            // Update local data with the new skills state
             setLocalData(prevData => ({
                 ...prevData,
-                orgSkillsNeeded: transformedSkills
+                orgSkillsNeeded: transformedSkills.filter(skill => 
+                    skill.action !== 'remove' && 'skill' in skill
+                )
             }));
 
             // Notify parent of successful save
             onSaveComplete('skills');
+            return true;
 
         } catch (err) {
+            console.error('Error saving skills:', err);
             setError(err.message);
             return false;
         } finally {
@@ -135,9 +165,16 @@ const EditSupportNeeds = forwardRef(({
             ? "bg-blue-50 text-blue-700" 
             : "bg-green-50 text-green-700";
 
+        const label = options.find(option => option.value === skill.skill)?.label || skill.skill;
+
         return (
             <div className={`${baseClasses} ${colorClasses}`}>
-                {options.find(option => option.value === skill.skill)?.label || skill.skill}
+                <span>{label}</span>
+                {skill.description && (
+                    <span className="ml-1 text-xs text-gray-500">
+                        (has description)
+                    </span>
+                )}
             </div>
         );
     };
@@ -156,6 +193,12 @@ const EditSupportNeeds = forwardRef(({
                 isSaving={isSaving}
             >
                 <div className="space-y-6">
+                    {error && (
+                        <div className="text-red-600 text-sm mb-4">
+                            {error}
+                        </div>
+                    )}
+
                     {/* Always Visible Skills Section */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div>
@@ -165,9 +208,9 @@ const EditSupportNeeds = forwardRef(({
                             <div className="flex flex-wrap">
                                 {formData.orgSkillsNeeded
                                     .filter(skill => skill.status === 'tech')
-                                    .map(skill => (
+                                    .map((skill, index) => (
                                         <SkillBadge 
-                                            key={skill.id} 
+                                            key={`${skill.skill}-${index}`}
                                             skill={skill} 
                                             type="tech" 
                                         />
@@ -187,9 +230,9 @@ const EditSupportNeeds = forwardRef(({
                             <div className="flex flex-wrap">
                                 {formData.orgSkillsNeeded
                                     .filter(skill => skill.status === 'non-tech')
-                                    .map(skill => (
+                                    .map((skill, index) => (
                                         <SkillBadge 
-                                            key={skill.id} 
+                                            key={`${skill.skill}-${index}`}
                                             skill={skill} 
                                             type="non-tech" 
                                         />
