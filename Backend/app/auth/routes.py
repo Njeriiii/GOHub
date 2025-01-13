@@ -49,7 +49,7 @@ def signup():
         email=email,
         first_name=first_name,
         last_name=last_name,
-        password=generate_password_hash(password, method="sha256"),
+        password=generate_password_hash(password),
         is_admin=is_admin,
     )
 
