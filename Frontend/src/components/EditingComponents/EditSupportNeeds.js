@@ -20,6 +20,7 @@ const EditSupportNeeds = forwardRef(({
     onEdit,
     onSaveComplete,
     onCancel,
+    localData,
     setLocalData
 }, ref) => {
     const supportNeedsRef = useRef();
@@ -70,19 +71,24 @@ const EditSupportNeeds = forwardRef(({
     const transformSkillsForApi = (skillsData) => {
         const { techSkills, nonTechSkills, removedSkills } = skillsData;
         
-        // Transform current skills
+        // Get original skills from formData
+        const originalSkills = formData.orgProfile.skills_needed.map(skill => skill.skill);
+        
+        // Transform skills with proper action flags
         const transformedSkills = [
             ...techSkills.map(skill => ({
                 skill: skill.value,
                 status: 'tech',
                 description: skill.description || '',
-                action: 'add'
+                // If skill wasn't in original list, it's new (add), otherwise it remains
+                action: originalSkills.includes(skill.value) ? 'remains' : 'add'
             })),
             ...nonTechSkills.map(skill => ({
                 skill: skill.value,
                 status: 'non-tech',
                 description: skill.description || '',
-                action: 'add'
+                // If skill wasn't in original list, it's new (add), otherwise it remains
+                action: originalSkills.includes(skill.value) ? 'remains' : 'add'
             })),
             // Add removed skills with 'remove' action
             ...removedSkills.tech.map(skill => ({
@@ -134,12 +140,21 @@ const EditSupportNeeds = forwardRef(({
                 throw new Error(data.message || 'Failed to save skills');
             }
 
+            // Filter out skills that were marked for removal
+            const activeSkills = transformedSkills.filter(skill => skill.action !== 'remove');
+
+
             // Update local data with the new skills state
             setLocalData(prevData => ({
                 ...prevData,
-                orgSkillsNeeded: transformedSkills.filter(skill => 
-                    skill.action !== 'remove' && 'skill' in skill
-                )
+                orgProfile: {
+                    ...prevData.orgProfile,
+                    skills_needed: activeSkills.map(skill => ({
+                        skill: skill.skill,
+                        status: skill.status,
+                        description: skill.description
+                    }))
+                }
             }));
 
             // Notify parent of successful save
@@ -172,7 +187,6 @@ const EditSupportNeeds = forwardRef(({
                 <span>{label}</span>
                 {skill.description && (
                     <span className="ml-1 text-xs text-gray-500">
-                        (has description)
                     </span>
                 )}
             </div>
@@ -206,7 +220,7 @@ const EditSupportNeeds = forwardRef(({
                                 <Translate>Technical Skills</Translate>
                             </h4>
                             <div className="flex flex-wrap">
-                                {formData.orgSkillsNeeded
+                                {localData.orgProfile.skills_needed
                                     .filter(skill => skill.status === 'tech')
                                     .map((skill, index) => (
                                         <SkillBadge 
@@ -216,7 +230,7 @@ const EditSupportNeeds = forwardRef(({
                                         />
                                     ))
                                 }
-                                {formData.orgSkillsNeeded.filter(skill => skill.status === 'tech').length === 0 && (
+                                {localData.orgProfile.skills_needed.filter(skill => skill.status === 'tech').length === 0 && (
                                     <p className="text-gray-500 italic text-sm">
                                         <Translate>No technical skills specified</Translate>
                                     </p>
@@ -228,7 +242,7 @@ const EditSupportNeeds = forwardRef(({
                                 <Translate>Non-Technical Skills</Translate>
                             </h4>
                             <div className="flex flex-wrap">
-                                {formData.orgSkillsNeeded
+                                {localData.orgProfile.skills_needed
                                     .filter(skill => skill.status === 'non-tech')
                                     .map((skill, index) => (
                                         <SkillBadge 
@@ -238,7 +252,7 @@ const EditSupportNeeds = forwardRef(({
                                         />
                                     ))
                                 }
-                                {formData.orgSkillsNeeded.filter(skill => skill.status === 'non-tech').length === 0 && (
+                                {localData.orgProfile.skills_needed.filter(skill => skill.status === 'non-tech').length === 0 && (
                                     <p className="text-gray-500 italic text-sm">
                                         <Translate>No non-technical skills specified</Translate>
                                     </p>
@@ -251,14 +265,14 @@ const EditSupportNeeds = forwardRef(({
                     {isEditing && (
                         <SupportNeeds
                             ref={supportNeedsRef}
-                            initialTechSkills={formData.orgSkillsNeeded
+                            initialTechSkills={localData.orgProfile.skills_needed
                                 .filter(skill => skill.status === 'tech')
                                 .map(skill => ({
                                     value: skill.skill,
                                     label: techSkillOptions.find(option => option.value === skill.skill)?.label || skill.skill,
                                     description: skill.description
                                 }))}
-                            initialNonTechSkills={formData.orgSkillsNeeded
+                            initialNonTechSkills={localData.orgProfile.skills_needed
                                 .filter(skill => skill.status === 'non-tech')
                                 .map(skill => ({
                                     value: skill.skill,

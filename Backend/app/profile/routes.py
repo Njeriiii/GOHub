@@ -211,36 +211,23 @@ def load_org_profile():
     if not user_id:
         return jsonify({"message": "User ID is required"}), 400
 
-    response_data = {}
-
     org_profile = OrgProfile.query.filter_by(user_id=user_id).first()
 
     if org_profile is None:
-        response_data["message"] = "Organisation profile not found"
-        response_data["status"] = "failed"
-        return jsonify(response_data), 404
+        return jsonify({
+            "message": "Organisation profile not found",
+            "status": "failed"
+        }), 404
 
-    org_id = org_profile.id
-
-    org_profile_data = org_profile.serialize()
-    org_projects = OrgProjects.query.filter_by(org_id=org_id).all()
-    org_initiatives = OrgInitiatives.query.filter_by(org_id=org_id).all()
-
-    org_skills_needed = SkillsNeeded.query.filter(
-        SkillsNeeded.org_profiles.any(id=org_id)
-    ).all()
-
-    response_data["orgProfile"] = org_profile_data
-    response_data["orgProfile"] = org_profile.serialize()
-    response_data["orgProjects"] = [project.serialize() for project in org_projects]
-    response_data["orgInitiatives"] = [
-        initiative.serialize() for initiative in org_initiatives
-    ]
-    response_data["orgSkillsNeeded"] = [
-        skill.serialize() for skill in org_skills_needed
-    ]
-
-    response_data["status"] = "success"
+    # Get all data from the serialized org profile
+    serialized_data = org_profile.serialize()
+    
+    response_data = {
+        "orgProfile": serialized_data,  # This now includes skills with descriptions
+        "orgProjects": [project.serialize() for project in org_profile.projects],
+        "orgInitiatives": [initiative.serialize() for initiative in org_profile.initiatives],
+        "status": "success"
+    }
 
     return jsonify(response_data), 200
 
@@ -548,38 +535,30 @@ def edit_org_initiatives():
 
 @profile.route("/profile/edit_skills", methods=["POST"])
 def edit_org_skills():
-    """Update organization skills"""
+    """Update organization skills with support for add/remove/remains actions"""
     try:
         data = request.get_json()
-        if not data or not isinstance(data, list):
+        if not data:
             return jsonify({"status": "error", "message": "Invalid data format"}), 400
 
-        # Find the user_id object in the list
-        user_id = None
-        skills_list = []
-        for item in data:
-            if isinstance(item, dict):
-                if 'user_id' in item:
-                    user_id = item['user_id']
-                elif 'skill' in item and 'status' in item:
-                    skills_list.append(item)
-
+        user_id = data.get('user_id')
         if not user_id:
             return jsonify({"status": "error", "message": "User ID is required"}), 400
 
-        # Get organization profile
+        skills_list = [data[str(i)] for i in range(len(data) - 1)]
+        print("Processing skills:", skills_list)
+
         org_profile = OrgProfile.query.filter_by(user_id=user_id).first()
         if not org_profile:
             return jsonify({"status": "error", "message": "Organization profile not found"}), 404
 
-        # Clear existing skills and add new ones
+        # Simply empty the skills list without trying to delete from association table
         org_profile.skills_needed = []
         db.session.flush()
 
-        # Process new skills
+        # Add new skills
         for skill_item in skills_list:
-            # Only process items marked for addition
-            if skill_item.get('action') == 'add':
+            if skill_item.get('action') in ['add', 'remains']:
                 # Get or create skill
                 skill = SkillsNeeded.query.filter_by(
                     skill=skill_item['skill'],
@@ -594,13 +573,26 @@ def edit_org_skills():
                     db.session.add(skill)
                     db.session.flush()
 
-                # Add to organization's skills
-                if skill not in org_profile.skills_needed:
-                    org_profile.skills_needed.append(skill)
+                # Add to relationship
+                org_profile.skills_needed.append(skill)
+                
+                # Let SQLAlchemy create the association, then update the description
+                db.session.flush()
+                
+                # Now update the description
+                db.session.execute(
+                    org_skills_connection.update().where(
+                        db.and_(
+                            org_skills_connection.c.org_id == org_profile.id,
+                            org_skills_connection.c.skill_id == skill.id
+                        )
+                    ).values(
+                        description=skill_item.get('description', '')
+                    )
+                )
 
         db.session.commit()
 
-        # Return updated skills - using the model's serialize method
         return jsonify({
             "status": "success",
             "message": "Skills updated successfully",
@@ -609,9 +601,9 @@ def edit_org_skills():
 
     except SQLAlchemyError as e:
         db.session.rollback()
-        print(f"Database error: {str(e)}")  # Log the error
-        return jsonify({"status": "error", "message": "Database error occurred"}), 500
+        print(f"Database error: {str(e)}")
+        return jsonify({"status": "error", "message": f"Database error: {str(e)}"}), 500
     except Exception as e:
         db.session.rollback()
-        print(f"Unexpected error: {str(e)}")  # Log the error
-        return jsonify({"status": "error", "message": "An unexpected error occurred"}), 500
+        print(f"Unexpected error: {str(e)}")
+        return jsonify({"status": "error", "message": str(e)}), 500

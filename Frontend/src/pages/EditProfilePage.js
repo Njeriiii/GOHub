@@ -136,6 +136,7 @@ export default function EditProfile({  }) {
                 onEdit={() => handleEdit('skills')}
                 onSaveComplete={handleSaveComplete}
                 onCancel={() => handleCancel('skills')}
+                localData={localData}
                 setLocalData={setLocalData}
             />
             )}

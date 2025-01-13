@@ -153,6 +153,20 @@ class OrgProfile(db.Model):
 
     def serialize(self):
 
+        skills_data = []
+        for skill_assoc in self.skills_needed:
+            # Get the description from the association table
+            description = db.session.query(org_skills_connection.c.description).filter(
+                db.and_(
+                    org_skills_connection.c.org_id == self.id,
+                    org_skills_connection.c.skill_id == skill_assoc.id
+                )
+            ).scalar()
+            
+            skill_data = skill_assoc.serialize()
+            skill_data['description'] = description
+            skills_data.append(skill_data)
+
         org_data = {
             "id": self.id,
             "user_id": self.user_id,
@@ -180,7 +194,7 @@ class OrgProfile(db.Model):
             "org_verified": self.org_verified,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
-            "skills_needed": [skill.serialize() for skill in self.skills_needed],
+            "skills_needed": skills_data,
             "focus_areas": [area.serialize() for area in self.focus_areas],
         }
         return org_data
