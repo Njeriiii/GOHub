@@ -2,9 +2,8 @@ from flask import Blueprint, jsonify, request
 from flask_login import login_required, current_user
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import joinedload
 from datetime import datetime
-import logging
-import sys
 from app import db
 
 from app.models import (
@@ -18,14 +17,6 @@ from app.models import (
 )
 
 profile = Blueprint("profile", __name__)
-
-# Configure logging
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s %(levelname)s: %(message)s',
-    stream=sys.stderr
-)
-logger = logging.getLogger(__name__)
 
 # Create a new organisation profile
 @profile.route("/profile/org", methods=["POST"])
@@ -460,3 +451,167 @@ def edit_org_projects():
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
+# Edit initiatives
+@profile.route("/profile/edit_initiatives", methods=["POST"])
+def edit_org_initiatives():
+    """Update organization initiatives intelligently"""
+    try:
+        print("Starting request processing")  # Debug log
+        data = request.get_json()
+        print(f"Received data: {data}")  # Debug log
+        
+        if not data:
+            print("No data received")  # Debug log
+            return jsonify({"status": "error", "message": "Invalid data format"}), 400
+
+        if not isinstance(data, list):
+            print(f"Invalid data type: {type(data)}")  # Debug log
+            return jsonify({"status": "error", "message": "Expected array of initiatives"}), 400
+
+        initiatives = data
+        if not initiatives:
+            print("No initiatives in data")  # Debug log
+            return jsonify({"status": "error", "message": "No initiatives provided"}), 400
+
+        # Get user_id and org_id from first initiative
+        first_initiative = initiatives[0]
+        user_id = first_initiative.get('user_id')
+        org_id = first_initiative.get('org_id')
+
+        print(f"User ID: {user_id}, Org ID: {org_id}")  # Debug log
+
+        if not user_id or not org_id:
+            print("Missing user_id or org_id")  # Debug log
+            return jsonify({"status": "error", "message": "User ID and Org ID are required"}), 400
+
+        try:
+            org_profile = OrgProfile.query.filter_by(id=org_id, user_id=user_id).first()
+            print(f"Found org profile: {org_profile is not None}")  # Debug log
+            
+            if not org_profile:
+                return jsonify({"status": "error", "message": "Organization profile not found"}), 404
+
+            existing_initiatives = OrgInitiatives.query.filter_by(org_id=org_id).all()
+            print(f"Found {len(existing_initiatives)} existing initiatives")  # Debug log
+            
+            existing_initiatives_dict = {init.id: init for init in existing_initiatives}
+            updated_initiative_ids = set()
+
+            # Start database transaction
+            for initiative_data in initiatives:
+                initiative_id = initiative_data.get('id')
+                print(f"Processing initiative ID: {initiative_id}")  # Debug log
+
+                if initiative_id and initiative_id in existing_initiatives_dict:
+                    # Update existing initiative
+                    initiative = existing_initiatives_dict[initiative_id]
+                    initiative.initiative_name = initiative_data['initiative_name']
+                    initiative.initiative_description = initiative_data['initiative_description']
+                    updated_initiative_ids.add(initiative_id)
+                else:
+                    # Create new initiative
+                    new_initiative = OrgInitiatives(
+                        org_id=org_id,
+                        initiative_name=initiative_data['initiative_name'],
+                        initiative_description=initiative_data['initiative_description']
+                    )
+                    db.session.add(new_initiative)
+
+            # Delete initiatives that weren't in the update
+            for init_id, init in existing_initiatives_dict.items():
+                if init_id not in updated_initiative_ids:
+                    print(f"Deleting initiative ID: {init_id}")  # Debug log
+                    db.session.delete(init)
+
+            db.session.commit()
+            print("Successfully committed changes")  # Debug log
+            
+            return jsonify({
+                "status": "success",
+                "message": "Initiatives updated successfully"
+            }), 200
+
+        except SQLAlchemyError as db_err:
+            print(f"Database error: {str(db_err)}")  # Debug log
+            db.session.rollback()
+            raise
+
+    except SQLAlchemyError as e:
+        print(f"SQLAlchemy error: {str(e)}")  # Debug log
+        db.session.rollback()
+        return jsonify({"status": "error", "message": str(e)}), 501
+    except Exception as e:
+        print(f"Unexpected error: {str(e)}")  # Debug log
+        print(f"Error type: {type(e)}")  # Debug log
+        return jsonify({"status": "error", "message": str(e)}), 502
+
+
+@profile.route("/profile/edit_skills", methods=["POST"])
+def edit_org_skills():
+    """Update organization skills"""
+    try:
+        data = request.get_json()
+        if not data or not isinstance(data, list):
+            return jsonify({"status": "error", "message": "Invalid data format"}), 400
+
+        # Find the user_id object in the list
+        user_id = None
+        skills_list = []
+        for item in data:
+            if isinstance(item, dict):
+                if 'user_id' in item:
+                    user_id = item['user_id']
+                elif 'skill' in item and 'status' in item:
+                    skills_list.append(item)
+
+        if not user_id:
+            return jsonify({"status": "error", "message": "User ID is required"}), 400
+
+        # Get organization profile
+        org_profile = OrgProfile.query.filter_by(user_id=user_id).first()
+        if not org_profile:
+            return jsonify({"status": "error", "message": "Organization profile not found"}), 404
+
+        # Clear existing skills and add new ones
+        org_profile.skills_needed = []
+        db.session.flush()
+
+        # Process new skills
+        for skill_item in skills_list:
+            # Only process items marked for addition
+            if skill_item.get('action') == 'add':
+                # Get or create skill
+                skill = SkillsNeeded.query.filter_by(
+                    skill=skill_item['skill'],
+                    status=skill_item['status']
+                ).first()
+
+                if not skill:
+                    skill = SkillsNeeded(
+                        skill=skill_item['skill'],
+                        status=skill_item['status']
+                    )
+                    db.session.add(skill)
+                    db.session.flush()
+
+                # Add to organization's skills
+                if skill not in org_profile.skills_needed:
+                    org_profile.skills_needed.append(skill)
+
+        db.session.commit()
+
+        # Return updated skills - using the model's serialize method
+        return jsonify({
+            "status": "success",
+            "message": "Skills updated successfully",
+            "skills": [skill.serialize() for skill in org_profile.skills_needed]
+        }), 200
+
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        print(f"Database error: {str(e)}")  # Log the error
+        return jsonify({"status": "error", "message": "Database error occurred"}), 500
+    except Exception as e:
+        db.session.rollback()
+        print(f"Unexpected error: {str(e)}")  # Log the error
+        return jsonify({"status": "error", "message": "An unexpected error occurred"}), 500

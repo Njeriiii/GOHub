@@ -21,7 +21,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "5162:5162"
+      - "5162:8080"
     environment:
       - FLASK_DEBUG=0
       - FLASK_APP=run.py
