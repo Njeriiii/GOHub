@@ -1,8 +1,9 @@
-import React, { useState, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { 
     BuildingOfficeIcon, 
     DocumentIcon,
+    ArrowRightIcon,
 } from '@heroicons/react/24/outline';
 import EditSupportNeeds from '../components/EditingComponents/EditSupportNeeds.js';
 import EditBasicInfo from '../components/EditingComponents/EditBasicInfo.js';
@@ -11,15 +12,11 @@ import EditProjects from '../components/EditingComponents/EditProjects.js';
 
 export default function EditProfile({  }) {
     const location = useLocation();
+    const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('basic');
     const [editingSections, setEditingSections] = useState({});
     const [localData, setLocalData] = useState(location.state.orgData);
     const [formData, setFormData] = useState(location.state.orgData);
-
-    // Function to handle completion of save operations
-    const handleSaveComplete = (section) => {
-        setEditingSections(prev => ({ ...prev, [section]: false }));
-    };
 
     const tabs = [
         { id: 'basic', label: 'Basic Information', icon: BuildingOfficeIcon },
@@ -34,7 +31,6 @@ export default function EditProfile({  }) {
 
     const handleSave = async (section) => {
         try {
-            // API call would go here to save the specific section
             console.log(`Saving section: ${section}`, localData);
             setEditingSections(prev => ({ ...prev, [section]: false }));
         } catch (error) {
@@ -45,6 +41,14 @@ export default function EditProfile({  }) {
     const handleCancel = (section) => {
         setLocalData(formData); // Reset to original data
         setEditingSections(prev => ({ ...prev, [section]: false }));
+    };
+
+    const handleReturnToProfile = () => {
+        navigate('/org_profile', { 
+            state: { 
+                org: { user_id: formData.orgProfile.user_id }
+            } 
+        });
     };
 
     return (
@@ -134,11 +138,20 @@ export default function EditProfile({  }) {
                 formData={formData}
                 isEditing={editingSections.skills}
                 onEdit={() => handleEdit('skills')}
-                onSaveComplete={handleSaveComplete}
+                onSaveComplete={() => handleSave('skills')}
                 onCancel={() => handleCancel('skills')}
                 localData={localData}
                 setLocalData={setLocalData}
             />
             )}
+            <div className="flex justify-end">
+                <button
+                    onClick={handleReturnToProfile}
+                    className="inline-flex items-center px-6 py-3 text-sm font-medium text-white bg-teal-600 rounded-full shadow-lg hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors duration-200"
+                >
+                    <span className="mr-2">Return to Profile</span>
+                    <ArrowRightIcon className="h-5 w-5" />
+                </button>
+            </div>
         </div>
 )};
