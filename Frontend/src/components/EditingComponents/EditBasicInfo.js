@@ -320,7 +320,7 @@ const EditBasicInfo = ({
                                     <p className="mt-1 text-gray-600">{localData.orgProfile.org_district_town}</p>
                                 </div>
                                 <div>
-                                    <h4 className="text-sm font-medium text-gray-700">org_county</h4>
+                                    <h4 className="text-sm font-medium text-gray-700">County</h4>
                                     <p className="mt-1 text-gray-600">{localData.orgProfile.org_county}</p>
                                 </div>
                                 <div>
