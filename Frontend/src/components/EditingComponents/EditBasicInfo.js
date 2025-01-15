@@ -33,6 +33,7 @@ const EditBasicInfo = ({
 
     // Refs for child components
     const overviewTextAreaRef = useRef(null);
+    const missionStatementRef = useRef(null);
     const contactInfoRef = useRef(null);
     const addressRef = useRef(null);
     const socialMediaRef = useRef(null);
@@ -118,6 +119,13 @@ const EditBasicInfo = ({
                     break;
 
                 case 'mission':
+                    if (!missionStatementRef.current) return;
+                        const missionData = missionStatementRef.current.getData();
+                        if (!missionData) throw new Error('Invalid mission data');
+                            sectionData = {
+                                org_mission_statement: missionData
+                            };
+                    break;
                 case 'overview':
                     // These sections' data is already in localData
                     sectionData = {};
@@ -202,13 +210,7 @@ const EditBasicInfo = ({
                             </label>
                             <MissionStatement
                                 initialValue={localData.orgProfile.org_mission_statement}
-                                onChange={(value) => setLocalData({
-                                    ...localData,
-                                    orgProfile: {
-                                        ...localData.orgProfile,
-                                        org_mission_statement: value
-                                    }
-                                })}
+                                ref={missionStatementRef}
                             />
                         </div>
                     </div>

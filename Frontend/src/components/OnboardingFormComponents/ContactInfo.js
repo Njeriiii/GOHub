@@ -8,11 +8,6 @@ const ContactInfo = forwardRef(({ initialValues = { email: '', phone: '' } }, re
         phone: ''
     });
 
-    // Update state when initialValues change
-    useEffect(() => {
-        setState(initialValues);
-    }, [initialValues]);
-
     const validateEmail = (email) => {
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return re.test(email);

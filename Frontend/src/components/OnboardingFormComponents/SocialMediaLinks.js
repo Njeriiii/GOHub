@@ -23,18 +23,6 @@ const SocialMediaLinks = forwardRef(({ initialValues = {} }, ref) => {
         youtube: initialValues.youtube || ''
     });
 
-    // Update state when initialValues change
-    useEffect(() => {
-        setLinks({
-            website: initialValues.website || '',
-            facebook: initialValues.facebook || '',
-            x: initialValues.x || '',
-            instagram: initialValues.instagram || '',
-            linkedin: initialValues.linkedin || '',
-            youtube: initialValues.youtube || ''
-        });
-    }, [initialValues]);
-
     const [errors, setErrors] = useState({
         website: '',
         facebook: '',

@@ -34,6 +34,10 @@ const EditInitiatives = ({
      * @param {Array} updatedInitiatives - New array of initiatives
      */
     const handleInitiativesChange = (updatedInitiatives) => {
+        if (!updatedInitiatives || updatedInitiatives.length === 0) {
+            return;
+        }
+
         setLocalData({
             ...localData,
             orgInitiatives: updatedInitiatives
@@ -66,7 +70,11 @@ const EditInitiatives = ({
             setError(null);
 
             // Get current initiatives data
-            const initiatives = localData.orgInitiatives;
+            // change variable name from initiativeName to initiative_name and description to initiative_description
+            const initiatives = localData.orgInitiatives.map(initiative => ({
+                initiative_name: initiative.initiativeName,
+                initiative_description: initiative.description
+            }));
 
             // Validate the data
             if (!validateInitiatives(initiatives)) {
@@ -79,8 +87,6 @@ const EditInitiatives = ({
                 org_id: formData.orgProfile.id,
                 user_id: formData.orgProfile.user_id
             }));
-    
-            console.log('Saving initiatives:', initiativesToSave);
     
             // Make API call to save initiatives
             // Add request debugging

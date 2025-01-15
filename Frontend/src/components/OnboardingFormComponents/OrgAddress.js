@@ -19,17 +19,6 @@ const OrgAddress = forwardRef(({ initialValues = {
         physicalDescription: initialValues.physicalDescription || '',
         googleMapsLink: initialValues.googleMapsLink || ''
     });
-    // Update state when initialValues change
-    useEffect(() => {
-        setState({
-            districtTown: initialValues.districtTown || '',
-            county: initialValues.county ? { value: initialValues.county, label: initialValues.county } : null,
-            poBox: initialValues.poBox || '',
-            country: { value: 'Kenya', label: 'Kenya' },
-            physicalDescription: initialValues.physicalDescription || '',
-            googleMapsLink: initialValues.googleMapsLink || ''
-        });
-    }, [initialValues]);
     
     const [errors, setErrors] = useState({
         districtTown: '',

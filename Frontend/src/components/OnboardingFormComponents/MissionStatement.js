@@ -1,15 +1,28 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 
-const MissionStatement = ({ initialValue = '', onChange }) => {
+/**
+ * MissionStatement Component
+ * A textarea component that automatically adjusts its height and tracks character count
+ * 
+ * @param {Object} props
+ * @param {string} props.initialValue - Initial text value for the mission statement
+ * @param {function} props.onChange - Callback function when text changes
+ * @returns {React.Component}
+ */
+const MissionStatement = forwardRef(({ initialValue = '' }, ref) => {
     const [statement, setStatement] = useState(initialValue);
     const [charCount, setCharCount] = useState(initialValue.length);
     const textAreaRef = useRef(null);
 
+    // Sync with initialValue changes
     useEffect(() => {
         setStatement(initialValue);
         setCharCount(initialValue.length);
     }, [initialValue]);
 
+    /**
+     * Adjusts textarea height based on content
+     */
     const adjustTextAreaHeight = () => {
         const textArea = textAreaRef.current;
         if (textArea) {
@@ -31,12 +44,20 @@ const MissionStatement = ({ initialValue = '', onChange }) => {
         return () => window.removeEventListener('resize', adjustTextAreaHeight);
     }, []);
 
+    /**
+     * Handles input changes in the textarea
+     * @param {React.ChangeEvent<HTMLTextAreaElement>} event
+     */
     const handleInputChange = (event) => {
         const newValue = event.target.value;
         setStatement(newValue);
         setCharCount(newValue.length);
-        onChange(newValue);
     };
+
+    // Expose getData method to parent through ref
+    useImperativeHandle(ref, () => ({
+        getData: () => statement
+    }));
 
     return (
         <div className="relative">
@@ -54,6 +75,5 @@ const MissionStatement = ({ initialValue = '', onChange }) => {
             </div>
         </div>
     );
-};
-
+});
 export default MissionStatement;

@@ -58,7 +58,7 @@ const AutoResizeTextarea = ({ value, onChange, placeholder, name }) => {
 };
 
 const ProgramInitiativesList = forwardRef(({ 
-    initialInitiatives = [], 
+    initialInitiatives, 
     hideTitle = false,
     onInitiativesChange // New prop for data sync
 }, ref) => {
@@ -67,10 +67,8 @@ const ProgramInitiativesList = forwardRef(({
         if (initialInitiatives.length > 0) {
             // Transform incoming data to match component format
             return initialInitiatives.map(initiative => ({
-                initiativeName: initiative.initiative_name || "",
-                description: initiative.initiative_description || "",
-                id: initiative.id,
-                org_id: initiative.org_id
+                initiativeName: initiative.initiative_name,
+                description: initiative.initiative_description,
             }));
         }
         return [{ initiativeName: "", description: "" }];
@@ -80,10 +78,8 @@ const ProgramInitiativesList = forwardRef(({
     useEffect(() => {
         if (onInitiativesChange) {
             const transformedData = initiatives.map(initiative => ({
-                id: initiative.id,
-                initiative_name: initiative.initiativeName,
-                initiative_description: initiative.description,
-                org_id: initiative.org_id
+                initiativeName: initiative.initiativeName,
+                description: initiative.description,
             }));
             onInitiativesChange(transformedData);
         }
@@ -117,10 +113,8 @@ const ProgramInitiativesList = forwardRef(({
     // Transform data back to API format when getting data
     useImperativeHandle(ref, () => ({
         getData: () => initiatives.map(initiative => ({
-            id: initiative.id,
-            initiative_name: initiative.initiativeName,
-            initiative_description: initiative.description,
-            org_id: initiative.org_id
+            initiativeName: initiative.initiativeName,
+            description: initiative.description,
         }))
     }));
 
