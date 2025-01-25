@@ -50,14 +50,14 @@ jobs:
           gcloud auth configure-docker us-west1-docker.pkg.dev
           
           # Build the container
-          docker build -t us-west1-docker.pkg.dev/$PROJECT_ID/ngo-connect/backend:${{ github.sha }} ./Backend
+          docker build -t us-west1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/ngo-connect-backend:${{ github.sha }} ./Backend
           
           # Push to Artifact Registry
-          docker push us-west1-docker.pkg.dev/$PROJECT_ID/ngo-connect/backend:${{ github.sha }}
+          docker push us-west1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/ngo-connect-backend:${{ github.sha }}
           
           # Deploy to Cloud Run
           gcloud run deploy ngo-connect-backend \
-            --image us-west1-docker.pkg.dev/$PROJECT_ID/ngo-connect/backend:${{ github.sha }} \
+            --image us-west1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/ngo-connect-backend:${{ github.sha }} \
             --region $REGION \
             --platform managed \
             --allow-unauthenticated \
