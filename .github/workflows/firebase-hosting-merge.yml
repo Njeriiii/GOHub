@@ -12,25 +12,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Debug directory structure
+      
+      # Debug step to verify paths
+      - name: Debug Paths
         run: |
-          pwd
+          echo "Current directory: $(pwd)"
+          echo "Contents of current directory:"
           ls -la
-          ls -la GOHub/Frontend || echo "Frontend directory not found"
+          echo "Contents of GOHub/Frontend:"
+          ls -la GOHub/Frontend
       
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: 'GOHub/Frontend/package-lock.json'
+          cache-dependency-path: '**/package-lock.json'
       
       # Install dependencies and build
       - name: Install and Build
         working-directory: GOHub/Frontend
         run: |
+          echo "Installing dependencies..."
           npm ci
+          echo "Building project..."
           npm run build
         env:
           CI: false
