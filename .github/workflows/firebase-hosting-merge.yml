@@ -3,14 +3,9 @@
 
 name: Deploy to Firebase Hosting on merge
 on:
-  workflow_dispatch:
   push:
     branches:
       - deployment
-    paths:
-    - 'Backend/**'
-    - '.github/workflows/cloudrun-deploy.yml'
-
 
 jobs:
   build_and_deploy:
