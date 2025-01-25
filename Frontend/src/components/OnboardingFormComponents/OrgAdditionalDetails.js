@@ -2,6 +2,7 @@ import React, { useState, forwardRef, useImperativeHandle } from 'react';
 import CreatableSelect from 'react-select/creatable';
 // This component represents the additional details section of the organization onboarding form.
 // It includes fields for the organization registration number, year established, and focus areas.
+// (Not used anymore)
 const OrgAdditionalDetails = forwardRef((props, ref) => {
     const [state, setState] = useState({
         org_registration_number: '',

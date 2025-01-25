@@ -16,6 +16,7 @@ import VolunteerForm from './pages/VolunteerForm';
 import VolunteerPage from './pages/VolunteerPage';
 import SelectUserTypePage from './pages/SelectUserTypePage';
 import EstablishmentGuide from './pages/EstablishmentGuide';
+import EditProfile from './pages/EditProfilePage';
 
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
               <Route path="/onboarding" element={<OnboardingForm />} />
               <Route path="/org_profile_form" element={<OrgProfileForm />} />
               <Route path="/org_profile" element={<OrgProfile />} />
+              <Route path="/edit_profile" element={<EditProfile />} />
 
               <Route path="/establishment-guide" element={<EstablishmentGuide />} />
             </Routes>

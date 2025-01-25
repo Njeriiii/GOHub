@@ -1,14 +1,81 @@
-import React, { useState, forwardRef, useImperativeHandle } from 'react';
-// This component represents the social media links section of the organization onboarding form.
-// It includes fields for the organization's website, Facebook, Twitter, Instagram, LinkedIn, and YouTube links.
-const SocialMediaLinks = forwardRef((props, ref) => {
+import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
+import { Globe, Facebook, Instagram, Linkedin, Youtube } from 'lucide-react';
+
+// Custom X (Twitter) icon since Lucide might not have the new X logo
+const XIcon = () => (
+    <svg 
+        className="h-5 w-5"
+        viewBox="0 0 24 24" 
+        fill="currentColor"
+        stroke="none"
+    >
+        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+    </svg>
+);
+
+const SocialMediaLinks = forwardRef(({ initialValues = {} }, ref) => {
     const [links, setLinks] = useState({
+        website: initialValues.website || '',
+        facebook: initialValues.facebook || '',
+        x: initialValues.x || '',
+        instagram: initialValues.instagram || '',
+        linkedin: initialValues.linkedin || '',
+        youtube: initialValues.youtube || ''
+    });
+
+    const [errors, setErrors] = useState({
+        website: '',
         facebook: '',
-        twitter: '',
+        x: '',
         instagram: '',
         linkedin: '',
         youtube: ''
     });
+
+    // URL validation patterns
+    const urlPatterns = {
+        website: /^(https?:\/\/|www\.)[^\/\s]+\.[^\/\s]+$/, 
+        facebook: /^https?:\/\/(www\.)?facebook\.com\/.+/,
+        x: /^https?:\/\/(www\.)?(twitter\.com|x\.com)\/.+/,  // Include both x.com and twitter.com
+        instagram: /^https?:\/\/(www\.)?instagram\.com\/.+/,
+        linkedin: /^https?:\/\/(www\.)?linkedin\.com\/(company|in)\/.+/,
+        youtube: /^https?:\/\/(www\.)?youtube\.com\/(c\/|channel\/|user\/|@)?.+/
+    };
+
+    const socialIcons = {
+        website: Globe,
+        facebook: Facebook,
+        x: XIcon,
+        instagram: Instagram,
+        linkedin: Linkedin,
+        youtube: Youtube
+    };
+
+    const platformLabels = {
+        website: 'Website',
+        facebook: 'Facebook',
+        x: 'X (Twitter)',
+        instagram: 'Instagram',
+        linkedin: 'LinkedIn',
+        youtube: 'YouTube'
+    };
+
+    const placeholders = {
+        website: 'https://www.example.org',
+        facebook: 'https://facebook.com/yourpage',
+        x: 'https://x.com/yourhandle',
+        instagram: 'https://instagram.com/yourprofile',
+        linkedin: 'https://linkedin.com/company/yourcompany',
+        youtube: 'https://youtube.com/c/yourchannel'
+    };
+
+    const validateUrl = (type, url) => {
+        if (!url) return true; // Empty URLs are valid
+        console.log('url:', url);
+        console.log('urlPatterns[type]:', urlPatterns[type]);
+        console.log(urlPatterns[type].test(url))
+        return urlPatterns[type].test(url);
+    };
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
@@ -16,102 +83,77 @@ const SocialMediaLinks = forwardRef((props, ref) => {
             ...prevLinks,
             [name]: value
         }));
+
+        // Clear error when user starts typing
+        setErrors(prevErrors => ({
+            ...prevErrors,
+            [name]: ''
+        }));
+
+        // Validate URL as user types
+        if (value && !validateUrl(name, value)) {
+            setErrors(prevErrors => ({
+                ...prevErrors,
+                [name]: `Please enter a valid ${platformLabels[name]} URL`
+            }));
+        }
+    };
+
+    const validate = () => {
+        let tempErrors = {};
+        let isValid = true;
+
+        // Validate each non-empty URL
+        Object.keys(links).forEach(platform => {
+            if (links[platform] && !validateUrl(platform, links[platform])) {
+                tempErrors[platform] = `Please enter a valid ${platformLabels[platform]} URL`;
+                isValid = false;
+            }
+        });
+
+        setErrors(tempErrors);
+        return isValid;
     };
 
     const getData = () => {
-        return links;
+        if (validate()) {
+            return links;
+        }
+        return null;
     };
 
     useImperativeHandle(ref, () => ({ getData }), [links]);
 
     return (
-        <div className="mt-6">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-4">Social Media Links</h2>
-            <div className="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8">
-                <div>
-                    <label htmlFor="websiteInput" className="block text-sm font-medium text-gray-700">
-                        Website
-                    </label>
-                    <input
-                        type="url"
-                        id="websiteInput"
-                        name="website"
-                        value={links.website}
-                        onChange={handleInputChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-600 focus:ring-teal-600 sm:text-sm"
-                        placeholder="https://website.com/yourpage"
-                    />
-                </div>
-                <div>
-                    <label htmlFor="facebookInput" className="block text-sm font-medium text-gray-700">
-                        Facebook
-                    </label>
-                    <input
-                        type="url"
-                        id="facebookInput"
-                        name="facebook"
-                        value={links.facebook}
-                        onChange={handleInputChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-600 focus:ring-teal-600 sm:text-sm"
-                        placeholder="https://facebook.com/yourpage"
-                    />
-                </div>
-                <div>
-                    <label htmlFor="twitterInput" className="block text-sm font-medium text-gray-700">
-                        Twitter
-                    </label>
-                    <input
-                        type="url"
-                        id="twitterInput"
-                        name="twitter"
-                        value={links.twitter}
-                        onChange={handleInputChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-600 focus:ring-teal-600 sm:text-sm"
-                        placeholder="https://twitter.com/yourhandle"
-                    />
-                </div>
-                <div>
-                    <label htmlFor="instagramInput" className="block text-sm font-medium text-gray-700">
-                        Instagram
-                    </label>
-                    <input
-                        type="url"
-                        id="instagramInput"
-                        name="instagram"
-                        value={links.instagram}
-                        onChange={handleInputChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-600 focus:ring-teal-600 sm:text-sm"
-                        placeholder="https://instagram.com/yourprofile"
-                    />
-                </div>
-                <div>
-                    <label htmlFor="linkedinInput" className="block text-sm font-medium text-gray-700">
-                        LinkedIn
-                    </label>
-                    <input
-                        type="url"
-                        id="linkedinInput"
-                        name="linkedin"
-                        value={links.linkedin}
-                        onChange={handleInputChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-600 focus:ring-teal-600 sm:text-sm"
-                        placeholder="https://linkedin.com/company/yourcompany"
-                    />
-                </div>
-                <div>
-                    <label htmlFor="youtubeInput" className="block text-sm font-medium text-gray-700">
-                        YouTube
-                    </label>
-                    <input
-                        type="url"
-                        id="youtubeInput"
-                        name="youtube"
-                        value={links.youtube}
-                        onChange={handleInputChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-600 focus:ring-teal-600 sm:text-sm"
-                        placeholder="https://youtube.com/yourchannel"
-                    />
-                </div>
+        <div className="space-y-6">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                {Object.keys(links).map(platform => {
+                    const Icon = socialIcons[platform];
+                    return (
+                        <div key={platform}>
+                            <label htmlFor={`${platform}Input`} className="block text-xl font-medium text-gray-700">
+                                {platformLabels[platform]}
+                            </label>
+                            <div className="mt-1 relative rounded-md shadow-sm">
+                                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                    <Icon className="h-5 w-5 text-gray-400" />
+                                </div>
+                                <input
+                                    type="url"
+                                    id={`${platform}Input`}
+                                    name={platform}
+                                    value={links[platform]}
+                                    onChange={handleInputChange}
+                                    className="block w-full rounded-md border-gray-300 pl-10 focus:border-teal-500 focus:ring-teal-500 sm:text-base"
+                                    placeholder={placeholders[platform]}
+                                />
+                            </div>
+                            {errors[platform] && (
+                                <p className="mt-1 text-sm text-red-600">{errors[platform]}</p>
+                            )}
+                        </div>
+                    );
+                })}
             </div>
         </div>
     );

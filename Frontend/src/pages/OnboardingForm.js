@@ -1,18 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Save } from 'lucide-react';
+import { Save } from 'lucide-react';
 // This component represents the organization onboarding form.
 // It includes multiple steps for collecting information about the organization.
 
-// import AdminDetails from '../components/OnboardingFormComponents/AdminDetails';
 import OrgDetails from '../components/OnboardingFormComponents/OrgDetails';
-import OrgLogo from '../components/OnboardingFormComponents/OrgLogo';
+// import OrgLogo from '../components/OnboardingFormComponents/OrgLogo';
 import MissionStatement from '../components/OnboardingFormComponents/MissionStatement';
 import ContactInfo from '../components/OnboardingFormComponents/ContactInfo';
 import OrgAddress from '../components/OnboardingFormComponents/OrgAddress';
-import CoverImageUpload from '../components/OnboardingFormComponents/OrgCoverImg';
+// import CoverImageUpload from '../components/OnboardingFormComponents/OrgCoverImg';
 import SocialMediaLinks from '../components/OnboardingFormComponents/SocialMediaLinks';
-import OrgAdditionalDetails from '../components/OnboardingFormComponents/OrgAdditionalDetails';
 
 import { useApi } from '../contexts/ApiProvider';
 import { useAuth } from '../contexts/AuthProvider';
@@ -22,126 +20,87 @@ const CustomAlert = ({ message, onClose }) => (
         <strong className="font-bold">Error!</strong>
         <span className="block sm:inline"> {message}</span>
         <span className="absolute top-0 bottom-0 right-0 px-4 py-3" onClick={onClose}>
-        <svg className="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
+            <svg className="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                <title>Close</title>
+                <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/>
+            </svg>
         </span>
     </div>
 );
 
-const steps = [
-    // { name: 'Admin Details', component: AdminDetails },
-    { name: 'Organization Details', component: OrgDetails },
-    { name: 'Mission Statement', component: MissionStatement },
-    { name: 'Logo', component: OrgLogo },
-    { name: 'Cover Image', component: CoverImageUpload },
-    { name: 'Contact Info', component: ContactInfo },
-    { name: 'Address', component: OrgAddress },
-    { name: 'Additional Details', component: OrgAdditionalDetails },
-    { name: 'Social Media', component: SocialMediaLinks },
-];
-
-    const OnboardingForm = () => {
-    const [currentStep, setCurrentStep] = useState(0);
+const OnboardingForm = () => {
     const [error, setError] = useState(null);
-    const [formData, setFormData] = useState({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate();
     const apiClient = useApi();
     const { getUserId } = useAuth();
-    const [formHeight, setFormHeight] = useState('auto');
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
-    // Create an array of refs for each step
-    const refs = useRef(steps.map(() => React.createRef()));
-
-    // Calculate the height of the form based on the number of steps
-    const formRef = useRef(null);
-
-    // User ID state
     const userId = getUserId();
-        const checkRedirect = async () => {
-        // Check if a profile has been created
-        const profileResponse = await apiClient.get(`/profile/load_org?user_id=${userId}`)
-                
+
+    // refs for all form sections
+    const orgDetailsRef = useRef();
+    const missionStatementRef = useRef();
+    // const logoRef = useRef();
+    // const coverImageRef = useRef();
+    const contactInfoRef = useRef();
+    const addressRef = useRef();
+    const socialMediaRef = useRef();
+
+    const checkRedirect = async () => {
+        const profileResponse = await apiClient.get(`/profile/load_org?user_id=${userId}`);
         if (profileResponse.ok && profileResponse.body) {
-            // Profile exists, redirect to dashboard
             navigate('/');
         }
-    }
+    };
 
-
-    // Calculate the height of the form based on the number of steps
     useEffect(() => {
-        const updateFormHeight = () => {
-            if (formRef.current) {
-                const windowHeight = window.innerHeight;
-                const formTop = formRef.current.getBoundingClientRect().top;
-                const newHeight = windowHeight - formTop - 40; // 40px for some bottom margin
-                setFormHeight(`${newHeight}px`);
-            }
-        };
-    
-        updateFormHeight();
-        window.addEventListener('resize', updateFormHeight);
-    
-        return () => window.removeEventListener('resize', updateFormHeight);
+        checkRedirect();
     }, []);
 
-    // Function to collect data from the current step
-    const collectDataFromCurrentStep = () => {
-        const currentStepData = refs.current[currentStep].current?.getData();
-        if (currentStepData) {
-            setFormData(prevData => ({
-                ...prevData,
-                [steps[currentStep].name]: currentStepData
-            }));
+    // Function to collect data from each component
+    const collectAllData = () => {
+        const formData = {
+            "Organization Details": orgDetailsRef.current?.getData(),
+            "Mission Statement": missionStatementRef.current?.getData(),
+            // "Logo": logoRef.current?.getData(),
+            // "Cover Image": coverImageRef.current?.getData(),
+            "Contact Info": contactInfoRef.current?.getData(),
+            "Address": addressRef.current?.getData(),
+            "Social Media": socialMediaRef.current?.getData()
+        };
+
+        // Check if any section returned null (validation failed)
+        for (const [section, data] of Object.entries(formData)) {
+            if (!data) {
+                setError(`Please check the ${section} section for errors`);
+                return null;
+            }
         }
+
+        return formData;
     };
 
-    // Function to handle the next button click
-    const handleNext = (event) => {
-        event.preventDefault(); // Prevent default form submission
-        collectDataFromCurrentStep();
-        // check if current step has data
-        if (currentStep < steps.length - 1) {
-        setCurrentStep(currentStep + 1);
-        }
-    };
-
-    // Function to handle the previous button click
-    const handlePrevious = (event) => {
-        event.preventDefault(); // Prevent default form submission
-        collectDataFromCurrentStep();
-        if (currentStep > 0) {
-        setCurrentStep(currentStep - 1);
-        }
-    };
-
-    // Function to handle form submission
     const handleSubmit = async (event) => {
         event.preventDefault();
-        if (isSubmitting) return; // Prevent multiple submissions
+        if (isSubmitting) return;
         setIsSubmitting(true);
         setError(null);
 
-        // Collect data from the current step before submitting
-        collectDataFromCurrentStep();
+    const formData = collectAllData();
+        if (!formData) {
+            setIsSubmitting(false);
+            return;
+        }
 
         const completeFormData = {
             user_id: userId,
             ...formData
         };
 
-        console.log('Submitting form data:', formData);
-
         try {
+            console.log('completeFormData:', completeFormData);
             const response = await apiClient.post('/profile/org', completeFormData);
             if (response.status === 201) {
-
-                console.log('Response:', response);
-
-                // Assuming the API returns the organization ID in the response body
                 const orgId = response.body.org_id;
-                console.log('Organization ID:', orgId);
-
                 if (!orgId) {
                     throw new Error('Organization ID not received from the server');
                 }
@@ -154,89 +113,76 @@ const steps = [
                 });
             }
         } catch (error) {
-        setError('An error occurred while submitting the form. Please try again.');
-        console.error('Error sending form data to the backend:', error);
+            setError('An error occurred while submitting the form. Please try again.');
+            console.error('Error sending form data to the backend:', error);
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    // Function to render the current step
-    const renderStepContent = (step, index) => {
-        const StepComponent = step.component;
-        return <StepComponent ref={refs.current[index]} />;
-    };
-
-    // if (!userId) {
-    //     return <div>Loading...</div>; // Or some other loading indicator
-    // }
-
     return (
-        checkRedirect(),
-        <div className="relative py-3 sm:max-w-xl md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mx-auto">
-            <div className="relative px-6 py-12 bg-white shadow-lg sm:rounded-3xl sm:p-24">
-                <div className="max-w-4xl mx-auto">
-                    <h2 className="text-2xl font-semibold text-center mb-6">Organization Onboarding</h2>
-                    
-                    {/* Progress bar */}
-                    <div className="mb-8">
-                        <div className="flex items-center justify-between">
-                            {steps.map((step, index) => (
-                                <div key={step.name} className="flex items-center">
-                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                                        index <= currentStep ? 'bg-teal-600 text-white' : 'bg-gray-200 text-gray-600'
-                                    }`}>
-                                        {index + 1}
-                                    </div>
-                                    {index < steps.length - 1 && (
-                                        <div className={`h-1 w-16 sm:w-24 ${
-                                            index < currentStep ? 'bg-teal-600' : 'bg-gray-200'
-                                        }`} />
-                                    )}
+        <div className="min-h-screen bg-gray-50 py-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div className="px-4 py-5 sm:p-6">
+                        <h2 className="text-2xl font-bold text-gray-900 text-center mb-8">
+                            Organization Profile
+                        </h2>
+
+                        <form onSubmit={handleSubmit} className="space-y-8">
+                            <div className="bg-gray-50 p-6 rounded-lg">
+                                <h3 className="text-xl font-medium text-gray-900 mb-6">Organization Details</h3>
+                                <OrgDetails ref={orgDetailsRef} />
+                            </div>
+
+                            <div className="bg-gray-50 p-6 rounded-lg">
+                                <h3 className="text-xl font-medium text-gray-900 mb-6">Mission Statement</h3>
+                                <MissionStatement ref={missionStatementRef} />
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="bg-gray-50 p-6 rounded-lg">
+                                    <h3 className="text-xl font-medium text-gray-900 mb-6">Contact Information</h3>
+                                    <ContactInfo ref={contactInfoRef} />
                                 </div>
-                            ))}
-                        </div>
+
+                                <div className="bg-gray-50 p-6 rounded-lg">
+                                    <h3 className="text-xl font-medium text-gray-900 mb-6">Address</h3>
+                                    <OrgAddress ref={addressRef} />
+                                </div>
+                            </div>
+
+                            <div className="bg-gray-50 p-6 rounded-lg">
+                                <h3 className="text-xl font-medium text-gray-900 mb-6">Social Media Links</h3>
+                                <SocialMediaLinks ref={socialMediaRef} />
+                            </div>
+
+                            {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="bg-gray-50 p-6 rounded-lg">
+                                    <h3 className="text-xl font-medium text-gray-900 mb-6">Logo</h3>
+                                    <OrgLogo ref={logoRef} />
+                                </div>
+
+                                <div className="bg-gray-50 p-6 rounded-lg">
+                                    <h3 className="text-xl font-medium text-gray-900 mb-6">Cover Image</h3>
+                                    <CoverImageUpload ref={coverImageRef} />
+                                </div>
+                            </div> */}
+
+                            {error && <CustomAlert message={error} onClose={() => setError(null)} />}
+
+                            <div className="flex justify-end">
+                                <button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {isSubmitting ? 'Submitting...' : 'Submit Profile'}
+                                    <Save className="ml-2 h-5 w-5" />
+                                </button>
+                            </div>
+                        </form>
                     </div>
-
-                    <form onSubmit={(e) => e.preventDefault()} ref={formRef} style={{ height: formHeight, overflowY: 'auto' }}>
-                        {renderStepContent(steps[currentStep], currentStep)}
-
-                        {error && <CustomAlert message={error} onClose={() => setError(null)} />}
-
-                        <div className="mt-8 flex justify-between">
-                            <button
-                                type="button"
-                                onClick={handlePrevious}
-                                disabled={currentStep === 0}
-                                className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 ${
-                                currentStep === 0 ? 'opacity-50 cursor-not-allowed' : ''
-                                }`}
-                            >
-                                <ChevronLeft className="mr-2 h-4 w-4" />
-                                Previous
-                            </button>
-                            {currentStep < steps.length - 1 ? (
-                                <button
-                                type="button"
-                                onClick={handleNext}
-                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
-                                >
-                                Next
-                                <ChevronRight className="ml-2 h-4 w-4" />
-                                </button>
-                            ) : (
-                                <button
-                                type="button"
-                                onClick={handleSubmit}
-                                disabled={isSubmitting}
-                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                {isSubmitting ? 'Submitting...' : 'Submit'}
-                                <Save className="ml-2 h-4 w-4" />
-                                </button>
-                            )}
-                        </div>
-                    </form>
                 </div>
             </div>
         </div>

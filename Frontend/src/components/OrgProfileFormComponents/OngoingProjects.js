@@ -1,6 +1,60 @@
-import React, { useState, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, forwardRef, useImperativeHandle, useRef, useEffect } from 'react';
 // This component represents the ongoing projects section of the organization profile form.
 // It includes fields for the project name and description.
+const AutoResizeTextarea = ({ value, onChange, placeholder, name }) => {
+    const textareaRef = useRef(null);
+    const mirrorRef = useRef(null);
+
+    useEffect(() => {
+        const textarea = textareaRef.current;
+        const mirror = mirrorRef.current;
+
+        if (textarea && mirror) {
+            // Copy styles to mirror
+            const styles = window.getComputedStyle(textarea);
+            mirror.style.width = styles.width;
+            mirror.style.padding = styles.padding;
+            mirror.style.borderStyle = styles.borderStyle;
+            mirror.style.borderWidth = styles.borderWidth;
+            mirror.style.boxSizing = styles.boxSizing;
+            mirror.style.fontFamily = styles.fontFamily;
+            mirror.style.fontSize = styles.fontSize;
+            
+            // Set mirror content and adjust height
+            mirror.textContent = value || placeholder;
+            textarea.style.height = `${mirror.scrollHeight}px`;
+        }
+    }, [value, placeholder]);
+
+    return (
+        <div className="relative w-full">
+            <textarea
+                ref={textareaRef}
+                name={name}
+                value={value}
+                onChange={onChange}
+                placeholder={placeholder}
+                rows={1}
+                className="w-full rounded-md border border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-2 resize-none overflow-hidden"
+                style={{ 
+                    minHeight: '100px',
+                    height: 'auto',
+                    overflow: 'hidden'
+                }}
+            />
+            <div 
+                ref={mirrorRef} 
+                className="absolute left-[-9999px] top-0 whitespace-pre-wrap break-words"
+                style={{
+                    visibility: 'hidden',
+                    position: 'absolute',
+                    wordWrap: 'break-word'
+                }}
+            />
+        </div>
+    );
+};
+
 const OngoingProjectsList = forwardRef((props, ref) => {
     const [projects, setProjects] = useState([
         { projectName: "", description: "" }, // Add initial project
@@ -25,7 +79,7 @@ const OngoingProjectsList = forwardRef((props, ref) => {
     const handleRemoveProject = (index) => {
         const values = [...projects];
         values.splice(index, 1); // Remove the element at the given index
-        setProjects(values);
+        setProjects(values.length > 0 ? values : [{ projectName: "", description: "" }]);
     };
 
     // Expose the getProjectsData function to parent components
@@ -33,54 +87,82 @@ const OngoingProjectsList = forwardRef((props, ref) => {
         getData: () => projects, // Return the array of projects
     }));
 
-return (
-    <div className="flex flex-col justify-center">
-        <div id="projects-container" className="mt-4 text-xl font-medium text-gray-700">
-            <h2 className="text-2xl font-semibold mb-5 font-medium text-gray-900"> Ongoing Projects</h2>
-            {projects.map((project, index) => (
-            <div key={index} className="mb-8"> {/* Add spacing */}
-                <div>
-                <label htmlFor={`projectName-${index}`}>Project Name:</label>
-                <input
-                    type="text"
-                    id={`projectName-${index}`} 
-                    name="projectName"
-                    value={project.projectName}
-                    onChange={(e) => handleInputChange(index, e)}
-                    className="flex-1 w-3/4 block rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    />
+    return (
+        <div className="flex flex-col justify-center">
+            <div id="projects-container" className="mt-4 text-xl font-medium text-gray-700">
+                <h2 className="text-3xl font-semibold mb-5 text-gray-900">
+                    Ongoing Projects
+                </h2>
+                
+                <div className="bg-teal-50 border-l-4 border-teal-500 p-4 mb-6">
+                    <p className="text-m text-teal-700">
+                        Describe the specific, time-bound projects your organization is currently working on. 
+                        These are concrete initiatives with clear goals, timelines, and measurable outcomes. 
+                        Focus on current projects that demonstrate your organization's active impact.
+                    </p>
                 </div>
 
-                <div>
-                    <label htmlFor={`description-${index}`}>Description:</label>
-                    <textarea
-                        id={`description-${index}`} 
-                        name="description"
-                        value={project.description}
-                        onChange={(e) => handleInputChange(index, e)}
-                        className="flex-1 w-3/4 block rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                        />
-                </div>
+                {projects.map((project, index) => (
+                    <div key={index} className="mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
+                        <div className="mb-4">
+                            <label 
+                                htmlFor={`projectName-${index}`} 
+                                className="block text-m font-medium text-gray-700 mb-2"
+                            >
+                                Project Name
+                            </label>
+                            <input
+                                type="text"
+                                id={`projectName-${index}`}
+                                name="projectName"
+                                value={project.projectName}
+                                onChange={(e) => handleInputChange(index, e)}
+                                placeholder="E.g., Digital Literacy Workshop Series 2024"
+                                className="w-full rounded-md border border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-2"
+                            />
+                        </div>
 
-                <button type="button" onClick={() => handleRemoveProject(index)} class="text-sm rounded-md font-semibold px-3 py- w-1/10 leading-6 text-gray-900 hover:bg-indigo-500 hover:text-white">
-                Cancel
+                        <div>
+                            <label 
+                                htmlFor={`description-${index}`} 
+                                className="block text-m font-medium text-gray-700 mb-2"
+                            >
+                                Description
+                            </label>
+                            <AutoResizeTextarea
+                                name="description"
+                                value={project.description}
+                                onChange={(e) => handleInputChange(index, e)}
+                                placeholder="Provide details about the project's specific goals, target audience, timeline, and expected outcomes."
+                            />
+                        </div>
+
+                        {projects.length > 1 && (
+                            <button 
+                                type="button" 
+                                onClick={() => handleRemoveProject(index)} 
+                                className="mt-4 text-sm rounded-md font-semibold px-3 py-2 text-red-600 hover:bg-red-50 border border-red-200"
+                            >
+                                Remove Project
+                            </button>
+                        )}
+                    </div>
+                ))}
+            </div>
+
+            <div className="flex justify-end mb-20">
+                <button 
+                    type="button" 
+                    onClick={handleAddProject} 
+                    className="rounded-md bg-teal-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-teal-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600"
+                >
+                    + Add Another Project
                 </button>
             </div>
-            ))}
+
+            <hr className="border-gray-200" />
         </div>
+    );
+});
 
-        <div class="flex gap-x-6 justify-end mb-20">
-            <button type="button" onClick={handleAddProject} class="rounded-md w-1/10 bg-teal-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600">
-            + Add Project 
-            </button>
-        </div>
-
-        <hr className="border-gray-200" /> 
-
-    </div>
-
-);
-}
-);
-
-export default OngoingProjectsList; 
+export default OngoingProjectsList;

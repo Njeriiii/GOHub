@@ -1,5 +1,6 @@
 from app import db
 from datetime import datetime, timezone
+from flask import current_app
 
 # Association table for User (volunteer) skills
 user_skills = db.Table('user_skills',
@@ -69,20 +70,39 @@ org_focus_areas = db.Table(
 class OrgProfile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    
+    # Basic Organization Details
     org_name = db.Column(db.String(200), nullable=False)
     org_overview = db.Column(db.String(200), nullable=False)
     org_mission_statement = db.Column(db.Text, nullable=True)
-    org_logo = db.Column(db.String(200), nullable=True)
-    org_cover_photo = db.Column(db.String(200), nullable=True)
+    org_registration_number = db.Column(db.String(200), nullable=True)
+    org_year_established = db.Column(db.Integer, nullable=True)
+    
+    # Media
+    org_logo_filename = db.Column(db.String(200), nullable=True)  # Store GCS object name
+    org_cover_photo_filename = db.Column(db.String(200), nullable=True)  # Store GCS object name
+
+    # Contact Information
     org_email = db.Column(db.String(200), nullable=False)
     org_phone = db.Column(db.String(200), nullable=False)
+    
+    # Address Information
     org_district_town = db.Column(db.String(200), nullable=False)
     org_county = db.Column(db.String(200), nullable=False)
     org_po_box = db.Column(db.String(200), nullable=False)
     org_country = db.Column(db.String(200), nullable=False)
+    org_physical_description = db.Column(db.Text, nullable=True)
+    org_google_maps_link = db.Column(db.String(500), nullable=True)
+    
+    # Social Media Links
     org_website = db.Column(db.String(200), nullable=True)
-    org_registration_number = db.Column(db.String(200), nullable=True)
-    org_year_established = db.Column(db.Integer, nullable=True)
+    org_facebook = db.Column(db.String(200), nullable=True)
+    org_x = db.Column(db.String(200), nullable=True)
+    org_instagram = db.Column(db.String(200), nullable=True)
+    org_linkedin = db.Column(db.String(200), nullable=True)
+    org_youtube = db.Column(db.String(200), nullable=True)
+    
+    # Meta Information
     org_verified = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     updated_at = db.Column(
@@ -109,17 +129,43 @@ class OrgProfile(db.Model):
     focus_areas = db.relationship(
         "FocusArea", secondary=org_focus_areas, back_populates="org_profiles", lazy=True
     )
-    social_media_links = db.relationship(
-        "SocialMediaLink",
-        backref="org_profile",
-        lazy=True,
-        cascade="all, delete-orphan",
-    )
+
+    @property
+    def logo_url(self):
+        """Generate signed URL for logo if filename exists"""
+        if not self.org_logo_filename:
+            return None
+        
+        bucket_name = current_app.config['GCS_BUCKET_NAME']
+        return f"https://storage.googleapis.com/{bucket_name}/{self.org_logo_filename}"
+
+    @property
+    def cover_photo_url(self):
+        """Generate signed URL for cover photo if filename exists"""
+        if not self.org_cover_photo_filename:
+            return None
+            
+        bucket_name = current_app.config['GCS_BUCKET_NAME']
+        return f"https://storage.googleapis.com/{bucket_name}/{self.org_cover_photo_filename}"
 
     def __repr__(self):
         return f"{self.org_name}"
 
     def serialize(self):
+
+        skills_data = []
+        for skill_assoc in self.skills_needed:
+            # Get the description from the association table
+            description = db.session.query(org_skills_connection.c.description).filter(
+                db.and_(
+                    org_skills_connection.c.org_id == self.id,
+                    org_skills_connection.c.skill_id == skill_assoc.id
+                )
+            ).scalar()
+            
+            skill_data = skill_assoc.serialize()
+            skill_data['description'] = description
+            skills_data.append(skill_data)
 
         org_data = {
             "id": self.id,
@@ -127,25 +173,29 @@ class OrgProfile(db.Model):
             "org_name": self.org_name,
             "org_overview": self.org_overview,
             "org_mission_statement": self.org_mission_statement,
-            "org_logo": self.org_logo,
-            "org_cover_photo": self.org_cover_photo,
+            "org_registration_number": self.org_registration_number,
+            "org_year_established": self.org_year_established,
+            "org_logo_filename": self.logo_url,
+            "org_cover_photo_filename": self.cover_photo_url,
             "org_email": self.org_email,
             "org_phone": self.org_phone,
             "org_district_town": self.org_district_town,
             "org_county": self.org_county,
             "org_po_box": self.org_po_box,
             "org_country": self.org_country,
+            "org_physical_description": self.org_physical_description,
+            "org_google_maps_link": self.org_google_maps_link,  
             "org_website": self.org_website,
-            "org_registration_number": self.org_registration_number,
-            "org_year_established": self.org_year_established,
+            "org_facebook": self.org_facebook,
+            "org_x": self.org_x,
+            "org_instagram": self.org_instagram,
+            "org_linkedin": self.org_linkedin,
+            "org_youtube": self.org_youtube,
             "org_verified": self.org_verified,
-            "created_at": self.created_at.isoformat(),
-            "updated_at": self.updated_at.isoformat(),
-            "skills_needed": [skill.serialize() for skill in self.skills_needed],
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
+            "skills_needed": skills_data,
             "focus_areas": [area.serialize() for area in self.focus_areas],
-            "social_media_links": [
-                link.serialize() for link in self.social_media_links
-            ],
         }
         return org_data
 
@@ -243,22 +293,6 @@ class FocusArea(db.Model):
         }
 
 
-class SocialMediaLink(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    org_id = db.Column(db.Integer, db.ForeignKey("org_profile.id"), nullable=False)
-    platform = db.Column(db.String(200), nullable=False)
-    url = db.Column(db.String(500), nullable=False)
-
-    def __repr__(self):
-        return f"{self.platform}: {self.url}"
-
-    def serialize(self):
-        return {
-            "id": self.id,
-            "org_id": self.org_id,
-            "platform": self.platform,
-            "url": self.url,
-        }
 
 class TranslationCache(db.Model):
     __tablename__ = 'translation_cache'

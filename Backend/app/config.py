@@ -25,20 +25,33 @@ class AppConfig:
         else:
             SQLALCHEMY_DATABASE_URI = database_url
     else:  # Running locally
-        SQLALCHEMY_DATABASE_URI = "postgresql://postgres:CloudDB123!@localhost:5432/ngo_connect"
+        SQLALCHEMY_DATABASE_URI = "sqlite:///db.sqlite"
     
-    # Enhanced connection pool settings
+    # Determine database type to set appropriate configuration
+    is_sqlite = SQLALCHEMY_DATABASE_URI.startswith('sqlite')
+    
+    # Base SQLAlchemy configuration
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_ENGINE_OPTIONS = {
-        'pool_pre_ping': True,
-        'pool_recycle': 300,
-        'pool_timeout': 900,
-        'pool_size': 10,
-        'max_overflow': 5,
-        'connect_args': {
-            'connect_timeout': 30  # Add connection timeout
+    
+    # Configure engine options based on database type
+    if is_sqlite:
+        SQLALCHEMY_ENGINE_OPTIONS = {
+            'pool_pre_ping': True,
+            'pool_recycle': 300,
+            'pool_size': 10,
+            'max_overflow': 5
         }
-    }
+    else:  # PostgreSQL configuration
+        SQLALCHEMY_ENGINE_OPTIONS = {
+            'pool_pre_ping': True,
+            'pool_recycle': 300,
+            'pool_timeout': 900,
+            'pool_size': 10,
+            'max_overflow': 5,
+            'connect_args': {
+                'connect_timeout': 30
+            } if not is_sqlite else {}
+        }
     
     # Session configuration
     SESSION_TYPE = "filesystem"
@@ -73,3 +86,6 @@ class AppConfig:
 class TestConfig(AppConfig):
     SQLALCHEMY_DATABASE_URI = "sqlite://"
     TESTING = True
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        'pool_pre_ping': True
+    }  # Simplified options for testing
