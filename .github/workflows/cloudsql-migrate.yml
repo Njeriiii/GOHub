@@ -23,32 +23,27 @@ jobs:
         with:
           python-version: '3.11'
 
-      - id: auth
-        name: Authenticate with Google Cloud
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: '${{ secrets.GCP_SA_KEY }}'
-
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          project_id: gohub-92b6b
-
-      - name: Install and start Cloud SQL Proxy
+      - name: Setup GCP Credentials
         run: |
-          # Download the proxy
-          wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy
-          chmod +x cloud_sql_proxy
+          echo '${{ secrets.GCP_SA_KEY }}' > gcp-credentials.json
+          chmod 600 gcp-credentials.json
+
+      - name: Install and start Cloud SQL Proxy v2
+        run: |
+          # Download Cloud SQL Proxy v2
+          curl -o cloud-sql-proxy https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/v2.8.1/cloud-sql-proxy.linux.amd64
+          chmod +x cloud-sql-proxy
           
           # Start the proxy with verbose logging
-          ./cloud_sql_proxy \
-            -instances=gohub-92b6b:us-west1:ngo-connect-db=tcp:5432 \
-            -credential_file=${{ github.workspace }}/gcp-credentials.json \
-            -verbose=true &
+          ./cloud-sql-proxy \
+            --credentials-file=gcp-credentials.json \
+            --address 0.0.0.0 \
+            --port 5432 \
+            gohub-92b6b:us-west1:ngo-connect-db &
           
           # Wait for proxy to start and verify it's running
           sleep 10
-          ps aux | grep cloud_sql_proxy
+          ps aux | grep cloud-sql-proxy
           netstat -tlpn | grep 5432 || ss -tlpn | grep 5432
 
       - name: Install dependencies
@@ -100,4 +95,9 @@ jobs:
       - name: Stop Cloud SQL Proxy
         if: always()
         run: |
-          pkill cloud_sql_proxy || true
+          pkill cloud-sql-proxy || true
+
+      - name: Cleanup
+        if: always()
+        run: |
+          rm -f gcp-credentials.json
