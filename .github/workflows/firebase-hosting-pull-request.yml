@@ -8,7 +8,7 @@ on:
       - deployment
 defaults:
   run:
-    working-directory: gohub/Frontend
+    working-directory: GOHub/Frontend
 
 permissions:
   checks: write
@@ -26,7 +26,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: 'gohub/Frontend/package-lock.json'
+          cache-dependency-path: 'GOHub/Frontend/package-lock.json'
       
       # Install dependencies
       - name: Install dependencies
@@ -45,4 +45,4 @@ jobs:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_GOHUB_92B6B }}
           projectId: gohub-92b6b
-          entryPoint: 'gohub/Frontend'
+          entryPoint: 'GOHub/Frontend'
