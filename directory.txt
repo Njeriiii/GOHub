@@ -1,0 +1,125 @@
+.
+├── Backend
+│   ├── Dockerfile
+│   ├── README.md
+│   ├── __pycache__
+│   │   └── run.cpython-312.pyc
+│   ├── app
+│   │   ├── __init__.py
+│   │   ├── __tests__
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   │   └── __init__.cpython-311.pyc
+│   │   │   └── test_models.py
+│   │   ├── auth
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   └── routes.py
+│   │   ├── config.py
+│   │   ├── main
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   └── routes.py
+│   │   ├── models.py
+│   │   ├── profile
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   └── routes.py
+│   │   └── tests
+│   │       └── test_google_auth.py
+│   ├── create_db.py
+│   ├── credentials
+│   │   └── google-credentials.json
+│   ├── flawless-snow-443501-q3-85e4441a1dd7.json
+│   ├── instance
+│   │   └── db.sqlite
+│   ├── migrations
+│   │   ├── README
+│   │   ├── __pycache__
+│   │   │   └── env.cpython-311.pyc
+│   │   ├── alembic.ini
+│   │   ├── env.py
+│   │   ├── script.py.mako
+│   │   └── versions
+│   ├── requirements.dev.txt
+│   ├── requirements.prod.txt
+│   ├── requirements.txt
+│   ├── run.py
+│   ├── start.sh
+├── CONTRIBUTING.md
+├── Frontend
+│   ├── Dockerfile.dev
+│   ├── Dockerfile.prod
+│   ├── README.md
+|   ├── package-lock.json
+│   ├── package.json
+│   ├── public
+│   │   ├── favicon.ico
+│   │   ├── index.html
+│   │   ├── logo192.png
+│   │   ├── logo512.png
+│   │   ├── manifest.json
+│   │   └── robots.txt
+│   ├── src
+│   │   ├── ApiClient.js
+│   │   ├── App.css
+│   │   ├── App.js
+│   │   ├── App.test.js
+│   │   ├── components
+│   │   │   ├── Header.js
+│   │   │   ├── KeyWordSearch.js
+│   │   │   ├── OnboardingFormComponents
+│   │   │   │   ├── AdminDetails.js
+│   │   │   │   ├── ContactInfo.js
+│   │   │   │   ├── MissionStatement.js
+│   │   │   │   ├── OrgAdditionalDetails.js
+│   │   │   │   ├── OrgAddress.js
+│   │   │   │   ├── OrgCoverImg.js
+│   │   │   │   ├── OrgDetails.js
+│   │   │   │   ├── OrgLogo.js
+│   │   │   │   └── SocialMediaLinks.js
+│   │   │   ├── OrgDisplayCard.js
+│   │   │   ├── OrgProfileFormComponents
+│   │   │   │   ├── OngoingProjects.js
+│   │   │   │   ├── PreviousProjects.js
+│   │   │   │   ├── ProgramsInitiatives.js
+│   │   │   │   └── SupportNeeds.js
+│   │   │   ├── Sidebar.js
+│   │   │   ├── icons
+│   │   │   │   ├── KenyaIcon.js
+│   │   │   │   └── kenya-svgrepo-com.svg
+│   │   │   ├── ui
+│   │   │   │   ├── alert.js
+│   │   │   │   └── card.js
+│   │   │   └── utils
+│   │   │       └── translationConstants.js
+│   │   ├── contexts
+│   │   │   ├── ApiProvider.js
+│   │   │   ├── AuthProvider.js
+│   │   │   └── TranslationProvider.js
+│   │   ├── index.css
+│   │   ├── index.js
+│   │   ├── logo.svg
+│   │   ├── pages
+│   │   │   ├── DisplayPage.js
+│   │   │   ├── EstablishmentGuide.js
+│   │   │   ├── LoginPage.js
+│   │   │   ├── OnboardingForm.js
+│   │   │   ├── OrgProfile.js
+│   │   │   ├── OrgProfileForm.js
+│   │   │   ├── OrgProjects.js
+│   │   │   ├── SelectUserTypePage.js
+│   │   │   ├── SignupPage.js
+│   │   │   ├── VolunteerForm.js
+│   │   │   └── VolunteerPage.js
+│   │   ├── reportWebVitals.js
+│   │   └── setupTests.js
+│   └── tailwind.config.js
+├── README.md
+├── build.sh
+├── directory_structure.txt
+├── docker-compose.dev.yml
+├── docker-compose.prod.yml
+├── logs
+├── nginx.conf
+└── render.yaml
