@@ -1,7 +1,7 @@
 name: Database Migrations
 
 on:
-  workflow_dispatch:  # Manual trigger
+  workflow_dispatch:
   push:
     branches:
       - deployment
@@ -51,14 +51,27 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          
+      - name: Debug Python Environment
+        working-directory: Backend
+        run: |
+          echo "Python version:"
+          python --version
+          echo "Installed packages:"
+          pip list
+          echo "Current directory:"
+          pwd
+          echo "Directory contents:"
+          ls -la
 
-      - name: Run Migrations
+      - name: Run Database Migrations
         working-directory: Backend
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           FLASK_APP: ${{ secrets.FLASK_APP }}
+          PYTHONPATH: ${PYTHONPATH}:${GITHUB_WORKSPACE}/Backend
         run: |
-          flask db upgrade
+          python manage_db.py
 
       - name: Stop Cloud SQL Proxy
         if: always()
