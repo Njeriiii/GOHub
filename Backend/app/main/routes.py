@@ -112,22 +112,32 @@ logger = logging.getLogger(__name__)
 
 def get_translate_client():
     """
-    Create and return a Google Translate client using mounted credentials in Cloud Run
-    or local credentials for development.
+    Create and return a Google Translate client using credentials based on environment:
+    - Cloud Run: Uses mounted secrets
+    - GitHub Actions: Uses provided credentials file
+    - Local development: Uses application default credentials
     """
     try:
         if os.getenv('K_SERVICE'):  # Running in Cloud Run
-            # Use the mounted secret path directly
+            creds_path = '/secrets/google-creds/key.json'
+            # Check if we're in migration (GitHub Actions)
+            if os.getenv('GITHUB_ACTIONS'):
+                creds_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
+                
+            if not os.path.exists(creds_path):
+                logger.warning(f"Credentials file not found at {creds_path} - translation features will be disabled")
+                return None
+
             credentials = service_account.Credentials.from_service_account_file(
-                '/secrets/google-creds/key.json',
+                creds_path,
                 scopes=['https://www.googleapis.com/auth/cloud-translation']
             )
             return translate.Client(credentials=credentials)
         else:
-            # Local development
+            # Local development - uses application default credentials
             return translate.Client()
     except Exception as e:
-        logger.error(f"Error initializing Google Translate client: {str(e)}")
+        logger.error(f"Error initializing Google Translate client: {str(e)} - translation features will be disabled")
         return None
 
 # Initialize the client when the module is imported
