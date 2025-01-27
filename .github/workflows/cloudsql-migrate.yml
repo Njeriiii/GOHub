@@ -36,12 +36,13 @@ jobs:
           curl -o cloud-sql-proxy https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/v2.8.1/cloud-sql-proxy.linux.amd64
           chmod +x cloud-sql-proxy
           
-          # Start proxy with detailed logging
+          # Start proxy with structured logging
           ./cloud-sql-proxy \
             --credentials-file=gcp-credentials.json \
             --address 0.0.0.0 \
             --port 5432 \
-            --verbosity=debug \
+            --structured-logs \
+            --quiet=false \
             gohub-92b6b:us-west1:ngo-connect-db > proxy.log 2>&1 &
           
           # Wait for proxy to start and verify
@@ -52,6 +53,7 @@ jobs:
             exit 1
           fi
           echo "Cloud SQL Proxy started successfully"
+          cat proxy.log
 
       - name: Install dependencies
         working-directory: Backend
