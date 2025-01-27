@@ -9,6 +9,7 @@ on:
       - 'Backend/migrations/**'
       - 'Backend/app/models.py'  # Path to match actual models location
       - 'Backend/app/models/**'  # Watch for any future model files in a models directory
+      - 'Backend/manage_db.py'
 
       - '.github/workflows/cloudsql-migrate.yml'
 
