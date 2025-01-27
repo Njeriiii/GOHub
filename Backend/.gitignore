@@ -19,6 +19,7 @@ __pycache__/
 
 # ignore .env
 .env
+.env.cloud
 ```
 
 # Ignore IDE-specific files

@@ -14,13 +14,20 @@ class AppConfig:
     if database_url and database_url.startswith("postgres://"):
         database_url = database_url.replace("postgres://", "postgresql://")
     
-    # Check if running locally or in Cloud Run
-    if os.getenv('K_SERVICE'):  # Running in Cloud Run
-        if os.getenv('USE_CLOUD_SQL_PROXY'):  # Using Cloud SQL Proxy (for migrations)
-            SQLALCHEMY_DATABASE_URI = f"postgresql://postgres:{os.getenv('DB_PASSWORD')}@127.0.0.1:5432/ngo_connect"
-        else:  # Direct Cloud SQL connection (for production)
-            SQLALCHEMY_DATABASE_URI = f"postgresql://postgres:{os.getenv('DB_PASSWORD')}@/ngo_connect?host=/cloudsql/gohub-92b6b:us-west1:ngo-connect-db"
-    else:  # Running locally
+    # Determine environment and database connection
+    IS_MIGRATION = os.getenv('IS_MIGRATION') == 'true'
+    IS_CLOUD_RUN = os.getenv('K_SERVICE') is not None
+    USE_CLOUD_SQL_PROXY = os.getenv('USE_CLOUD_SQL_PROXY') == 'true'
+    
+    # Database URI Configuration
+    if IS_MIGRATION or USE_CLOUD_SQL_PROXY:
+        # Use Cloud SQL Proxy connection for migrations or when explicitly requested
+        SQLALCHEMY_DATABASE_URI = f"postgresql://postgres:{os.getenv('DB_PASSWORD')}@127.0.0.1:5432/ngo_connect"
+    elif IS_CLOUD_RUN:
+        # Direct Cloud SQL connection for production
+        SQLALCHEMY_DATABASE_URI = f"postgresql://postgres:{os.getenv('DB_PASSWORD')}@/ngo_connect?host=/cloudsql/gohub-92b6b:us-west1:ngo-connect-db"
+    else:
+        # Local development fallback
         SQLALCHEMY_DATABASE_URI = database_url or "sqlite:///db.sqlite"
     
     # Determine database type to set appropriate configuration

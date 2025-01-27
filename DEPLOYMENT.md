@@ -40,6 +40,37 @@ This application is deployed using Google Cloud Platform and Firebase, with auto
 - Required for local development
 - Enables local testing with production database
 
+#### Migrations
+Step-by-step process for updating the Cloud SQL database to match DB models:
+
+1. Ensure Cloud SQL Proxy is running:
+```bash
+./cloud-sql-proxy gohub-92b6b:us-west1:ngo-connect-db
+```
+
+2. Set database URL:
+```bash
+export $(cat .env.cloud | xargs)
+export DATABASE_URL="postgresql://postgres:your_password@127.0.0.1:5432/ngo_connect"
+```
+
+3. Generate a migration for the changes:
+```bash
+flask db revision --autogenerate -m "describe_changes"
+```
+
+4. Review the generated migration file in migrations/versions/ to make sure it captures the intended changes
+
+5. Apply the migration to Cloud SQL:
+```bash
+flask db upgrade
+```
+
+Optional commands that are helpful:
+- `flask db current` - shows current revision
+- `flask db history` - shows migration history
+- `flask db show` - shows current database structure
+
 ### 2. Backend Setup (Cloud Run)
 
 #### Environment Variables
@@ -188,3 +219,5 @@ firebase hosting:sites:list
 # View detailed hosting information
 firebase hosting:site:get
 ```
+
+
