@@ -42,7 +42,6 @@ jobs:
             --address 0.0.0.0 \
             --port 5432 \
             --structured-logs \
-            --quiet=false \
             gohub-92b6b:us-west1:ngo-connect-db > proxy.log 2>&1 &
           
           # Wait for proxy to start and verify
@@ -53,7 +52,6 @@ jobs:
             exit 1
           fi
           echo "Cloud SQL Proxy started successfully"
-          cat proxy.log
 
       - name: Install dependencies
         working-directory: Backend
@@ -65,7 +63,7 @@ jobs:
         working-directory: Backend
         run: |
           mkdir -p migrations/versions
-          mkdir -p uploads  # For UPLOAD_FOLDER in config
+          mkdir -p uploads
 
       - name: Setup environment variables
         working-directory: Backend
@@ -75,6 +73,7 @@ jobs:
           FLASK_APP=app:create_app()
           FLASK_ENV=production
           K_SERVICE=cloud-run
+          USE_CLOUD_SQL_PROXY=true
           DATABASE_URL=postgresql://postgres:${{ secrets.DB_PASSWORD }}@127.0.0.1:5432/ngo_connect
           DB_PASSWORD=${{ secrets.DB_PASSWORD }}
           GOOGLE_APPLICATION_CREDENTIALS=${{ github.workspace }}/gcp-credentials.json
@@ -82,8 +81,6 @@ jobs:
           JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
           UPLOAD_FOLDER=${{ github.workspace }}/Backend/uploads
           EOF
-          
-          echo "Environment file created successfully"
           
           # Export for immediate use
           export $(cat .env | xargs)
@@ -123,7 +120,6 @@ jobs:
         working-directory: Backend
         run: |
           echo "Current directory: $(pwd)"
-          echo "Python path: $PYTHONPATH"
           echo "Starting migrations..."
           python manage_db.py
 

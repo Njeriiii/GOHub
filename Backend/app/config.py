@@ -1,13 +1,11 @@
-# app/config.py
+# Backend/app/config.py
 import os
 import secrets
 
 from dotenv import load_dotenv
 from datetime import timedelta
-import os
 
 load_dotenv()
-
 
 class AppConfig:
     SECRET_KEY = secrets.token_hex(24)
@@ -18,14 +16,12 @@ class AppConfig:
     
     # Check if running locally or in Cloud Run
     if os.getenv('K_SERVICE'):  # Running in Cloud Run
-        # Use secret for password in production
-        db_password = os.getenv('DB_PASSWORD')
-        if db_password:
-            SQLALCHEMY_DATABASE_URI = f"postgresql://postgres:{db_password}@/ngo_connect?host=/cloudsql/gohub-92b6b:us-west1:ngo-connect-db"
-        else:
-            SQLALCHEMY_DATABASE_URI = database_url
+        if os.getenv('USE_CLOUD_SQL_PROXY'):  # Using Cloud SQL Proxy (for migrations)
+            SQLALCHEMY_DATABASE_URI = f"postgresql://postgres:{os.getenv('DB_PASSWORD')}@127.0.0.1:5432/ngo_connect"
+        else:  # Direct Cloud SQL connection (for production)
+            SQLALCHEMY_DATABASE_URI = f"postgresql://postgres:{os.getenv('DB_PASSWORD')}@/ngo_connect?host=/cloudsql/gohub-92b6b:us-west1:ngo-connect-db"
     else:  # Running locally
-        SQLALCHEMY_DATABASE_URI = "sqlite:///db.sqlite"
+        SQLALCHEMY_DATABASE_URI = database_url or "sqlite:///db.sqlite"
     
     # Determine database type to set appropriate configuration
     is_sqlite = SQLALCHEMY_DATABASE_URI.startswith('sqlite')
