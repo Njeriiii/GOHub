@@ -7,7 +7,9 @@ on:
       - deployment
     paths:
       - 'Backend/migrations/**'
-      - 'Backend/models/**'
+      - 'Backend/app/models.py'  # Path to match actual models location
+      - 'Backend/app/models/**'  # Watch for any future model files in a models directory
+
       - '.github/workflows/cloudsql-migrate.yml'
 
 jobs:
@@ -36,7 +38,7 @@ jobs:
           curl -o cloud-sql-proxy https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/v2.8.1/cloud-sql-proxy.linux.amd64
           chmod +x cloud-sql-proxy
           
-          # Start proxy with structured logging
+          ## Start proxy with structured logging
           ./cloud-sql-proxy \
             --credentials-file=gcp-credentials.json \
             --address 0.0.0.0 \
