@@ -7,6 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 from datetime import timedelta
 import os
+import importlib
 from google.oauth2 import service_account
 
 from app.config import AppConfig
@@ -41,6 +42,13 @@ def create_app(config_class=AppConfig):
             "supports_credentials": True  # Add this line
         }})
 
+    # Load config from environment variable or default to AppConfig
+    config_class = os.getenv('CONFIG_CLASS', 'app.config.AppConfig')
+    if isinstance(config_class, str):
+        module_name, class_name = config_class.rsplit('.', 1)
+        module = importlib.import_module(module_name)
+        config_class = getattr(module, class_name)
+    
     app.config.from_object(config_class)
 
     Session(app)

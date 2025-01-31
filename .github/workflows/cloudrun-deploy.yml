@@ -1,0 +1,64 @@
+name: Deploy to Cloud Run
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'Backend/**'
+      - '.github/workflows/cloudrun-deploy.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      # Add explicit pip install step
+      - name: Install pip dependencies
+        working-directory: Backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.dev.txt
+
+      - id: auth
+        name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+          token_format: 'access_token'
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: gohub-92b6b
+
+      - name: Build and Push Container
+        env:
+          REGION: us-west1
+          PROJECT_ID: gohub-92b6b
+        run: |
+          # Configure docker to use gcloud credentials
+          gcloud auth configure-docker us-west1-docker.pkg.dev
+          
+          # Build the container
+          docker build -t us-west1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/ngo-connect-backend:${{ github.sha }} ./Backend
+          
+          # Push to Artifact Registry
+          docker push us-west1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/ngo-connect-backend:${{ github.sha }}
+          
+          # Deploy to Cloud Run
+          gcloud run deploy ngo-connect-backend \
+            --image us-west1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/ngo-connect-backend:${{ github.sha }} \
+            --region $REGION \
+            --platform managed \
+            --allow-unauthenticated \
+            --set-env-vars "DATABASE_URL=${{ secrets.DATABASE_URL }},FLASK_APP=${{ secrets.FLASK_APP }},JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}"
