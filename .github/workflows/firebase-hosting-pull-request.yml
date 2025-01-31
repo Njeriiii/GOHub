@@ -45,4 +45,4 @@ jobs:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_GOHUB_92B6B }}
           projectId: gohub-92b6b
-          entryPoint: 'GOHub/Frontend'
+          entryPoint: 'Frontend'
