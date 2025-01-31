@@ -90,17 +90,21 @@ const SupportNeeds = forwardRef(({ initialTechSkills = [], initialNonTechSkills 
 
                 // Combine and deduplicate skills
                 const techList = Array.from(new Set([
-                    ...skills.filter(s => s.status === 'tech').map(s => s.value),
-                    ...techSkillOptions.map(s => s.value)
-                ])).map(value => ({
+                    ...(skills?.filter(s => s?.status === 'tech')?.map(s => s?.value) || []),
+                    ...(techSkillOptions?.map(s => s?.value) || [])
+                ]))
+                .filter(value => value) // Remove any undefined/null values
+                .map(value => ({
                     value,
                     label: value.charAt(0).toUpperCase() + value.slice(1)
                 }));
 
                 const nonTechList = Array.from(new Set([
-                    ...skills.filter(s => s.status === 'non-tech').map(s => s.value),
-                    ...nonTechSkillOptions.map(s => s.value)
-                ])).map(value => ({
+                    ...(skills?.filter(s => s?.status === 'non-tech')?.map(s => s?.value) || []),
+                    ...(nonTechSkillOptions?.map(s => s?.value) || [])
+                ]))
+                .filter(value => value) // Remove any undefined/null values
+                .map(value => ({
                     value,
                     label: value.charAt(0).toUpperCase() + value.slice(1)
                 }));

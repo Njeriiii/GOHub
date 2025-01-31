@@ -64,7 +64,7 @@ const ProgramInitiativesList = forwardRef(({
 }, ref) => {
     // Initialize with provided initiatives or default empty one
     const [initiatives, setInitiatives] = useState(() => {
-        if (initialInitiatives.length > 0) {
+        if (initialInitiatives && initialInitiatives.length > 0) {
             // Transform incoming data to match component format
             return initialInitiatives.map(initiative => ({
                 initiativeName: initiative.initiative_name,
