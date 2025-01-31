@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - deployment
+      - main
     paths:
       - 'Backend/**'
       - '.github/workflows/cloudrun-deploy.yml'

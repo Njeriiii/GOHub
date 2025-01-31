@@ -5,10 +5,10 @@ name: Deploy to Firebase Hosting on PR
 on: 
   pull_request:
     branches:
-      - deployment
+      - main
 defaults:
   run:
-    working-directory: GOHub/Frontend
+    working-directory: Frontend
 
 permissions:
   checks: write
