@@ -17,6 +17,7 @@ import VolunteerPage from './pages/VolunteerPage';
 import SelectUserTypePage from './pages/SelectUserTypePage';
 import EstablishmentGuide from './pages/EstablishmentGuide';
 import EditProfile from './pages/EditProfilePage';
+import ProposalBuilderPage from './pages/ProposalBuilderPage';
 
 
 function App() {
@@ -43,6 +44,7 @@ function App() {
               <Route path="/edit_profile" element={<EditProfile />} />
 
               <Route path="/establishment-guide" element={<EstablishmentGuide />} />
+              <Route path="/proposal-builder" element={<ProposalBuilderPage />} />
             </Routes>
             </TranslationProvider>
         </ApiProvider>
