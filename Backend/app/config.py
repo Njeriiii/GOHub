@@ -86,6 +86,9 @@ class AppConfig:
     GOOGLE_CLOUD_PROJECT = os.getenv("GOOGLE_CLOUD_PROJECT")
     GOOGLE_APPLICATION_CREDENTIALS = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 
+    # Anthropic API key
+    ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY')
+
 class TestConfig(AppConfig):
     SQLALCHEMY_DATABASE_URI = "sqlite://"
     TESTING = True

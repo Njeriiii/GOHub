@@ -219,7 +219,7 @@ export default function ProjectNarrativeSection({ }) {
 
             const response = await apiClient.post('/claude/generate', {
                 prompt,
-                section: 'narrative'
+                section: 'projectNarrative'
             });
 
             setGeneratedContent(response.content);
