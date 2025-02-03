@@ -90,6 +90,9 @@ class AppConfig:
     # Anthropic API key
     ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY')
 
+    # Anthropic API key
+    ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY')
+
 class TestConfig(AppConfig):
     SQLALCHEMY_DATABASE_URI = "sqlite://"
     TESTING = True
