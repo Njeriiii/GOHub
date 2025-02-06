@@ -29,7 +29,7 @@ import Header from '../components/Header';
  * Content is saved to localStorage for persistence between sessions.
  */
 export default function ProposalBuilder() {
-    const [activeSection, setActiveSection] = useState('organization');
+    const [activeSection, setActiveSection] = useState('organizationInfo');
 
     const sections = [
         { id: 'organizationInfo', label: 'Organization Information', icon: BuildingOfficeIcon },

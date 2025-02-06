@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BuildingOfficeIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import { useApi } from '../../contexts/ApiProvider';
 import { useAuth } from '../../contexts/AuthProvider';
+import GeneratedContent from './GeneratedContent';
 
 /**
  * OrganizationInfoSection
@@ -27,6 +28,14 @@ export default function OrganizationInfoSection() {
     const [isGenerating, setIsGenerating] = useState(false);
     const [error, setError] = useState(null);
     const [generatedContent, setGeneratedContent] = useState('');
+
+    // Load stored content from localStorage on mount
+    useEffect(() => {
+        const storedContent = localStorage.getItem('organizationContent');
+        if (storedContent) {
+            setGeneratedContent(storedContent);
+        }
+    }, []);
 
     // State for form inputs, will be populated with org data
     const [inputs, setInputs] = useState({
@@ -200,6 +209,8 @@ export default function OrganizationInfoSection() {
         );
     }
 
+    console.log('generatedContent:', generatedContent);
+
     return (
         <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Organization Information</h2>
@@ -364,18 +375,10 @@ export default function OrganizationInfoSection() {
 
             {/* Display generated content */}
             {generatedContent && (
-                <div className="prose max-w-none mt-6">
-                    <div className="bg-gray-50 rounded-lg p-6">
-                        {generatedContent}
-                    </div>
-                    <button
-                        onClick={handleGenerate}
-                        className="mt-4 inline-flex items-center px-4 py-2 border border-gray-300 text-m font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-                    >
-                        <ArrowPathIcon className="h-4 w-4 mr-2" />
-                        Regenerate
-                    </button>
-                </div>
+                <GeneratedContent 
+                    content={generatedContent}
+                    onRegenerate={handleGenerate}
+                />
             )}
         </div>
     );
