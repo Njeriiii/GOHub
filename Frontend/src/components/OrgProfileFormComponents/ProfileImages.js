@@ -8,7 +8,7 @@ import {
 import { useApi } from '../../contexts/ApiProvider';
 import { useAuth } from '../../contexts/AuthProvider';
 
-export function ProfileImages({ orgId, onComplete }) {
+export function ProfileImages({  }) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [selectedImages, setSelectedImages] = useState({
@@ -63,7 +63,6 @@ export function ProfileImages({ orgId, onComplete }) {
         // Skip if no images selected
         console.log("selectedImages at handleSubmit ", selectedImages);
         if (!selectedImages.logo && !selectedImages.cover_photo) {
-            onComplete();
             return;
         }
 
@@ -87,28 +86,37 @@ export function ProfileImages({ orgId, onComplete }) {
 
             console.log("formData3", formData.get("cover_photo"));
 
-            const response = apiClient.post('/profile/upload-images', formData);
+            const response = await apiClient.post('/profile/upload-images', formData);
 
-            console.log("response", response);
+            const { message, results } = response?.body;
+            
+            console.log('Upload successful:', {
+                message,
+                logoUrl: results.logo?.url,
+                coverUrl: results.cover_photo?.url
+            });
 
-            const data = await response.json();
+            if (results.logo?.success || results.cover_photo?.success) {
+                setPreviews((prev) => ({
+                    ...prev,
+                    logo: results.logo.url,
+                    cover_photo: results.cover_photo.url,
+                }));
 
-            console.log("data", data);
-
-            if (!response.ok) {
-                throw new Error(data.error || "Failed to upload images");
+            console.log('Previews', previews);
+            } else {
+                throw new Error(response.body.error || 'Upload failed');
             }
 
-        // onComplete();
         } catch (err) {
-        setError(err.message);
+            setError(err.response?.data?.error || err.message || 'Upload failed');
         } finally {
-        setLoading(false);
+            setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-slate-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+        <div className=" py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
             {/* Enhanced Header with animation */}
             <div className="text-center mb-12 animate-fadeIn">
@@ -281,7 +289,7 @@ export function ProfileImages({ orgId, onComplete }) {
                     className="flex items-center space-x-3 px-8 py-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-xl hover:from-teal-600 hover:to-teal-700 transition-all hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
                 >
                     <span className="text-base font-medium">
-                    {loading ? "Saving Changes..." : "Complete Profile"}
+                    {loading ? "Saving Changes..." : "Save"}
                     </span>
                     <Save className="h-5 w-5" />
                 </button>
