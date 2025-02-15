@@ -150,7 +150,9 @@ export default function EditProfile({  }) {
 
             {/* Images editing sections */}
             {activeTab === 'images' && (
-                <ProfileImages/>
+                <ProfileImages 
+                    onEdit={true}
+            />
             )}
 
             {/* Return to Profile Button */}

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
     Upload,
     Image as ImageIcon,
@@ -8,7 +9,9 @@ import {
 import { useApi } from '../../contexts/ApiProvider';
 import { useAuth } from '../../contexts/AuthProvider';
 
-export function ProfileImages({  }) {
+export function ProfileImages({ 
+        onEdit = false,
+    }) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [selectedImages, setSelectedImages] = useState({
@@ -22,6 +25,9 @@ export function ProfileImages({  }) {
 
     const apiClient = useApi();
     const { user } = useAuth();
+    const location = useLocation();
+    const orgData = location.state?.orgData;
+    const navigate = useNavigate();
 
     const handleImageSelect = (type, e) => {
         const file = e.target.files[0];
@@ -57,6 +63,18 @@ export function ProfileImages({  }) {
         
         console.log("selectedImages", selectedImages);
         setError(null);
+    };
+
+    console.log("orgDat!a", orgData);
+
+    const handleNavigateToProfile = () => {
+
+        // Navigate to profile page
+        navigate("/org_profile", {
+            state: {
+                org: { user_id: orgData.user_id },
+            },
+        });
     };
 
     const handleSubmit = async () => {
@@ -293,6 +311,16 @@ export function ProfileImages({  }) {
                     </span>
                     <Save className="h-5 w-5" />
                 </button>
+                
+                {/* render if edit is false */}
+                {!onEdit && (
+                    <button
+                    onClick={handleNavigateToProfile}
+                    className="flex items-center space-x-3 px-8 py-3 bg-gray-200 text-gray-600 rounded-xl hover:bg-gray-300 transition-all"
+                    >
+                    <span className="text-base font-medium">Go to Profile</span>
+                    </button>
+                )}
                 </div>
             </div>
             </div>

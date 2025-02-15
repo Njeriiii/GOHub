@@ -63,7 +63,7 @@ const OrgProfileForm = () => {
             const response = await apiClient.post('/profile/org/projects_initiatives', formData);
             if (response.status === 201) {
                 setSuccess(true);
-                setTimeout(() => navigate('/'), 1500);
+                setTimeout(() => navigate('/upload-images', { state: { orgData: formData } }), 1500);
             }
         } catch (err) {
             setError('Something went wrong. Please try again.');
