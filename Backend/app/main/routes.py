@@ -51,6 +51,7 @@ def get_all_orgs():
             "org_overview": org.org_overview,
             "focus_areas": [focus_area.serialize() for focus_area in org.focus_areas],
             "skills_needed": [skill.serialize() for skill in org.skills_needed],
+            "org_logo_filename": org.logo_url,
         }
 
         orgs_data.append(org_data)
@@ -107,7 +108,7 @@ def match_volunteer_skills():
     except Exception as e:
         db.session.rollback()
         return jsonify({"message": f"An error occurred: {str(e)}"}), 500
-    
+
 logger = logging.getLogger(__name__)
 
 def get_translate_client():
@@ -255,4 +256,3 @@ def translate_text():
         return jsonify({
             'error': f'Server error: {str(e)}'
         }), 500
-
