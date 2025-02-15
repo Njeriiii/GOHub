@@ -99,8 +99,8 @@ export function ProfileImages({  }) {
             if (results.logo?.success || results.cover_photo?.success) {
                 setPreviews((prev) => ({
                     ...prev,
-                    logo: results.logo.url,
-                    cover_photo: results.cover_photo.url,
+                    logo: results.logo?.url,
+                    cover_photo: results.cover_photo?.url,
                 }));
 
             console.log('Previews', previews);
