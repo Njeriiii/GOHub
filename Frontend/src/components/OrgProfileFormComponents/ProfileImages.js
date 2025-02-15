@@ -61,11 +61,8 @@ export function ProfileImages({
                 [type]: file,
             }));
         
-        console.log("selectedImages", selectedImages);
         setError(null);
     };
-
-    console.log("orgDat!a", orgData);
 
     const handleNavigateToProfile = () => {
 
@@ -79,7 +76,6 @@ export function ProfileImages({
 
     const handleSubmit = async () => {
         // Skip if no images selected
-        console.log("selectedImages at handleSubmit ", selectedImages);
         if (!selectedImages.logo && !selectedImages.cover_photo) {
             return;
         }
@@ -90,19 +86,13 @@ export function ProfileImages({
 
             const formData = new FormData();
             formData.append("user_id", user.id);
-            console.log("user", user);
-
-            console.log('FormData1 has user id', formData.get("user_id"));
 
             if (selectedImages.logo) {
                 formData.append("logo", selectedImages.logo);
             }
-            console.log('FormData2', formData.get("logo"));
             if (selectedImages.cover_photo) {
                 formData.append("cover_photo", selectedImages.cover_photo);
             }
-
-            console.log("formData3", formData.get("cover_photo"));
 
             const response = await apiClient.post('/profile/upload-images', formData);
 
@@ -120,8 +110,6 @@ export function ProfileImages({
                     logo: results.logo?.url,
                     cover_photo: results.cover_photo?.url,
                 }));
-
-            console.log('Previews', previews);
             } else {
                 throw new Error(response.body.error || 'Upload failed');
             }
