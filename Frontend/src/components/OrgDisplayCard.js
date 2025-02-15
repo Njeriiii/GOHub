@@ -15,68 +15,112 @@ const categoryColors = {
 // Organization display card component - used to display organization information in a card format
 export default function OrgDisplayCard({ org }) {
     const navigate = useNavigate();
-
-    function handleProfileLinkClick(org) {
-        navigate('/org_profile', { state: { org } });
-    }
-
     const categoryColor = categoryColors[org.category?.toLowerCase()] || categoryColors.default;
+
+    const handleProfileLinkClick = (e, org) => {
+        e.stopPropagation();
+        navigate('/org_profile', { state: { org } });
+    };
+
+    const getAbbreviation = (name) => {
+    return name
+        .split(" ")
+        .map((word) => word[0])
+        .join("")
+        .substring(0, 3)
+        .toUpperCase();
+    };
+
 
     return (
         <div 
-            className="m-4 bg-slate-50 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:translate-y-[-5px] cursor-pointer border-l-4 border-teal-800"
-            onClick={() => handleProfileLinkClick(org)}
+            className="group relative bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden"
+            onClick={(e) => handleProfileLinkClick(e, org)}
         >
-            <div className="p-6">
-                <div className="flex justify-between items-start mb-4">
-                    <h2 className="text-2xl font-bold text-teal-900 mb-2">
+            {/* Card Header with Logo and Category Tags */}
+            <div className="p-6 flex flex-col sm:flex-row gap-6">
+                {/* Organization Logo */}
+                <div className="relative w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0">
+                    <div className="w-full h-full rounded-lg bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 flex items-center justify-center overflow-hidden">
+                        {org.org_logo_filename ? (
+                            <img 
+                                src={org.org_logo_filename} 
+                                alt={`${org.org_name} Logo`}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                    e.target.style.display = 'none';
+                                    e.target.parentElement.innerHTML = `
+                                        <span className="text-gray-400 text-sm font-medium">
+                                            ${org.org_name.substring(0, 2).toUpperCase()}
+                                        </span>
+                                    `;
+                                }}
+                            />
+                        ) : (
+                            <span className="text-gray-400 text-sm font-medium">
+                                {getAbbreviation(org.org_name)}
+                            </span>
+                        )}
+                    </div>
+                </div>
+
+                {/* Organization Info */}
+                <div className="flex-1">
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
                         {org.org_name}
                     </h2>
-                    <span className={`px-3 py-1 ${categoryColor} text-sm font-semibold rounded-full`}>
-                    <div className="flex flex-wrap items-center">
+                    
+                    {/* Focus Areas */}
+                    <div className="flex flex-wrap gap-2 mb-4">
                         {org.focus_areas.map((focus_area, index) => (
-                            <React.Fragment key={focus_area.id}>
-                                <span 
-                                    className={`px-3 py-1 ${categoryColor} text-sm font-semibold rounded-full`}
-                                    title={<DynamicTranslate>{focus_area.description}</DynamicTranslate> || <DynamicTranslate>{focus_area.name}</DynamicTranslate>}
-                                >
-                                    <DynamicTranslate>{focus_area.name}</DynamicTranslate>
-                                </span>
-                                {index < org.focus_areas.length - 1 && (
-                                    <span className="mx-1 text-gray-400">•</span>
-                                )}
-                            </React.Fragment>
+                            <span 
+                                key={focus_area.id}
+                                className={`px-3 py-1 text-sm font-medium rounded-full border ${categoryColor}`}
+                                title={focus_area.description}
+                            >
+                                <DynamicTranslate>{focus_area.name}</DynamicTranslate>
+                            </span>
                         ))}
                     </div>
-                    </span>
+
+                    {/* Organization Overview */}
+                    <p className="text-gray-600 text-sm sm:text-base mb-4 line-clamp-2 sm:line-clamp-3">
+                        <DynamicTranslate>{org.org_overview}</DynamicTranslate>
+                    </p>
                 </div>
-                <p className="text-gray-600 mb-4 line-clamp-3">
-                    <DynamicTranslate>{org.org_overview}</DynamicTranslate>
-                </p>
-                <div className="flex flex-wrap gap-4 mb-4">
+            </div>
+
+            {/* Card Footer with Metadata and CTA */}
+            <div className="px-6 pb-6 pt-2 border-t border-gray-100">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
                     <div className="flex items-center text-gray-600">
-                        <MapPin size={18} className="mr-2 text-teal-600" />
-                        <span><DynamicTranslate>{org.location || 'Location N/A'}</DynamicTranslate></span>
+                        <MapPin size={16} className="mr-2 text-gray-400" />
+                        <span className="text-sm truncate">
+                            <DynamicTranslate>{org.location || 'Location N/A'}</DynamicTranslate>
+                        </span>
                     </div>
                     <div className="flex items-center text-gray-600">
-                        <Users size={18} className="mr-2 text-teal-600" />
-                        <span><DynamicTranslate>{org.beneficiaries || 'Beneficiaries N/A'}</DynamicTranslate></span>
+                        <Users size={16} className="mr-2 text-gray-400" />
+                        <span className="text-sm truncate">
+                            <DynamicTranslate>{org.beneficiaries || 'Beneficiaries N/A'}</DynamicTranslate>
+                        </span>
                     </div>
                     <div className="flex items-center text-gray-600">
-                        <Calendar size={18} className="mr-2 text-teal-600" />
-                        <span><DynamicTranslate>{org.established || 'Est. N/A'}</DynamicTranslate></span>
+                        <Calendar size={16} className="mr-2 text-gray-400" />
+                        <span className="text-sm truncate">
+                            <DynamicTranslate>{org.established || 'Est. N/A'}</DynamicTranslate>
+                        </span>
                     </div>
                 </div>
+
+                {/* CTA Button */}
                 <div className="flex justify-end">
                     <button
-                        className="flex items-center px-4 py-2 bg-teal-600 text-white rounded-full hover:bg-teal-800 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            handleProfileLinkClick(org);
-                        }}
+                        className="group-hover:bg-teal-600 bg-teal-500 text-white px-4 py-2 rounded-lg text-sm font-medium inline-flex items-center transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
+                        onClick={(e) => handleProfileLinkClick(e, org)}
                     >
                         <Translate>View Profile</Translate>
-                        <ArrowRight className="ml-2 h-4 w-4" />
+                        <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                     </button>
                 </div>
             </div>
