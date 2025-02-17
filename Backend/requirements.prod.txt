@@ -13,9 +13,11 @@ setuptools>=65.5.1
 google-api-core>=2.14.0
 google-cloud-core>=2.3.3
 google-cloud-translate>=3.18.0
+google-cloud-storage>=3.0.0
 google-auth>=2.23.0
 gunicorn==21.2.0
 itsdangerous==2.0.1
+pillow>=11.1.0
 python-dotenv==0.21.1
 SQLAlchemy==2.0.12
 Werkzeug==2.2.2

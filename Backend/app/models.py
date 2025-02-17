@@ -147,6 +147,16 @@ class OrgProfile(db.Model):
             
         bucket_name = current_app.config['GCS_BUCKET_NAME']
         return f"https://storage.googleapis.com/{bucket_name}/{self.org_cover_photo_filename}"
+    
+    def has_images(self):
+        """Check if org has any images uploaded"""
+        return bool(self.org_logo_filename or self.org_cover_photo_filename)
+
+    def clear_images(self):
+        """Remove all image references"""
+        self.org_logo_filename = None
+        self.org_cover_photo_filename = None
+        db.session.commit()
 
     def __repr__(self):
         return f"{self.org_name}"
