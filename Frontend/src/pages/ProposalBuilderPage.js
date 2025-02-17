@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
     BuildingOfficeIcon, 
     DocumentIcon,
     CurrencyDollarIcon,
-    DocumentTextIcon
+    DocumentTextIcon,
+    CheckCircleIcon,
+    ArrowDownIcon
 } from '@heroicons/react/24/outline';
 import ProjectNarrativeSection from '../components/ProposalBuilderComponents/ProjectNarrativeSection';
 import OrganizationInfoSection from '../components/ProposalBuilderComponents/OrganizationInfoSection';
@@ -20,7 +22,7 @@ import Header from '../components/Header';
  * 1. Organization Information - Details about your organization
  * 2. Project Narrative - Core project description and goals
  * 3. Budget - Financial requirements and justification
- * 4. Project Summary - Executive summary (generated last, displayed first)
+ * 4. Executive Summary - Comprehensive overview (generated last, displayed first)
  * 
  * Each section:
  * - Collects specific inputs
@@ -32,6 +34,12 @@ import Header from '../components/Header';
  */
 export default function ProposalBuilder() {
     const [activeSection, setActiveSection] = useState('organizationInfo');
+    const [completedSections, setCompletedSections] = useState(() => {
+        // Initialize from localStorage
+        const saved = localStorage.getItem('completedSections');
+        return saved ? JSON.parse(saved) : [];
+    });
+    const [showTip, setShowTip] = useState(true);
 
     const sections = [
         { id: 'organizationInfo', label: 'Organization Information', icon: BuildingOfficeIcon },
@@ -40,12 +48,31 @@ export default function ProposalBuilder() {
         { id: 'executiveSummary', label: 'Executive Summary', icon: DocumentTextIcon }
     ];
 
+    // Track section completion
+    useEffect(() => {
+        const handleStorageChange = () => {
+            const completed = [];
+            if (localStorage.getItem('organizationContent')) completed.push('organizationInfo');
+            if (localStorage.getItem('projectNarrative')) completed.push('projectNarrative');
+            if (localStorage.getItem('proposalBudget')) completed.push('proposalBudget');
+            if (localStorage.getItem('executiveSummary')) completed.push('executiveSummary');
+            
+            setCompletedSections(completed);
+            localStorage.setItem('completedSections', JSON.stringify(completed));
+        };
+
+        // Check on mount and when localStorage changes
+        handleStorageChange();
+        window.addEventListener('storage', handleStorageChange);
+        return () => window.removeEventListener('storage', handleStorageChange);
+    }, []);
+
     return (
         <div className="min-h-screen bg-gray-50">
             <Header />
             <main>
-                {/* Introduction section */}
                 <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+                    {/* Introduction section */}
                     <div className="bg-white rounded-lg shadow-md p-6 mb-8">
                         <div className="max-w-3xl">
                             <h1 className="text-3xl font-bold text-gray-900 mb-4">
@@ -64,7 +91,34 @@ export default function ProposalBuilder() {
                             </div>
                         </div>
                     </div>
-                {/* Section Navigation */}
+
+                    {/* Progress Overview */}
+                    {showTip && (
+                        <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                            <div className="flex justify-between items-start">
+                                <div className="flex space-x-2">
+                                    <ArrowDownIcon className="h-5 w-5 text-yellow-600" />
+                                    <div>
+                                        <p className="text 
+                                        text-yellow-800">
+                                            <span className="font-bold">Recommended order:</span> Complete sections from left to right. The Executive Summary should be written last as it draws from all other sections.
+                                        </p>
+                                        <p className="text-yellow-600 text-sm mt-1">
+                                            Progress is automatically saved as you work.
+                                        </p>
+                                    </div>
+                                </div>
+                                <button 
+                                    onClick={() => setShowTip(false)}
+                                    className="text-yellow-600 hover:text-yellow-800"
+                                >
+                                    ×
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Section Navigation */}
                     <div className="mb-6 border-b border-gray-200">
                         <nav className="flex space-x-4" aria-label="Sections">
                             {sections.map((section) => (
@@ -72,7 +126,7 @@ export default function ProposalBuilder() {
                                     key={section.id}
                                     onClick={() => setActiveSection(section.id)}
                                     className={`
-                                        py-4 px-1 border-b-2 font-medium text-lg
+                                        relative py-4 px-1 border-b-2 font-medium text-lg
                                         ${activeSection === section.id
                                             ? 'border-teal-500 text-teal-600'
                                             : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -81,28 +135,48 @@ export default function ProposalBuilder() {
                                 >
                                     <section.icon className="h-5 w-5 inline-block mr-2" />
                                     {section.label}
+                                    {completedSections.includes(section.id) && (
+                                        <CheckCircleIcon className="h-5 w-5 text-green-500 absolute -top-2 -right-2" />
+                                    )}
                                 </button>
                             ))}
                         </nav>
                     </div>
 
-                    {/* Navigation and Section Content */}
+                    {/* Section Content */}
                     <div>                      
-                        {/* Project Narrative Section */}
-                        {activeSection === 'projectNarrative' && (
-                        <ProjectNarrativeSection/> )}
+                        {activeSection === 'projectNarrative' && <ProjectNarrativeSection />}
+                        {activeSection === 'organizationInfo' && <OrganizationInfoSection />}
+                        {activeSection === 'proposalBudget' && <ProposalBudgetSection />}
+                        {activeSection === 'executiveSummary' && <ExecutiveSummarySection />}
+                    </div>
 
-                        {/* Organization Information Section */}
-                        {activeSection === 'organizationInfo' && (
-                        <OrganizationInfoSection/> )}
-
-                        {/* Proposal Budget Section */}
-                        {activeSection === 'proposalBudget' && (
-                        <ProposalBudgetSection/> )}
-
-                        {/* Executive Summary Section */}
-                        {activeSection === 'executiveSummary' && (
-                        <ExecutiveSummarySection/> )}
+                    {/* Section Navigation Footer */}
+                    <div className="mt-8 flex justify-between">
+                        <button
+                            onClick={() => {
+                                const currentIndex = sections.findIndex(s => s.id === activeSection);
+                                if (currentIndex > 0) {
+                                    setActiveSection(sections[currentIndex - 1].id);
+                                }
+                            }}
+                            disabled={activeSection === sections[0].id}
+                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            Previous Section
+                        </button>
+                        <button
+                            onClick={() => {
+                                const currentIndex = sections.findIndex(s => s.id === activeSection);
+                                if (currentIndex < sections.length - 1) {
+                                    setActiveSection(sections[currentIndex + 1].id);
+                                }
+                            }}
+                            disabled={activeSection === sections[sections.length - 1].id}
+                            className="px-4 py-2 text-sm font-medium text-white bg-teal-600 border border-transparent rounded-md hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            Next Section
+                        </button>
                     </div>
                 </div>
             </main>
