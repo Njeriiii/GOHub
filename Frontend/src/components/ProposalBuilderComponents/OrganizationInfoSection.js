@@ -177,10 +177,7 @@ export default function OrganizationInfoSection() {
                 section: 'organizationInfo'
             });
 
-            console.log('Generated content:', response);
-
             setGeneratedContent(response.body.content);
-            console.log('generatedContent:', generatedContent);
             localStorage.setItem('organizationContent', response.body.content);
 
         } catch (error) {
@@ -208,8 +205,6 @@ export default function OrganizationInfoSection() {
             </div>
         );
     }
-
-    console.log('generatedContent:', generatedContent);
 
     return (
         <div className="bg-white rounded-lg shadow-md p-6">
