@@ -4,7 +4,7 @@ import {
     ArrowPathIcon,
 } from '@heroicons/react/24/outline';
 import { useApi } from '../../contexts/ApiProvider';
-
+import GeneratedContent from './GeneratedContent';
 /**
  * ProjectNarrativeSection
  * 
@@ -23,7 +23,15 @@ export default function ProjectNarrativeSection({ }) {
     const [generatedContent, setGeneratedContent] = useState('');
     const [isGenerating, setIsGenerating] = useState(false);
     const [error, setError] = useState(null);
-    const { apiClient } = useApi();
+    const apiClient = useApi();
+
+    // Load stored content from localStorage on mount
+    useEffect(() => {
+        const storedContent = localStorage.getItem('projectNarrative');
+        if (storedContent) {
+            setGeneratedContent(storedContent);
+        }
+    }, []);
 
     const [inputs, setInputs] = useState({
         problem: {
@@ -175,8 +183,6 @@ export default function ProjectNarrativeSection({ }) {
         setIsGenerating(true);
         setError(null);
 
-        console.log('inputs:', inputs);
-
         try {
             // Get previous content for context
             const orgContent = localStorage.getItem('organizationContent');
@@ -222,9 +228,9 @@ export default function ProjectNarrativeSection({ }) {
                 section: 'projectNarrative'
             });
 
-            setGeneratedContent(response.content);
-            localStorage.setItem('projectNarrativeContent', response.content);
-
+            setGeneratedContent(response.body.content);
+            localStorage.setItem("projectNarrative", response.body.content);
+            
         } catch (error) {
             console.error('Generation failed:', error);
             setError('Failed to generate content. Please try again.');
@@ -237,10 +243,28 @@ export default function ProjectNarrativeSection({ }) {
     return (
         <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Project Narrative</h2>
+
+            {/* Information Notice */}
+                <div className="mb-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <p className="text-blue-800 font-normal">
+                        <ul className="list-disc list-inside">
+                            <li><span class="font-bold">Be thorough and specific</span> in your responses.</li>
+                            <li><span class="font-bold">Provide context</span> where necessary, and include relevant details to support your points.</li>
+                            <li><span class="font-bold">Ensure you highlight key information</span> that helps convey the urgency, impact, and effectiveness of your approach.</li>
+                            <li>Keep your answers clear and focused while making sure to address all aspects of the request.</li>
+                        </ul>
+                    </p>
+                </div>
+
+            {error && (
+                <div className="mb-6 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
+                    {error}
+                </div>
+            )}
             
             {/* Input Form */}
             <div className="space-y-8">
-                {!generatedContent && sections.map((section) => (
+                {sections.map((section) => (
                     <div key={section.title} className="border-b border-gray-200 pb-6">
                         <h3 className="text-xl font-medium text-gray-900 mb-4">
                             {section.title}
@@ -284,47 +308,30 @@ export default function ProjectNarrativeSection({ }) {
             </div>
 
             {/* Generate button that calls handleGenerate */}
-            {!generatedContent && (
-                <button
-                    onClick={handleGenerate}
-                    disabled={isGenerating}
-                    className="mt-6 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50"
-                >
-                    {isGenerating ? (
-                        <>
-                            <ArrowPathIcon className="animate-spin h-5 w-5 mr-2" />
-                            Generating...
-                        </>
-                    ) : (
-                        <>
-                            <DocumentTextIcon className="h-5 w-5 mr-2" />
-                            Generate Narrative
-                        </>
-                    )}
-                </button>
-            )}
+            <button
+                onClick={handleGenerate}
+                disabled={isGenerating}
+                className="mt-6 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50"
+            >
+                {isGenerating ? (
+                    <>
+                        <ArrowPathIcon className="animate-spin h-5 w-5 mr-2" />
+                        Generating...
+                    </>
+                ) : (
+                    <>
+                        <DocumentTextIcon className="h-5 w-5 mr-2" />
+                        Generate Narrative
+                    </>
+                )}
+            </button>
 
             {/* Display generated content */}
             {generatedContent && (
-                <div className="prose max-w-none mt-6">
-                    <div className="bg-gray-50 rounded-lg p-6">
-                        {generatedContent}
-                    </div>
-                    <button
-                        onClick={handleGenerate}
-                        className="mt-4 inline-flex items-center px-4 py-2 border border-gray-300 text-m font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-                    >
-                        <ArrowPathIcon className="h-4 w-4 mr-2" />
-                        Regenerate
-                    </button>
-                </div>
-            )}
-
-            {/* Error display */}
-            {error && (
-                <div className="mt-4 text-red-600 text-m">
-                    {error}
-                </div>
+                <GeneratedContent 
+                    content={generatedContent}
+                    onRegenerate={handleGenerate}
+                />
             )}
         </div>
     );
