@@ -8,6 +8,7 @@ import {
 import ProjectNarrativeSection from '../components/ProposalBuilderComponents/ProjectNarrativeSection';
 import OrganizationInfoSection from '../components/ProposalBuilderComponents/OrganizationInfoSection';
 import ProposalBudgetSection from '../components/ProposalBuilderComponents/ProposalBudgetSection';
+import ExecutiveSummarySection from '../components/ProposalBuilderComponents/ExecutiveSummarySection';
 import Header from '../components/Header';
 
 /**
@@ -36,7 +37,7 @@ export default function ProposalBuilder() {
         { id: 'organizationInfo', label: 'Organization Information', icon: BuildingOfficeIcon },
         { id: 'projectNarrative', label: 'Project Narrative', icon: DocumentIcon },
         { id: 'proposalBudget', label: 'Budget', icon: CurrencyDollarIcon },
-        { id: 'summary', label: 'Project Summary', icon: DocumentTextIcon }
+        { id: 'executiveSummary', label: 'Executive Summary', icon: DocumentTextIcon }
     ];
 
     return (
@@ -59,11 +60,6 @@ export default function ProposalBuilder() {
                                         <h2 className="font-medium text-gray-900">Professional Quality</h2>
                                         <p className="text-lg mt-1">Generate polished, funder-ready content that follows grant writing best practices.</p>
                                     </div>
-                                </div>
-                                <div className="bg-gray-50 rounded-lg p-4 mt-6">
-                                    <p className="text-lg">
-                                        <span className="font-medium">Pro tip:</span> While we'll generate your project summary last, it should appear first in your final document. This ensures it captures the essence of your complete proposal.
-                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -103,6 +99,10 @@ export default function ProposalBuilder() {
                         {/* Proposal Budget Section */}
                         {activeSection === 'proposalBudget' && (
                         <ProposalBudgetSection/> )}
+
+                        {/* Executive Summary Section */}
+                        {activeSection === 'executiveSummary' && (
+                        <ExecutiveSummarySection/> )}
                     </div>
                 </div>
             </main>
