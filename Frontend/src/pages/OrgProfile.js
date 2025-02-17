@@ -61,6 +61,15 @@ export default function OrgProfile() {
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="space-y-10">
                 <div className="bg-gradient-to-r from-teal-400 via-cyan-500 to-sky-500 rounded-lg shadow-xl overflow-hidden">
+                    <div className="relative">
+                        {onboardingFormData.orgProfile.org_cover_photo_filename && (
+                            <img 
+                                src={onboardingFormData.orgProfile.org_cover_photo_filename} 
+                                alt="Organization Cover" 
+                                className="w-full h-64 object-cover"
+                                onError={(e) => e.target.style.display = 'none'}
+                            />
+                        )}
                     <div className="p-8 sm:p-12 flex justify-between items-center">
                         <div>
                             <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4">{onboardingFormData.orgProfile.org_name}</h1>
@@ -72,11 +81,28 @@ export default function OrgProfile() {
                         </div>
                         <div className="hidden sm:block">
                             <div className="w-32 h-32 rounded-full bg-white flex items-center justify-center">
-                                <span className="text-teal-500 text-xs text-center">
-                                {onboardingFormData.orgProfile.org_name} Logo
-                                </span>
+                                {onboardingFormData.orgProfile.org_logo_filename ? (
+                                    <img 
+                                        src={onboardingFormData.orgProfile.org_logo_filename} 
+                                        alt="Organization Logo" 
+                                        className="w-full h-full object-cover rounded-full"
+                                        onError={(e) => {
+                                            e.target.style.display = 'none';
+                                            e.target.closest('div').innerHTML = `
+                                                <span className="text-teal-500 text-xs text-center">
+                                                    ${onboardingFormData.orgProfile.name} Logo
+                                                </span>
+                                            `;
+                                        }}
+                                    />
+                                ) : (
+                                    <span className="text-teal-500 text-xs text-center">
+                                        {onboardingFormData.orgProfile.name} Logo
+                                    </span>
+                                )}
                             </div>
                         </div>
+                    </div>
                     </div>
                 </div>
                 <div className="flex justify-end">

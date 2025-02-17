@@ -1,10 +1,14 @@
+import logging
 from flask import Blueprint, jsonify, request
 from flask_login import login_required, current_user
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import joinedload
-from datetime import datetime
+from datetime import datetime, timezone
 from app import db
+from app.utils.image_handler import ImageHandler
+from google.cloud import storage
+import os
 
 from app.models import (
     User,
@@ -607,3 +611,208 @@ def edit_org_skills():
         db.session.rollback()
         print(f"Unexpected error: {str(e)}")
         return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@profile.route("/profile/upload-images", methods=["POST"])
+def upload_org_images():
+    """
+    Handle simultaneous upload of organization logo and cover photo
+    Expected form data:
+    - user_id: The current user's ID
+    - org_id: The organization profile ID
+    - logo: (optional) The logo file
+    - cover_photo: (optional) The cover photo file
+
+    Returns:
+        tuple: (json_response, status_code)
+        Response includes:
+        - message: Status message
+        - results: Dictionary containing upload results for each image type
+        Status codes:
+        - 200: All uploads successful
+        - 207: Partial success (some uploads failed)
+        - 400: Bad request (missing data or all uploads failed)
+        - 403: Unauthorized access
+        - 404: Organization not found
+        - 500: Server error
+    """
+    try:
+        # Get the current user's ID
+        current_user_id = request.form.get("user_id")
+        if not current_user_id:
+            return jsonify({"error": "User ID is required"}), 400
+
+        # Get and validate org_id
+        org_profile = OrgProfile.query.filter_by(user_id=current_user_id).first()
+        if not org_profile:
+            return jsonify({"error": "Organization profile not found"}), 404
+
+        org_id = org_profile.id
+        if not org_id:
+            return jsonify({"error": "Organization ID is required"}), 400
+
+        # Verify ownership
+        logging.warning(
+            f"User {current_user_id} attempting to upload images for org {org_id}"
+        )
+        logging.warning(f"Org profile user ID: {org_profile.user_id}")
+        if int(org_profile.user_id) != int(current_user_id):
+            logging.warning(
+                f"Unauthorized image upload attempt for org {org_id} by user {current_user_id}"
+            )
+            return jsonify({"error": "Unauthorized access"}), 403
+
+        # Validate that at least one file was provided
+        if not any(request.files.get(type_) for type_ in ["logo", "cover_photo"]):
+            return jsonify({"error": "No image files provided"}), 400
+
+        # Initialize image handler
+        image_handler = ImageHandler()
+
+        # Track upload results for each image type
+        results = {"logo": None, "cover_photo": None}
+
+        # Handle both file uploads
+        for image_type in ["logo", "cover_photo"]:
+            if image_type in request.files:
+                file = request.files[image_type]
+                if file and file.filename:
+                    try:
+                        # Get the current filename for this image type
+                        old_filename = (
+                            org_profile.org_logo_filename
+                            if image_type == "logo"
+                            else org_profile.org_cover_photo_filename
+                        )
+
+                        # Delete old image if it exists
+                        if old_filename:
+                            logging.info(f"Deleting old {image_type}: {old_filename}")
+                            image_handler.delete_image(old_filename)
+
+                        # Upload new image
+                        logging.info(f"Uploading new {image_type}: {file.filename}")
+                        filename = image_handler.upload_image(file, image_type)
+
+                        # Update database field
+                        if image_type == "logo":
+                            org_profile.org_logo_filename = filename
+                        else:
+                            org_profile.org_cover_photo_filename = filename
+
+                        # Store result with public URL
+                        bucket_name = os.getenv("GCS_BUCKET_NAME")
+                        results[image_type] = {
+                            "success": True,
+                            "filename": filename,
+                            "url": f"https://storage.googleapis.com/{bucket_name}/{filename}",
+                        }
+                        logging.info(f"Successfully uploaded {image_type}")
+
+                    except ValueError as ve:
+                        logging.error(f"Error uploading {image_type}: {str(ve)}")
+                        results[image_type] = {"success": False, "error": str(ve)}
+
+        # Update organization profile timestamp
+        org_profile.updated_at = datetime.now(timezone.utc)
+
+        # Commit changes to database
+        try:
+            db.session.commit()
+            logging.info(f"Successfully updated org profile {org_id} with new images")
+        except SQLAlchemyError as e:
+            logging.error(f"Database error updating org profile {org_id}: {str(e)}")
+            db.session.rollback()
+            return jsonify({"error": "Failed to update database"}), 500
+
+        # Prepare response with upload results
+        response = {"message": "Image upload completed", "results": results}
+
+        # Determine appropriate status code based on results
+        if all(r and r.get("success") for r in results.values() if r):
+            status_code = 200  # All uploads successful
+        elif any(r and r.get("success") for r in results.values() if r):
+            status_code = 207  # Partial success
+        else:
+            status_code = 400  # All uploads failed
+
+        return jsonify(response), status_code
+
+    except Exception as e:
+        logging.error(f"Unexpected error in upload_org_images: {str(e)}")
+        db.session.rollback()
+        return (
+            jsonify(
+                {
+                    "error": "Internal server error",
+                    "message": "An unexpected error occurred while processing the upload",
+                }
+            ),
+            500,
+        )
+
+
+@profile.route("/api/test/gcs", methods=["GET"])
+def test_gcs_connection():
+    """Test GCS connectivity and operations. Only available in development."""
+    if os.getenv("ENV") != "development":
+        return jsonify({"error": "Test endpoint only available in development"}), 403
+
+    results = {
+        "connection": False,
+        "bucket_access": False,
+        "list_files": False,
+        "test_upload": False,
+        "details": {},
+    }
+
+    try:
+        # Test 1: Basic connection
+        storage_client = storage.Client()
+        results["connection"] = True
+        results["details"]["project"] = storage_client.project
+
+        # Test 2: Bucket access
+        bucket_name = os.getenv("GCS_BUCKET_NAME")
+        bucket = storage_client.bucket(bucket_name)
+        results["bucket_access"] = True
+        results["details"]["bucket_name"] = bucket_name
+
+        # Test 3: List files
+        blobs = list(bucket.list_blobs(max_results=5))
+        results["list_files"] = True
+        results["details"]["files"] = [
+            {"name": blob.name, "size": blob.size, "updated": blob.updated.isoformat()}
+            for blob in blobs
+        ]
+
+        # Test 4: Test upload
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        test_blob = bucket.blob(f"test/gcs_test_{timestamp}.txt")
+        test_blob.upload_from_string(
+            "GCS Test at " + datetime.now().isoformat(), content_type="text/plain"
+        )
+        results["test_upload"] = True
+        results["details"]["test_file"] = {
+            "name": test_blob.name,
+            "url": f"https://storage.googleapis.com/{bucket_name}/{test_blob.name}",
+        }
+
+        # Add credentials info
+        creds_path = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+        results["details"]["credentials_path"] = (
+            creds_path if creds_path else "Using default credentials"
+        )
+
+        return jsonify(
+            {"success": True, "message": "All GCS tests passed", "results": results}
+        )
+
+    except Exception as e:
+        results["error"] = str(e)
+        return (
+            jsonify(
+                {"success": False, "message": "GCS test failed", "results": results}
+            ),
+            500,
+        )

@@ -4,11 +4,13 @@ import {
     BuildingOfficeIcon, 
     DocumentIcon,
     ArrowRightIcon,
+    CameraIcon
 } from '@heroicons/react/24/outline';
 import EditSupportNeeds from '../components/EditingComponents/EditSupportNeeds.js';
 import EditBasicInfo from '../components/EditingComponents/EditBasicInfo.js';
 import EditInitiatives from '../components/EditingComponents/EditInitiatives.js';
 import EditProjects from '../components/EditingComponents/EditProjects.js';
+import ProfileImages from '../components/OrgProfileFormComponents/ProfileImages.js';
 
 export default function EditProfile({  }) {
     const location = useLocation();
@@ -22,7 +24,8 @@ export default function EditProfile({  }) {
         { id: 'basic', label: 'Basic Information', icon: BuildingOfficeIcon },
         { id: 'initiatives', label: 'Initiatives', icon: DocumentIcon },
         { id: 'projects', label: 'Projects', icon: DocumentIcon },
-        { id: 'skills', label: 'Skills Needed', icon: DocumentIcon }
+        { id: 'skills', label: 'Skills Needed', icon: DocumentIcon },
+        { id: 'images', label: 'Images', icon: CameraIcon}
     ];
 
     const handleEdit = (section) => {
@@ -144,6 +147,15 @@ export default function EditProfile({  }) {
                 setLocalData={setLocalData}
             />
             )}
+
+            {/* Images editing sections */}
+            {activeTab === 'images' && (
+                <ProfileImages 
+                    onEdit={true}
+            />
+            )}
+
+            {/* Return to Profile Button */}
             <div className="flex justify-end">
                 <button
                     onClick={handleReturnToProfile}
