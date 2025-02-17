@@ -7,6 +7,7 @@ import {
 } from '@heroicons/react/24/outline';
 import ProjectNarrativeSection from '../components/ProposalBuilderComponents/ProjectNarrativeSection';
 import OrganizationInfoSection from '../components/ProposalBuilderComponents/OrganizationInfoSection';
+import ProposalBudgetSection from '../components/ProposalBuilderComponents/ProposalBudgetSection';
 import Header from '../components/Header';
 
 /**
@@ -34,7 +35,7 @@ export default function ProposalBuilder() {
     const sections = [
         { id: 'organizationInfo', label: 'Organization Information', icon: BuildingOfficeIcon },
         { id: 'projectNarrative', label: 'Project Narrative', icon: DocumentIcon },
-        { id: 'budget', label: 'Budget', icon: CurrencyDollarIcon },
+        { id: 'proposalBudget', label: 'Budget', icon: CurrencyDollarIcon },
         { id: 'summary', label: 'Project Summary', icon: DocumentTextIcon }
     ];
 
@@ -98,6 +99,10 @@ export default function ProposalBuilder() {
                         {/* Organization Information Section */}
                         {activeSection === 'organizationInfo' && (
                         <OrganizationInfoSection/> )}
+
+                        {/* Proposal Budget Section */}
+                        {activeSection === 'proposalBudget' && (
+                        <ProposalBudgetSection/> )}
                     </div>
                 </div>
             </main>
