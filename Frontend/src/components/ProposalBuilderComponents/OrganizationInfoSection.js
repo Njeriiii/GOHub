@@ -363,6 +363,8 @@ export default function OrganizationInfoSection() {
                 <GeneratedContent 
                     content={generatedContent}
                     onRegenerate={handleGenerate}
+                    storageKey="organizationInfo"
+                    title="Generated Organization Information"
                 />
             )}
         </div>

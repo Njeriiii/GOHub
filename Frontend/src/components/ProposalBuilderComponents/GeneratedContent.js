@@ -2,8 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { ArrowPathIcon, DocumentDuplicateIcon, CheckIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '../../contexts/AuthProvider';
 
-const GeneratedContent = ({ content, onRegenerate }) => {
-    // State for managing content display and interactions
+/**
+ * GeneratedContent
+ * 
+ * A reusable component for displaying and managing AI-generated content.
+ * Handles content display, copying, regeneration, and storage management.
+ * 
+ * @param {string} content - The content to display
+ * @param {function} onRegenerate - Callback function to regenerate content
+ * @param {string} storageKey - Key for localStorage (e.g., 'projectNarrative', 'executiveSummary')
+ * @param {string} title - Optional custom title for the content section
+ */
+const GeneratedContent = ({ 
+    content, 
+    onRegenerate, 
+    storageKey, 
+    title = 'Generated Content'
+}) => {
     const [copied, setCopied] = useState(false);
     const [localContent, setLocalContent] = useState('');
     const [isRegenerating, setIsRegenerating] = useState(false);
@@ -11,11 +26,14 @@ const GeneratedContent = ({ content, onRegenerate }) => {
     const { user } = useAuth();
     const userId = user ? user.id : null;
 
+    // Create full storage key with user ID if available
+    const fullStorageKey = userId ? `${userId}_${storageKey}` : storageKey;
+
     // Load content from localStorage on mount and when content prop changes
     useEffect(() => {
-        const storedContent = localStorage.getItem(`${userId}_organizationContent`);
+        const storedContent = localStorage.getItem(fullStorageKey);
         setLocalContent(content || storedContent || '');
-    }, [content]);
+    }, [content, fullStorageKey]);
 
     // Format content with proper line breaks and spacing
     const formatContent = (text) => {
@@ -50,17 +68,21 @@ const GeneratedContent = ({ content, onRegenerate }) => {
     };
 
     // Handle regeneration of content
-    const handleRegenerate = () => {
+    const handleRegenerate = async () => {
         setIsRegenerating(true);
-        onRegenerate();
-        // Reset states after regeneration starts
-        setLocalContent('');
-        setIsRegenerating(false);
+        try {
+            await onRegenerate();
+        } catch (error) {
+            console.error('Regeneration failed:', error);
+            setShowAlert(true);
+        } finally {
+            setIsRegenerating(false);
+        }
     };
 
     // Clear content from localStorage
     const handleClear = () => {
-        localStorage.removeItem('organizationContent');
+        localStorage.removeItem(fullStorageKey);
         setLocalContent('');
         setShowAlert(true);
         setTimeout(() => setShowAlert(false), 3000);
@@ -73,19 +95,10 @@ const GeneratedContent = ({ content, onRegenerate }) => {
 
     return (
         <div className="mt-8 bg-white border border-gray-200 rounded-xl shadow-sm">
-            {/* Alert for notifications */}
-            {/* {showAlert && (
-                // <Alert className="mb-4">
-                //     <AlertDescription>
-                //         {copied ? 'Content copied to clipboard!' : 'Content cleared from storage!'}
-                //     </AlertDescription>
-                // </Alert>
-            )} */}
-
             {/* Header */}
             <div className="px-6 py-4 border-b border-gray-200">
                 <h3 className="text-lg font-semibold text-gray-900">
-                    Generated Content
+                    {title}
                 </h3>
             </div>
 

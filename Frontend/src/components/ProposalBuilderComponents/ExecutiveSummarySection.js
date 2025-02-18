@@ -209,6 +209,8 @@ export default function ExecutiveSummarySection() {
                 <GeneratedContent 
                     content={generatedContent}
                     onRegenerate={handleGenerate}
+                    storageKey="executiveSummary"
+                    title="Generated Executive Summary"
                 />
             )}
         </div>

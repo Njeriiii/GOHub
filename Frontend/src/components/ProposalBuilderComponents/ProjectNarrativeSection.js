@@ -334,6 +334,8 @@ export default function ProjectNarrativeSection({ }) {
                 <GeneratedContent 
                     content={generatedContent}
                     onRegenerate={handleGenerate}
+                    storageKey="projectNarrative"
+                    title="Generated Project Narrative"
                 />
             )}
         </div>

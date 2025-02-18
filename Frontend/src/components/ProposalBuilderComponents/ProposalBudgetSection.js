@@ -286,6 +286,8 @@ export default function ProposalBudgetSection() {
                 <GeneratedContent 
                     content={generatedContent}
                     onRegenerate={handleGenerate}
+                    storageKey="proposalBudget"
+                    title="Generated Budget"
                 />
             )}
         </div>
