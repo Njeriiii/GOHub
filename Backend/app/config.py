@@ -13,12 +13,12 @@ class AppConfig:
     database_url = os.getenv("DATABASE_URL")
     if database_url and database_url.startswith("postgres://"):
         database_url = database_url.replace("postgres://", "postgresql://")
-    
+
     # Determine environment and database connection
     IS_MIGRATION = os.getenv('IS_MIGRATION') == 'true'
     IS_CLOUD_RUN = os.getenv('K_SERVICE') is not None
     USE_CLOUD_SQL_PROXY = os.getenv('USE_CLOUD_SQL_PROXY') == 'true'
-    
+
     # Database URI Configuration
     if IS_MIGRATION or USE_CLOUD_SQL_PROXY:
         # Use Cloud SQL Proxy connection for migrations or when explicitly requested
@@ -29,13 +29,13 @@ class AppConfig:
     else:
         # Local development fallback
         SQLALCHEMY_DATABASE_URI = database_url or "sqlite:///db.sqlite"
-    
+
     # Determine database type to set appropriate configuration
     is_sqlite = SQLALCHEMY_DATABASE_URI.startswith('sqlite')
-    
+
     # Base SQLAlchemy configuration
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    
+
     # Configure engine options based on database type
     if is_sqlite:
         SQLALCHEMY_ENGINE_OPTIONS = {
@@ -55,25 +55,25 @@ class AppConfig:
                 'connect_timeout': 30
             } if not is_sqlite else {}
         }
-    
+
     # Session configuration
     SESSION_TYPE = "filesystem"
     SESSION_COOKIE_SAMESITE = "None"
     SESSION_COOKIE_SECURE = True
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_DOMAIN = '.onrender.com' if os.getenv('FLASK_ENV') == 'production' else None
-    
+
     # Mail configuration
     MAIL_USERNAME = os.getenv("MAIL_USERNAME")
     MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
     MAIL_SERVER = "smtp.googlemail.com"
     MAIL_PORT = 587
     MAIL_USE_TLS = True
-    
+
     # File upload configuration
     UPLOAD_FOLDER = os.path.abspath("uploads")
     ENV = os.getenv("FLASK_ENV", "production")
-    
+
     # JWT settings
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(days=1)
@@ -85,8 +85,10 @@ class AppConfig:
     # Google Cloud configuration
     GOOGLE_CLOUD_PROJECT = os.getenv("GOOGLE_CLOUD_PROJECT")
     GOOGLE_APPLICATION_CREDENTIALS = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+    GCS_BUCKET_NAME = os.environ.get("GCS_BUCKET_NAME")
 
-    GCS_BUCKET_NAME = os.environ.get('GCS_BUCKET_NAME')
+    # Anthropic API key
+    ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY')
 
 class TestConfig(AppConfig):
     SQLALCHEMY_DATABASE_URI = "sqlite://"

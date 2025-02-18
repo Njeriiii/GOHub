@@ -17,7 +17,8 @@ import VolunteerPage from './pages/VolunteerPage';
 import SelectUserTypePage from './pages/SelectUserTypePage';
 import EstablishmentGuide from './pages/EstablishmentGuide';
 import EditProfile from './pages/EditProfilePage';
-import ProfileImages from './components/OrgProfileFormComponents/ProfileImages';
+import ProfileImages from "./components/OrgProfileFormComponents/ProfileImages";
+import ProposalBuilderPage from './pages/ProposalBuilderPage';
 
 
 function App() {
@@ -37,7 +38,6 @@ function App() {
               <Route path="/home" element={<DisplayPage />} />
               <Route path="/find-gos" element={<DisplayPage />} />
               <Route path="/" element={<Navigate to="/find-gos" />} />
-              
               <Route path="/onboarding" element={<OnboardingForm />} />
               <Route path="/org_profile_form" element={<OrgProfileForm />} />
               <Route path="/org_profile" element={<OrgProfile />} />
@@ -45,11 +45,12 @@ function App() {
               <Route path="/edit_profile" element={<EditProfile />} />
 
               <Route path="/establishment-guide" element={<EstablishmentGuide />} />
+              <Route path="/proposal-builder" element={<ProposalBuilderPage />} />
             </Routes>
-            </TranslationProvider>
+          </TranslationProvider>
         </ApiProvider>
-        </AuthProvider>
-    </BrowserRouter>
+      </AuthProvider>
+      </BrowserRouter>
     </Container>
   );
 }
