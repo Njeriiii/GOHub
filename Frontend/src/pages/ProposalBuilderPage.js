@@ -12,6 +12,7 @@ import OrganizationInfoSection from '../components/ProposalBuilderComponents/Org
 import ProposalBudgetSection from '../components/ProposalBuilderComponents/ProposalBudgetSection';
 import ExecutiveSummarySection from '../components/ProposalBuilderComponents/ExecutiveSummarySection';
 import Header from '../components/Header';
+import { useAuth } from '../contexts/AuthProvider';
 
 /**
  * ProposalBuilder
@@ -34,12 +35,14 @@ import Header from '../components/Header';
  */
 export default function ProposalBuilder() {
     const [activeSection, setActiveSection] = useState('organizationInfo');
+    const [showTip, setShowTip] = useState(true);
+    const { user } = useAuth();
+    const userId = user ? user.id : null;
     const [completedSections, setCompletedSections] = useState(() => {
         // Initialize from localStorage
-        const saved = localStorage.getItem('completedSections');
+        const saved = localStorage.getItem(`${userId}_completedSections`);
         return saved ? JSON.parse(saved) : [];
     });
-    const [showTip, setShowTip] = useState(true);
 
     const sections = [
         { id: 'organizationInfo', label: 'Organization Information', icon: BuildingOfficeIcon },
@@ -52,13 +55,13 @@ export default function ProposalBuilder() {
     useEffect(() => {
         const handleStorageChange = () => {
             const completed = [];
-            if (localStorage.getItem('organizationContent')) completed.push('organizationInfo');
-            if (localStorage.getItem('projectNarrative')) completed.push('projectNarrative');
-            if (localStorage.getItem('proposalBudget')) completed.push('proposalBudget');
-            if (localStorage.getItem('executiveSummary')) completed.push('executiveSummary');
+            if (localStorage.getItem(`${userId}_organizationContent`)) completed.push('organizationInfo');
+            if (localStorage.getItem(`${userId}_projectNarrative`)) completed.push('projectNarrative');
+            if (localStorage.getItem(`${userId}_proposalBudget`)) completed.push('proposalBudget');
+            if (localStorage.getItem(`${userId}_executiveSummary`)) completed.push('executiveSummary');
             
             setCompletedSections(completed);
-            localStorage.setItem('completedSections', JSON.stringify(completed));
+            localStorage.setItem(`${userId}_completedSection`, JSON.stringify(completed));
         };
 
         // Check on mount and when localStorage changes
@@ -143,12 +146,21 @@ export default function ProposalBuilder() {
                         </nav>
                     </div>
 
-                    {/* Section Content */}
-                    <div>                      
-                        {activeSection === 'projectNarrative' && <ProjectNarrativeSection />}
-                        {activeSection === 'organizationInfo' && <OrganizationInfoSection />}
-                        {activeSection === 'proposalBudget' && <ProposalBudgetSection />}
-                        {activeSection === 'executiveSummary' && <ExecutiveSummarySection />}
+                    <div className="mb-8">
+                        {!userId ? (
+                            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                <p className="text-yellow-800">
+                                    Please log in to access organization information.
+                                </p>
+                            </div>
+                        ) : (
+                            <>
+                                {activeSection === 'projectNarrative' && <ProjectNarrativeSection />}
+                                {activeSection === 'organizationInfo' && <OrganizationInfoSection />}
+                                {activeSection === 'proposalBudget' && <ProposalBudgetSection />}
+                                {activeSection === 'executiveSummary' && <ExecutiveSummarySection />}
+                            </>
+                        )}
                     </div>
 
                     {/* Section Navigation Footer */}

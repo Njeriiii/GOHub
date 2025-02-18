@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowPathIcon, DocumentDuplicateIcon, CheckIcon, TrashIcon } from '@heroicons/react/24/outline';
-// import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useAuth } from '../../contexts/AuthProvider';
 
 const GeneratedContent = ({ content, onRegenerate }) => {
     // State for managing content display and interactions
@@ -8,10 +8,12 @@ const GeneratedContent = ({ content, onRegenerate }) => {
     const [localContent, setLocalContent] = useState('');
     const [isRegenerating, setIsRegenerating] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
+    const { user } = useAuth();
+    const userId = user ? user.id : null;
 
     // Load content from localStorage on mount and when content prop changes
     useEffect(() => {
-        const storedContent = localStorage.getItem('organizationContent');
+        const storedContent = localStorage.getItem(`${userId}_organizationContent`);
         setLocalContent(content || storedContent || '');
     }, [content]);
 

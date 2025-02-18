@@ -4,6 +4,7 @@ import {
     ArrowPathIcon,
 } from '@heroicons/react/24/outline';
 import { useApi } from '../../contexts/ApiProvider';
+import { useAuth } from '../../contexts/AuthProvider';
 import GeneratedContent from './GeneratedContent';
 
 /**
@@ -18,6 +19,8 @@ export default function ExecutiveSummarySection() {
     const [isGenerating, setIsGenerating] = useState(false);
     const [error, setError] = useState(null);
     const apiClient = useApi();
+    const { user } = useAuth();
+    const userId = user ? user.id : null;
 
     const [inputs, setInputs] = useState({
         keyHighlights: '', // Additional points to emphasize
@@ -28,7 +31,7 @@ export default function ExecutiveSummarySection() {
 
     // Load stored content from localStorage on mount
     useEffect(() => {
-        const storedContent = localStorage.getItem('executiveSummary');
+        const storedContent = localStorage.getItem(`${userId}_executiveSummary`);
         if (storedContent) {
             setGeneratedContent(storedContent);
         }
@@ -47,9 +50,9 @@ export default function ExecutiveSummarySection() {
 
         try {
             // Get content from all previous sections
-            const orgContent = localStorage.getItem('organizationContent');
-            const narrativeContent = localStorage.getItem('projectNarrative');
-            const budgetContent = localStorage.getItem("proposalBudget");
+            const orgContent = localStorage.getItem(`${userId}_organizationContent`);
+            const narrativeContent = localStorage.getItem(`${userId}_projectNarrative`);
+            const budgetContent = localStorage.getItem(`${userId}_proposalBudget`);
 
             const prompt = `You are an expert grant writer. Create a compelling executive summary that synthesizes all sections of the grant proposal into a powerful opening statement. 
             
@@ -87,7 +90,8 @@ export default function ExecutiveSummarySection() {
             });
 
             setGeneratedContent(response.body.content);
-            localStorage.setItem('executiveSummary', response.body.content);
+            localStorage.setItem(`${userId}_executiveSummary`, response.body.content);
+
             
         } catch (error) {
             console.error('Generation failed:', error);

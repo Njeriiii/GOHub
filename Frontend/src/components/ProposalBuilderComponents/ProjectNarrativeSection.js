@@ -4,6 +4,7 @@ import {
     ArrowPathIcon,
 } from '@heroicons/react/24/outline';
 import { useApi } from '../../contexts/ApiProvider';
+import { useAuth } from '../../contexts/AuthProvider';
 import GeneratedContent from './GeneratedContent';
 /**
  * ProjectNarrativeSection
@@ -24,10 +25,12 @@ export default function ProjectNarrativeSection({ }) {
     const [isGenerating, setIsGenerating] = useState(false);
     const [error, setError] = useState(null);
     const apiClient = useApi();
+    const { user } = useAuth();
+    const userId = user ? user.id : null;
 
     // Load stored content from localStorage on mount
     useEffect(() => {
-        const storedContent = localStorage.getItem('projectNarrative');
+        const storedContent = localStorage.getItem(`${userId}_projectNarrative`);
         if (storedContent) {
             setGeneratedContent(storedContent);
         }
@@ -185,7 +188,7 @@ export default function ProjectNarrativeSection({ }) {
 
         try {
             // Get previous content for context
-            const orgContent = localStorage.getItem('organizationContent');
+            const orgContent = localStorage.getItem(`${userId}_organizationContent`);
 
             const prompt = `You are an expert grant writer. Using the provided information, create a compelling project narrative section for a grant proposal. 
             Make it professional, clear, and persuasive.
@@ -229,7 +232,7 @@ export default function ProjectNarrativeSection({ }) {
             });
 
             setGeneratedContent(response.body.content);
-            localStorage.setItem("projectNarrative", response.body.content);
+            localStorage.setItem(`${userId}_projectNarrative`, response.body.content);
             
         } catch (error) {
             console.error('Generation failed:', error);

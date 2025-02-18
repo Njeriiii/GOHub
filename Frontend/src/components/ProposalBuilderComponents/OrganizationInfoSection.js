@@ -31,7 +31,7 @@ export default function OrganizationInfoSection() {
 
     // Load stored content from localStorage on mount
     useEffect(() => {
-        const storedContent = localStorage.getItem('organizationContent');
+        const storedContent = localStorage.getItem(`${userId}_organizationContent`);
         if (storedContent) {
             setGeneratedContent(storedContent);
         }
@@ -178,7 +178,7 @@ export default function OrganizationInfoSection() {
             });
 
             setGeneratedContent(response.body.content);
-            localStorage.setItem('organizationContent', response.body.content);
+            localStorage.setItem(`${userId}_organizationContent`, response.body.content);
 
         } catch (error) {
             console.error('Generation failed:', error);
@@ -192,16 +192,6 @@ export default function OrganizationInfoSection() {
         return (
             <div className="flex justify-center items-center h-64">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-500"></div>
-            </div>
-        );
-    }
-
-    if (!userId) {
-        return (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                <p className="text-yellow-800">
-                    Please log in to access organization information.
-                </p>
             </div>
         );
     }

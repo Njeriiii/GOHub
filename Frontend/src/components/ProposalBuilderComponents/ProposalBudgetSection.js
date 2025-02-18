@@ -4,6 +4,7 @@ import {
     ArrowPathIcon,
 } from '@heroicons/react/24/outline';
 import { useApi } from '../../contexts/ApiProvider';
+import { useAuth } from '../../contexts/AuthProvider';
 import GeneratedContent from './GeneratedContent';
 
 /**
@@ -18,6 +19,8 @@ export default function ProposalBudgetSection() {
     const [isGenerating, setIsGenerating] = useState(false);
     const [error, setError] = useState(null);
     const apiClient = useApi();
+    const { user } = useAuth();
+    const userId = user ? user.id : null;
 
     // Initialize form state
     const [inputs, setInputs] = useState({
@@ -36,7 +39,7 @@ export default function ProposalBudgetSection() {
 
     // Load stored content from localStorage on mount
     useEffect(() => {
-        const storedContent = localStorage.getItem('proposalBudget');
+        const storedContent = localStorage.getItem(`${userId}_proposalBudget`);
         if (storedContent) {
             setGeneratedContent(storedContent);
         }
@@ -65,8 +68,8 @@ export default function ProposalBudgetSection() {
 
         try {
             // Get previous content for context
-            const orgContent = localStorage.getItem('organizationContent');
-            const narrativeContent = localStorage.getItem('projectNarrative');
+            const orgContent = localStorage.getItem(`${userId}_organizationContent`);
+            const narrativeContent = localStorage.getItem(`${userId}_projectNarrative`);
 
             const prompt = `You are an expert grant writer. Using the provided information, create a budget narrative that ${
                 inputs.grantType === 'specific' 
@@ -104,7 +107,7 @@ export default function ProposalBudgetSection() {
             });
 
             setGeneratedContent(response.body.content);
-            localStorage.setItem('proposalBudget', response.body.content);
+            localStorage.setItem(`${userId}_proposalBudget`, response.body.content);
             
         } catch (error) {
             console.error('Generation failed:', error);
