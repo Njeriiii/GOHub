@@ -101,9 +101,11 @@ def create_app(config_class=AppConfig):
     from app.auth.routes import auth as auth_blueprint
     from app.profile.routes import profile as profile_blueprint
     from app.main.routes import main as main_blueprint
+    from app.claude.routes import claude as claude_blueprint
 
     app.register_blueprint(auth_blueprint)
     app.register_blueprint(profile_blueprint)
     app.register_blueprint(main_blueprint)
+    app.register_blueprint(claude_blueprint)
 
     return app
