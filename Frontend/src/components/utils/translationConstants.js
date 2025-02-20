@@ -7,7 +7,7 @@ export const STATIC_PHRASES = {
         'Find GOs': 'Find GOs',
         'Establishment Guide': 'Establishment Guide',
         'Volunteer': 'Volunteer',
-        'About': 'About',
+        'About Us': 'About Us',
         'Welcome!': 'Welcome!',
         'Log out': 'Log out',
         
@@ -107,7 +107,7 @@ export const STATIC_PHRASES = {
         'Find GOs': 'Tafuta Mashirika',
         'Establishment Guide': 'Mwongozo wa Uanzishaji',
         'Volunteer': 'Kujitolea',
-        'About': 'Kuhusu',
+        'About Us': 'Kutuhusu',
         'Welcome!': 'Karibu!',
         'Log out': 'Toka',
         'View Profile': 'Tazama Profaili',

@@ -36,6 +36,7 @@ export function DynamicTranslate({ children }) {
 
         // Skip translation for non-string content
         if (!children || typeof children !== 'string') {
+            console.warn('DynamicTranslate component requires a string child', children);
             return;
         }
 

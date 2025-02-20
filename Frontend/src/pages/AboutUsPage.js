@@ -6,28 +6,29 @@ import {
     HomeIcon,
     Trees} from "lucide-react";
 import Header from "../components/Header";
+import { DynamicTranslate } from "../contexts/TranslationProvider";
 
 export default function AboutUsPage() {
     const impactAreas = [
         {
         icon: <HandHeart className="h-16 w-8" />,
-        area: "Community Support",
-        description: "Grassroots initiatives led by local communities",
+        area: <DynamicTranslate>Community Support</DynamicTranslate>,
+        description:<DynamicTranslate>Grassroots initiatives led by local communities</DynamicTranslate>,
         },
         {
         icon: <HomeIcon className="h-16 w-8" />,
-        area: "Local Development",
-        description: "Infrastructure and capacity building projects",
+        area:<DynamicTranslate>Local Development</DynamicTranslate>,
+        description:<DynamicTranslate>Infrastructure and capacity building projects</DynamicTranslate>,
         },
         {
         icon: <Users className="h-16 w-8" />,
-        area: "Social Services",
-        description: "Health, education, and social welfare programs",
+        area:<DynamicTranslate>Social Services</DynamicTranslate>,
+        description:<DynamicTranslate>Health, education, and social welfare programs</DynamicTranslate>,
         },
         {
         icon: <Trees className="h-16 w-8" />,
-        area: "Sustainable Growth",
-        description: "Environmental and economic sustainability initiatives",
+        area:<DynamicTranslate>Sustainable Growth</DynamicTranslate>,
+        description:<DynamicTranslate>Environmental and economic sustainability initiatives</DynamicTranslate>,
         },
     ];
 
@@ -41,11 +42,13 @@ export default function AboutUsPage() {
                 <section className="text-center space-y-6">
                     <div className="max-w-4xl mx-auto space-y-4">
                         <h1 className="text-6xl font-bold text-gray-900 tracking-tight">
-                        Empowering Kenyan Communities Through Connection
+                            <DynamicTranslate>Empowering Kenyan Communities Through Connection</DynamicTranslate>
                         </h1>
                         <p className="text-2xl text-gray-900 font-medium">
-                        Building digital bridges to strengthen Community Based
-                        Organizations across Kenya
+                            <DynamicTranslate>
+                            Building digital bridges to strengthen Community Based
+                            Organizations across Kenya
+                            </DynamicTranslate>
                         </p>
                     </div>
                 </section>
@@ -54,22 +57,26 @@ export default function AboutUsPage() {
                 <section className="max-w-4xl mx-auto">
                     <Card className="bg-teal-50 border border-teal-300 shadow-md rounded-xl">
                         <CardHeader className="pb-2 text-center">
-                        <CardTitle className="text-3xl font-semibold text-teal-900">
-                            What is a Community-Based Organization (CBO)?
-                        </CardTitle>
+                            <CardTitle className="text-3xl font-semibold text-teal-900">
+                                <DynamicTranslate>What is a Community-Based Organization (CBO)?</DynamicTranslate>
+                            </CardTitle>
                         </CardHeader>
                         <CardContent className="text-teal-900/80 text-lg leading-relaxed text-center space-y-4">
-                        <p className="text-xl font-medium">
-                            A <span className="font-bold text-teal-900">Community-Based Organization (CBO)</span> is a nonprofit group 
-                            formed and led by local community members to address specific social and economic needs. 
-                            CBOs play a key role in grassroots development, providing essential support and 
-                            services where they are needed most.
-                        </p>
-                        <p className="text-xl font-medium">
-                            These organizations operate at the community level, focusing on <span className="font-bold text-teal-900">sustainable solutions </span> 
-                            and meaningful impact. By working closely with the people they serve, CBOs help drive 
-                            long-term progress and positive change.
-                        </p>
+                            <p className="text-xl font-medium">
+                                <DynamicTranslate>
+                                    A Community-Based Organization (CBO) is a non-profit group 
+                                    formed and led by local community members to address specific social and economic needs. 
+                                    CBOs play a key role in grassroots development, providing essential support and 
+                                    services where they are needed most.
+                                </DynamicTranslate>
+                            </p>
+                            <p className="text-xl font-medium">
+                                <DynamicTranslate>
+                                    These organizations operate at the community level, focusing on sustainable solutions
+                                    and meaningful impact. By working closely with the people they serve, CBOs help drive 
+                                    long-term progress and positive change.
+                                </DynamicTranslate>
+                            </p>
                         </CardContent>
                     </Card>
                 </section>
@@ -77,20 +84,24 @@ export default function AboutUsPage() {
 
                 {/* Mission Statement */}
                 <section className="max-w-4xl mx-auto text-center space-y-4">
-                    <h2 className="text-4xl font-bold text-gray-900">Our Mission</h2>
+                    <h2 className="text-4xl font-bold text-gray-900">
+                        <DynamicTranslate>Our Mission</DynamicTranslate>
+                    </h2>
                     <p className="text-2xl text-gray-600 leading-relaxed font-medium">
-                        To empower Kenyan CBOs by providing a collaborative platform that
-                        breaks down barriers between organizations, facilitates resource
-                        sharing, and amplifies their collective impact. We believe that when
-                        local communities connect and work together, they can create
-                        sustainable, lasting change from the ground up.
+                        <DynamicTranslate>
+                            To empower Kenyan CBOs by providing a collaborative platform that
+                            breaks down barriers between organizations, facilitates resource
+                            sharing, and amplifies their collective impact. We believe that when
+                            local communities connect and work together, they can create
+                            sustainable, lasting change from the ground up.
+                        </DynamicTranslate>
                     </p>
                 </section>
 
                 {/* Focus Areas */}
                 <section className="space-y-8">
                     <h2 className="text-4xl font-bold text-gray-900 text-center">
-                        Supporting Key Community Initiatives
+                        <DynamicTranslate>Supporting Key Community Initiatives</DynamicTranslate>
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {impactAreas.map((area, index) => (
@@ -118,17 +129,19 @@ export default function AboutUsPage() {
                 <section className="max-w-4xl mx-auto text-center space-y-4 pb-12">
                     <Card className="bg-gradient-to-br from-gray-50 to-gray-100 border-none">
                         <CardHeader>
-                        <CardTitle className="text-4xl font-bold text-gray-900">
-                            Our Vision for Kenya
-                        </CardTitle>
+                            <CardTitle className="text-4xl font-bold text-gray-900">
+                                <DynamicTranslate>Our Vision for Kenya</DynamicTranslate>
+                            </CardTitle>
                         </CardHeader>
                         <CardContent className="text-2xl text-gray-600 leading-relaxed">
                         <p className="font-medium">
-                            We envision a Kenya where every community has the tools and
-                            connections they need to thrive. By strengthening the network of
-                            CBOs, we're helping build a future where local solutions drive
-                            national progress, and where every community can learn from and
-                            support each other's success.
+                            <DynamicTranslate>
+                                We envision a Kenya where every community has the tools and
+                                connections they need to thrive. By strengthening the network of
+                                CBOs, we're helping build a future where local solutions drive
+                                national progress, and where every community can learn from and
+                                support each other's success.
+                            </DynamicTranslate>
                         </p>
                         </CardContent>
                     </Card>
