@@ -62,22 +62,22 @@ export default function DisplayPage() {
     };
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen bg-teal-50">
             <Header />
             
-            <main className="pb-20">
+            <main className="pb-10">
                 {/* Hero Section */}
-                <div className="bg-teal-600">
-                    <div className="container mx-auto px-4 py-16">
-                        <div className="max-w-2xl mx-auto text-center">
+                <div className="bg-teal-50">
+                    <div className="container mx-auto py-16">
+                        <div className="text-center">
                             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/10 mb-6">
-                                <KenyaIcon className="w-8 h-8 text-white" />
+                                <KenyaIcon className="w-8 h-8 text-teal-600" />
                             </div>
-                            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+                            <h1 className="text-4xl md:text-5xl font-bold text-teal-600 mb-4">
                                 <Translate>Discover Kenyan Organizations</Translate>
                             </h1>
-                            <p className="text-2xl text-white/90 font-bold">
-                                <Translate>Connect with community-based charities making a real difference</Translate>
+                            <p className="text-2xl text-teal-600 font-bold">
+                                <Translate>Connect with community-based organizations making real change happen!</Translate>
                             </p>
                         </div>
                     </div>
@@ -113,7 +113,7 @@ export default function DisplayPage() {
                                             }
                                         </h2>
                                         <span className="px-4 py-1.5 text-xl font-bold bg-teal-50 text-teal-600 rounded-full">
-                                            {searchResults?.length || orgsData?.length || 0} <Translate>organization(s)</Translate>
+                                            {searchResults?.length || orgsData?.length || 0} <Translate>Organization(s)</Translate>
                                         </span>
                                     </div>
                                     {searchResults && (
