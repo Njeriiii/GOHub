@@ -19,6 +19,7 @@ import EstablishmentGuide from './pages/EstablishmentGuide';
 import EditProfile from './pages/EditProfilePage';
 import ProfileImages from "./components/OrgProfileFormComponents/ProfileImages";
 import ProposalBuilderPage from './pages/ProposalBuilderPage';
+import AboutUsPage from './pages/AboutUsPage';
 
 
 function App() {
@@ -38,6 +39,7 @@ function App() {
               <Route path="/home" element={<DisplayPage />} />
               <Route path="/find-gos" element={<DisplayPage />} />
               <Route path="/" element={<Navigate to="/find-gos" />} />
+              <Route path="/about-us" element={<AboutUsPage />} />
               <Route path="/onboarding" element={<OnboardingForm />} />
               <Route path="/org_profile_form" element={<OrgProfileForm />} />
               <Route path="/org_profile" element={<OrgProfile />} />

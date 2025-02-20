@@ -17,7 +17,7 @@ const navigation = [
     { name: "Establishment Guide", href: "/establishment-guide" },
     { name: "Proposal Builder", href: "/proposal-builder" },
     { name: "Volunteer", href: "/volunteer" },
-    { name: "About", href: "/about" },
+    { name: "About Us", href: "/about-us" },
 ];
 
 // Logo component
