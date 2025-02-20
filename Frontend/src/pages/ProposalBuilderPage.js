@@ -37,6 +37,7 @@ export default function ProposalBuilder() {
     const [activeSection, setActiveSection] = useState('organizationInfo');
     const [showTip, setShowTip] = useState(true);
     const { user } = useAuth();
+    console.log(user);
     const userId = user ? user.id : null;
     const [completedSections, setCompletedSections] = useState(() => {
         // Initialize from localStorage
@@ -147,10 +148,10 @@ export default function ProposalBuilder() {
                     </div>
 
                     <div className="mb-8">
-                        {!userId ? (
+                        {!(userId && user && user.is_admin) ? (
                             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                                 <p className="text-yellow-800">
-                                    Please log in to access organization information.
+                                    Please log in to access your organization's information. This tool is only available to registered CBO founders.
                                 </p>
                             </div>
                         ) : (
