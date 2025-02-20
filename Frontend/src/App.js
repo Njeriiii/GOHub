@@ -21,6 +21,7 @@ import EditProfile from './pages/EditProfilePage';
 import ProfileImages from "./components/OrgProfileFormComponents/ProfileImages";
 import ProposalBuilderPage from './pages/ProposalBuilderPage';
 import AboutUsPage from './pages/AboutUsPage';
+import FoundersResourcesPage from './pages/FoundersResourcesPage';
 
 
 function App() {
@@ -41,6 +42,7 @@ function App() {
               <Route path="/find-gos" element={<DisplayPage />} />
               <Route path="/" element={<HomePage />} />
               <Route path="/about-us" element={<AboutUsPage />} />
+              <Route path="/founder-resources" element={<FoundersResourcesPage />} />
               <Route path="/onboarding" element={<OnboardingForm />} />
               <Route path="/org_profile_form" element={<OrgProfileForm />} />
               <Route path="/org_profile" element={<OrgProfile />} />

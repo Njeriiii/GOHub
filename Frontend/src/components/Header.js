@@ -13,9 +13,8 @@ import { Translate, LanguageSwitch } from '../contexts/TranslationProvider';
 // Navigation links
 const navigation = [
     { name: "Home", href: "/" },
-    { name: "Find GOs", href: "/find-gos" },
-    { name: "Establishment Guide", href: "/establishment-guide" },
-    { name: "Proposal Builder", href: "/proposal-builder" },
+    { name: "Find CBOs", href: "/find-gos" },
+    { name: "Founder Resources", href: "/founder-resources" },
     { name: "Volunteer", href: "/volunteer" },
     { name: "About Us", href: "/about-us" },
 ];

@@ -13,3 +13,7 @@ export function CardTitle({ className, children }) {
 export function CardContent({ className, children }) {
     return <div className={`p-6 pt-0 ${className}`}>{children}</div>;
 }
+
+export function CardDescription({ className, children }) {
+    return <p className={`text-gray-600 ${className}`}>{children}</p>;
+}
