@@ -10,6 +10,7 @@ import OnboardingForm from './pages/OnboardingForm';
 import OrgProfileForm from './pages/OrgProfileForm';
 import OrgProfile from './pages/OrgProfile';
 import DisplayPage from './pages/DisplayPage';
+import HomePage from './pages/HomePage';
 import SignupPage from './pages/SignupPage';
 import LoginPage from './pages/LoginPage';
 import VolunteerForm from './pages/VolunteerForm';
@@ -38,7 +39,7 @@ function App() {
               <Route path="/volunteer" element={<VolunteerPage />} />
               <Route path="/home" element={<DisplayPage />} />
               <Route path="/find-gos" element={<DisplayPage />} />
-              <Route path="/" element={<Navigate to="/find-gos" />} />
+              <Route path="/" element={<HomePage />} />
               <Route path="/about-us" element={<AboutUsPage />} />
               <Route path="/onboarding" element={<OnboardingForm />} />
               <Route path="/org_profile_form" element={<OrgProfileForm />} />
