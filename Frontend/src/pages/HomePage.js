@@ -62,7 +62,7 @@ export default function HomePage() {
                             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
                                 <DynamicTranslate>Uniting Communities Across Kenya</DynamicTranslate>
                             </h1>
-                            <p className="text-xl text-white/90 mb-8">
+                            <p className="text-2xl text-white/90 mb-8 font-medium">
                                 <DynamicTranslate>Connect with community-based organizations making real change happen!</DynamicTranslate>
                             </p>
                             <div className="flex justify-center gap-4">
@@ -177,13 +177,13 @@ export default function HomePage() {
                             <h2 className="text-3xl font-bold mb-4">
                                 <DynamicTranslate>Ready to Make an Impact?</DynamicTranslate>
                             </h2>
-                            <p className="text-lg text-gray-600 mb-8">
+                            <p className="text-lg text-gray-600 mb-8 font-medium">
                                 <DynamicTranslate>
                                     Whether you're a CBO founder, volunteer, or supporter, 
                                     join our platform to connect and create positive change.
                                 </DynamicTranslate>
                             </p>
-                            <Button size="lg" className="bg-teal-600 hover:bg-teal-700">
+                            <Button size="lg" className="bg-teal-600 hover:bg-teal-700" href="/signup">
                                 <DynamicTranslate>Get Started</DynamicTranslate>
                                 <ArrowRight className="w-4 h-4 ml-2" />
                             </Button>
