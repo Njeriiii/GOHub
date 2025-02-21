@@ -69,6 +69,9 @@ const VolunteerForm = () => {
                 if (profileResponse.body.volunteer.skills.length > 0) {
                     // Profile exists, redirect to dashboard
                     navigate('/');
+                } else {
+                    // Profile does not exist, allow user to create one
+                    return;
                 }
             }
         }
@@ -136,8 +139,7 @@ const VolunteerForm = () => {
 
         // delay the redirect to allow the checkRedirect function to run
         // before the return statement
-        setTimeout(() => {
-            checkRedirect();
+        checkRedirect();
 
             return (            
                 <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -188,6 +190,5 @@ const VolunteerForm = () => {
                 </div>
                 </div>
             );
-        }, 500);
     };
 export default VolunteerForm;
