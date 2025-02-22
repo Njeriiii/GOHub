@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApi } from '../contexts/ApiProvider';
 import { useAuth } from '../contexts/AuthProvider';
-import { Translate } from '../contexts/TranslationProvider';
+import { DynamicTranslate, Translate } from '../contexts/TranslationProvider';
 import {
     Card,
     CardContent,
@@ -31,6 +31,7 @@ import {
 } from "../components/utils/supportNeedsFocusAreaEntries";
 
 const messages = [
+    <DynamicTranslate>If you're not a volunteer yet, sign up!</DynamicTranslate>,
     <Translate>Update your skills profile to include more areas you're interested in</Translate>,
     <Translate>Expand your search criteria, such as considering remote opportunities</Translate>,
     <Translate>Check back regularly, as new opportunities are added frequently.</Translate>,
@@ -167,7 +168,7 @@ export default function VolunteerDashboard() {
                                             {volunteerInfo.skills?.slice(0, showAllSkills ? undefined : 5).map((skill) => (
                                                 <span 
                                                     key={skill.skill_id} 
-                                                    className="inline-flex items-center px-2.5 py-1 rounded-full text-m font-bold bg-teal-50 text-teal-600"
+                                                    className="inline-flex items-center px-2.5 py-1 rounded-full text-lg font-bold bg-teal-50 text-teal-600"
                                                 >
                                                     {getSkillLabel(skill.skill)}
                                                 </span>
@@ -176,7 +177,7 @@ export default function VolunteerDashboard() {
                                         {volunteerInfo.skills?.length > 5 && (
                                             <button
                                                 onClick={() => setShowAllSkills(!showAllSkills)}
-                                                className="mt-3 flex items-center text-sm text-teal-600 hover:text-teal-700"
+                                                className="mt-3 flex items-center text-m text-teal-600 hover:text-teal-700"
                                             >
                                                 {showAllSkills ? (
                                                     <>
@@ -196,24 +197,24 @@ export default function VolunteerDashboard() {
                                     {/* Quick Stats */}
                                     <Card>
                                         <CardHeader>
-                                            <CardTitle className="text-lg"><Translate>Your Potential for Impact</Translate></CardTitle>
+                                            <CardTitle className="text-xl"><Translate>Your Potential for Impact</Translate></CardTitle>
                                         </CardHeader>
                                         <CardContent className="grid grid-cols-2 gap-4">
                                             <div className="p-4 bg-teal-50 rounded-lg text-center">
                                                 <Sparkles className="w-5 h-5 text-teal-600 mx-auto mb-2" />
-                                                <div className="text-2xl font-bold text-teal-700">{volunteerInfo?.skills?.length || 0}</div>
-                                                <div className="text-sm text-teal-600"><Translate>Skills</Translate></div>
+                                                <div className="text-3xl font-bold text-teal-700">{volunteerInfo?.skills?.length || 0}</div>
+                                                <div className="text-m text-teal-600"><Translate>Skills</Translate></div>
                                             </div>
                                             <div className="p-4 bg-teal-50 rounded-lg text-center">
                                                 <Target className="w-5 h-5 text-teal-600 mx-auto mb-2" />
-                                                <div className="text-2xl font-bold text-teal-700">{matchedOrgs.length}</div>
-                                                <div className="text-sm text-teal-600"><Translate>Matches</Translate></div>
+                                                <div className="text-3xl font-bold text-teal-700">{matchedOrgs.length}</div>
+                                                <div className="text-m text-teal-600"><Translate>Matches</Translate></div>
                                             </div>
                                         </CardContent>
                                     </Card>
 
                                     <button 
-                                        className="w-full flex items-center justify-center gap-2 py-2 text-sm font-medium text-teal-600 bg-teal-50 rounded-lg hover:bg-teal-100 transition-colors"
+                                        className="w-full flex items-center justify-center gap-2 py-2 text-m font-medium text-teal-600 bg-teal-50 rounded-lg hover:bg-teal-100 transition-colors"
                                         onClick={() => window.location.href = '/profile/edit'}
                                     >
                                         <Pencil className="w-4 h-4" />
@@ -231,7 +232,7 @@ export default function VolunteerDashboard() {
                                     <Users className="w-10 h-5 text-teal-600" />
                                     <div>
                                         <CardTitle className='font-bold'><Translate>Matched Organizations</Translate></CardTitle>
-                                        <CardDescription className='font-medium text-lg'>
+                                        <CardDescription className='font-medium text-xl'>
                                             {matchedOrgs.length} <Translate>organizations match your skills</Translate>
                                         </CardDescription>
                                     </div>
@@ -262,7 +263,7 @@ export default function VolunteerDashboard() {
                                             <div className="w-6 h-6 rounded-full bg-teal-50 text-teal-600 flex items-center justify-center font-medium">
                                                 {index + 1}
                                             </div>
-                                            <p className="text-gray-600 text-m">{message}</p>
+                                            <p className="text-gray-600 text-lg">{message}</p>
                                         </div>
                                     ))}
                                 </div>
