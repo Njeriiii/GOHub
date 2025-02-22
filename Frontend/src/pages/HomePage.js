@@ -94,12 +94,12 @@ export default function HomePage() {
                             <CardContent className="p-6">
                                 <Lightbulb className="w-8 h-8 text-teal-600 mb-4" />
                                 <h3 className="text-xl font-semibold mb-2">
-                                    <DynamicTranslate>Founder's Corner</DynamicTranslate>
+                                    <DynamicTranslate>Founder's Resources </DynamicTranslate>
                                 </h3>
                                 <p className="text-gray-600 mb-4">
                                     <DynamicTranslate>Resources, guides, and support for CBO founders and leaders</DynamicTranslate>
                                 </p>
-                                <Button variant="link" className="text-teal-600 p-0">
+                                <Button variant="link" className="text-teal-600 p-0" href="/founder-resources">
                                     <DynamicTranslate>Access Resources</DynamicTranslate>
                                     <ArrowRight className="w-4 h-4 ml-2" />
                                 </Button>
@@ -115,7 +115,7 @@ export default function HomePage() {
                                 <p className="text-gray-600 mb-4">
                                     <DynamicTranslate>Make a difference by volunteering with local organizations</DynamicTranslate>
                                 </p>
-                                <Button variant="link" className="text-teal-600 p-0">
+                                <Button variant="link" className="text-teal-600 p-0" href="/volunteer">
                                     <DynamicTranslate>Start Volunteering</DynamicTranslate>
                                     <ArrowRight className="w-4 h-4 ml-2" />
                                 </Button>
