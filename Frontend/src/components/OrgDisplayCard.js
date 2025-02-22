@@ -1,7 +1,8 @@
 import React from "react";
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, MapPin, Users, Calendar } from 'lucide-react';
+import { ArrowRight, MapPin, Users, Calendar, Briefcase } from 'lucide-react';
 import { Translate, DynamicTranslate } from '../contexts/TranslationProvider';
+import { techSkillOptions, nonTechSkillOptions } from "../components/utils/supportNeedsFocusAreaEntries";
 
 const categoryColors = {
     default: 'bg-teal-100 text-teal-800',
@@ -9,11 +10,16 @@ const categoryColors = {
     health: 'bg-rose-100 text-rose-800',
     environment: 'bg-green-100 text-green-800',
     community: 'bg-purple-100 text-purple-800',
-    // Add more categories as needed
+};
+
+const getSkillLabel = (skillValue, status) => {
+    const options = status === 'tech' ? techSkillOptions : nonTechSkillOptions;
+    const skill = options.find(option => option.value === skillValue);
+    return skill ? skill.label : skillValue;
 };
 
 // Organization display card component - used to display organization information in a card format
-export default function OrgDisplayCard({ org }) {
+export default function OrgDisplayCard({ org, isVolunteerPage = false }) {
     const navigate = useNavigate();
     const categoryColor = categoryColors[org.category?.toLowerCase()] || categoryColors.default;
 
@@ -83,10 +89,34 @@ export default function OrgDisplayCard({ org }) {
                         ))}
                     </div>
 
-                    {/* Organization Overview */}
-                    <p className="text-gray-600 text-sm sm:text-base mb-4 line-clamp-2 sm:line-clamp-3">
-                        <DynamicTranslate>{org.org_overview}</DynamicTranslate>
-                    </p>
+                    {/* Skills Needed Section */}
+                    { isVolunteerPage && org.skills_needed && org.skills_needed.length > 0 ? (
+                    <div className="mb-4">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Briefcase className="w-4 h-4 text-gray-500" />
+                            <h3 className="text-sm font-medium text-gray-700">
+                                <DynamicTranslate>Skills Needed</DynamicTranslate>
+                            </h3>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                            {org.skills_needed.map((skill) => (
+                                <div 
+                                    key={`${skill.org_id}-${skill.skill_id}`}
+                                    className="group/skill relative"
+                                >
+                                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-50 text-gray-700 border border-gray-200">
+                                        {getSkillLabel(skill.skill_name, skill.status)}
+                                    </span>
+                                    {skill.description && (
+                                        <div className="absolute z-10 bottom-full mb-2 left-0 hidden group-hover/skill:block w-48 p-2 bg-gray-800 text-white text-xs rounded shadow-lg">
+                                            {skill.description}
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    ) : null }
                 </div>
             </div>
 

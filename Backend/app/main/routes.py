@@ -12,7 +12,8 @@ from app.models import (
     SkillsNeeded,
     org_skills_connection,
     OrgProfile,
-    TranslationCache
+    TranslationCache,
+    serialize_org_skill_connection
 )
 
 main = Blueprint("main", __name__)
@@ -87,14 +88,23 @@ def match_volunteer_skills():
         # Prepare the response data
         org_matches = []
         for org in matching_orgs:
-            
+            # Get the skills connections for this organization
+            org_skills = (
+                db.session.query(org_skills_connection)
+                .join(SkillsNeeded)
+                .filter(org_skills_connection.c.org_id == org.id)
+                .all()
+            )
             org_matches.append(
                 {
                     "org_id": org.id,
                     "org_name": org.org_name,
                     "user_id": org.user_id,
                     "focus_areas": [focus_area.serialize() for focus_area in org.focus_areas],
-                    # "matching_skills": matching_skills,
+                    "skills_needed": [
+                        serialize_org_skill_connection(skill_connection)
+                        for skill_connection in org_skills
+                    ],
                 }
             )
         

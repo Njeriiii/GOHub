@@ -292,7 +292,7 @@ export default function VolunteerDashboard() {
                             <CardContent>
                                 <div className="space-y-4 bg-teal-50">
                                     {matchedOrgs.map((org) => (
-                                        <OrgDisplayCard key={org.org_id} org={org} />
+                                        <OrgDisplayCard key={org.org_id} org={org} isVolunteerPage={true} />
                                     ))}
                                     {matchedOrgs.length === 0 && (
                                         <div className="text-center py-8 text-gray-500">
