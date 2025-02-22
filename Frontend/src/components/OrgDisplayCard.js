@@ -40,7 +40,7 @@ export default function OrgDisplayCard({ org, isVolunteerPage = false }) {
 
     return (
         <div 
-            className="group relative bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden"
+            className="group relative bg-white rounded-xl transition-all duration-300 overflow-hidden"
             onClick={(e) => handleProfileLinkClick(e, org)}
         >
             {/* Card Header with Logo and Category Tags */}
@@ -89,6 +89,11 @@ export default function OrgDisplayCard({ org, isVolunteerPage = false }) {
                         ))}
                     </div>
 
+                    {/* Mission Statement */}
+                    <p className="text-m text-gray-600 mb-4">
+                        <DynamicTranslate>{org.org_mission_statement}</DynamicTranslate>
+                    </p>
+
                     {/* Skills Needed Section */}
                     { isVolunteerPage && org.skills_needed && org.skills_needed.length > 0 ? (
                     <div className="mb-4">
@@ -108,7 +113,7 @@ export default function OrgDisplayCard({ org, isVolunteerPage = false }) {
                                         {getSkillLabel(skill.skill_name, skill.status)}
                                     </span>
                                     {skill.description && (
-                                        <div className="absolute z-10 bottom-full mb-2 left-0 hidden group-hover/skill:block w-48 p-2 bg-gray-800 text-white text-xs rounded shadow-lg">
+                                        <div className="absolute z-10 bottom-full mb-2 left-0 hidden group-hover/skill:block w-48 p-2 bg-gray-800 text-white text-xs rounded">
                                             {skill.description}
                                         </div>
                                     )}
@@ -121,27 +126,23 @@ export default function OrgDisplayCard({ org, isVolunteerPage = false }) {
             </div>
 
             {/* Card Footer with Metadata and CTA */}
-            <div className="px-6 pb-6 pt-2 border-t border-gray-100">
+            <div className="px-6 pb-6 pt-2">
+                {org.org_county && org.org_year_established ? (
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
                     <div className="flex items-center text-gray-600">
                         <MapPin size={16} className="mr-2 text-gray-400" />
                         <span className="text-sm truncate">
-                            <DynamicTranslate>{org.location || 'Location N/A'}</DynamicTranslate>
-                        </span>
-                    </div>
-                    <div className="flex items-center text-gray-600">
-                        <Users size={16} className="mr-2 text-gray-400" />
-                        <span className="text-sm truncate">
-                            <DynamicTranslate>{org.beneficiaries || 'Beneficiaries N/A'}</DynamicTranslate>
+                            {`${org.org_county || 'Location N/A'}`}
                         </span>
                     </div>
                     <div className="flex items-center text-gray-600">
                         <Calendar size={16} className="mr-2 text-gray-400" />
                         <span className="text-sm truncate">
-                            <DynamicTranslate>{org.established || 'Est. N/A'}</DynamicTranslate>
+                            {org.org_year_established || 'Est. N/A'}
                         </span>
                     </div>
                 </div>
+            ) : null }
 
                 {/* CTA Button */}
                 <div className="flex justify-end">

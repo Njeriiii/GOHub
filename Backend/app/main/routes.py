@@ -53,6 +53,10 @@ def get_all_orgs():
             "focus_areas": [focus_area.serialize() for focus_area in org.focus_areas],
             "skills_needed": [skill.serialize() for skill in org.skills_needed],
             "org_logo_filename": org.logo_url,
+            "org_mission_statement": org.org_mission_statement,
+            "org_year_established": org.org_year_established,
+            "org_district_town": org.org_district_town,
+            "org_county": org.org_county,
         }
 
         orgs_data.append(org_data)
