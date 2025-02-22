@@ -72,12 +72,12 @@ export default function ProposalBuilder() {
     }, []);
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-teal-50">
             <Header />
             <main>
                 <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
                     {/* Introduction section */}
-                    <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+                    <div className="bg-gray-50 rounded-lg p-6 mb-8">
                         <div className="max-w-3xl">
                             <h1 className="text-3xl font-bold text-gray-900 mb-4">
                                 AI-Powered Grant Proposal Builder
@@ -98,23 +98,23 @@ export default function ProposalBuilder() {
 
                     {/* Progress Overview */}
                     {showTip && (
-                        <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <div className="mb-6 bg-orange-50 border border-orange-200 rounded-lg p-4">
                             <div className="flex justify-between items-start">
                                 <div className="flex space-x-2">
-                                    <ArrowDownIcon className="h-5 w-5 text-yellow-600" />
+                                    <ArrowDownIcon className="h-5 w-5 text-orange-600" />
                                     <div>
                                         <p className="text 
-                                        text-yellow-800">
+                                        text-orange-800">
                                             <span className="font-bold">Recommended order:</span> Complete sections from left to right. The Executive Summary should be written last as it draws from all other sections.
                                         </p>
-                                        <p className="text-yellow-600 text-sm mt-1">
+                                        <p className="text-orange-600 text-sm mt-1 font-bold">
                                             Progress is automatically saved as you work.
                                         </p>
                                     </div>
                                 </div>
                                 <button 
                                     onClick={() => setShowTip(false)}
-                                    className="text-yellow-600 hover:text-yellow-800"
+                                    className="text-orange-600 hover:text-orange-800"
                                 >
                                     ×
                                 </button>
@@ -149,8 +149,8 @@ export default function ProposalBuilder() {
 
                     <div className="mb-8">
                         {!(userId && user && user.is_admin) ? (
-                            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                                <p className="text-yellow-800">
+                            <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                                <p className="text-orange-800">
                                     Please log in to access your organization's information. This tool is only available to registered CBO founders.
                                 </p>
                             </div>

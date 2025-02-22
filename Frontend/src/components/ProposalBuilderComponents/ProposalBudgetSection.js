@@ -118,7 +118,7 @@ export default function ProposalBudgetSection() {
     };
 
     return (
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white rounded-lg p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Project Budget</h2>
 
             {/* Grant Type Selection */}
@@ -189,7 +189,7 @@ export default function ProposalBudgetSection() {
                         }))}
                         placeholder="Paste the budget-related requirements from the grant listing..."
                         rows={4}
-                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                        className="block w-full rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500"
                     />
                 </div>
             )}
@@ -205,7 +205,7 @@ export default function ProposalBudgetSection() {
                         value={inputs.budget.totalAmount}
                         onChange={(e) => handleInputChange('budget', 'totalAmount', e.target.value)}
                         placeholder="e.g., $50,000"
-                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                        className="block w-full rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500"
                     />
                 </div>
 
@@ -218,7 +218,7 @@ export default function ProposalBudgetSection() {
                         onChange={(e) => handleInputChange('budget', 'breakdown', e.target.value)}
                         placeholder="List major budget categories and amounts..."
                         rows={4}
-                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                        className="block w-full rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500"
                     />
                 </div>
 
@@ -231,7 +231,7 @@ export default function ProposalBudgetSection() {
                         onChange={(e) => handleInputChange('budget', 'justification', e.target.value)}
                         placeholder="Explain why each cost is necessary..."
                         rows={4}
-                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                        className="block w-full rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500"
                     />
                 </div>
 
@@ -244,7 +244,7 @@ export default function ProposalBudgetSection() {
                         onChange={(e) => handleInputChange('sustainability', 'additionalFunding', e.target.value)}
                         placeholder="Describe any matching funds, other grants, or revenue sources..."
                         rows={3}
-                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                        className="block w-full rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500"
                     />
                 </div>
 
@@ -257,7 +257,7 @@ export default function ProposalBudgetSection() {
                         onChange={(e) => handleInputChange('sustainability', 'continuationPlan', e.target.value)}
                         placeholder="How will the project continue after the grant period?"
                         rows={3}
-                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                        className="block w-full rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500"
                     />
                 </div>
             </div>
@@ -266,7 +266,7 @@ export default function ProposalBudgetSection() {
             <button
                 onClick={handleGenerate}
                 disabled={isGenerating}
-                className="mt-6 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50"
+                className="mt-6 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50"
             >
                 {isGenerating ? (
                     <>
