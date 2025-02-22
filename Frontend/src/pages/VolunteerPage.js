@@ -21,6 +21,9 @@ import {
     Sparkles,
     Target,
     Users,
+    Award, 
+    GraduationCap, 
+    Clock,
 } from "lucide-react";
 import { Loader2 } from 'lucide-react';
 import Header from '../components/Header';
@@ -39,6 +42,50 @@ const messages = [
     <Translate>Reach out to our support team for personalized assistance in finding opportunities.</Translate>
 ];
 
+const BenefitCard = ({ icon: Icon, title, description }) => (
+    <div className="p-4 bg-white">
+        <div className="flex flex-col items-start">
+        <div className="p-2 bg-teal-50 rounded-lg mb-4">
+            <Icon className="w-6 h-6 text-teal-600" />
+        </div>
+        <div className="space-y-1">
+            <h3 className="text-gray-900 font-medium">
+            <DynamicTranslate>{title}</DynamicTranslate>
+            </h3>
+            <p className="text-gray-600">
+            <DynamicTranslate>{description}</DynamicTranslate>
+            </p>
+        </div>
+        </div>
+    </div>
+);
+
+const BenefitSection = () => {
+    return (
+        <div className="grid md:grid-cols-2 gap-6 mb-8">
+            <BenefitCard
+            icon={GraduationCap}
+            title="Earn University Credit"
+            description="Gain university credits while making a difference."
+            />
+            <BenefitCard
+            icon={Users}
+            title="Build Your Community"
+            description="Create meaningful connections and strengthen your community."
+            />
+            <BenefitCard
+            icon={Award}
+            title="Gain Valuable Experience"
+            description="Develop practical skills for your career."
+            />
+            <BenefitCard
+            icon={Clock}
+            title="Flexible Hours"
+            description="Volunteer on your own schedule."
+            />
+        </div>
+    );
+};
 export default function VolunteerDashboard() {
     const [matchedOrgs, setMatchedOrgs] = useState([]);
     const [volunteerInfo, setVolunteerInfo] = useState(null);
@@ -100,6 +147,7 @@ export default function VolunteerDashboard() {
             <div className="min-h-screen bg-teal-50">
                 <Header />
                 <div className="container mx-auto px-4 py-16">
+                    <BenefitSection/>       
                     <Card>
                         <CardHeader>
                             <CardTitle>
@@ -223,6 +271,9 @@ export default function VolunteerDashboard() {
                                 </CardContent>
                             </Card>
                         )}
+                        <div className="mt-8">
+                            <BenefitSection />
+                        </div>
                     </div>
 
                     <div className="lg:col-span-2">
