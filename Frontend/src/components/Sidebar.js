@@ -1,240 +1,229 @@
-import React from 'react';
+import React from "react";
+import { Translate } from "../contexts/TranslationProvider";
 import { 
-    MapPinIcon, 
-    PhoneIcon, 
-    EnvelopeIcon, 
-    GlobeAltIcon, 
-    BuildingOfficeIcon,
-    DocumentTextIcon,
-    CalendarIcon
-} from '@heroicons/react/24/outline';
-import { Translate } from '../contexts/TranslationProvider';
-import { 
+    Building2,
+    Phone,
+    Mail,
+    MapPin,
+    Globe,
+    FileText,
+    Calendar,
     Facebook, 
     Instagram, 
     Linkedin, 
     Youtube, 
-} from 'lucide-react';
+    ExternalLink,
+} from "lucide-react";
 
-// Helper function to get coordinates from Google Maps URL
-function getCoordinates(url) {
-    try {
-        // Regex to extract coordinates from Google Maps URL
-        const match = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/) || 
-                    url.match(/q=(-?\d+\.\d+),(-?\d+\.\d+)/);
-        if (match) {
-            return [parseFloat(match[1]), parseFloat(match[2])];
-        }
-        // Default to Githunguri coordinates if parsing fails
-        return [-1.0586336, 36.7779108];
-    } catch (error) {
-        console.error('Error parsing Google Maps URL:', error);
-        return [-1.0586336, 36.7779108];
-    }
-}
-
-// Static Map component
-function StaticMap({ googleMapsUrl }) {
-    const [lat, lng] = getCoordinates(googleMapsUrl);
-
-    // Adjust bounding box for a zoomed-in view
-    const zoomFactor = 0.002; // Smaller value = more zoomed in
-    const staticMapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${lng - zoomFactor},${lat - zoomFactor},${lng + zoomFactor},${lat + zoomFactor}&layer=mapnik&marker=${lat},${lng}`;
-
-    return (
-        <div className="relative w-full h-[200px]">
-            {/* Embed OpenStreetMap */}
-            <iframe
-                src={staticMapUrl}
-                width="600"
-                height="200"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                className="rounded-lg"
-                title="Static Map"
-            ></iframe>
-        </div>
-    );
-}
-
-// InfoItem component - renders a single contact information item
+// InfoItem component with improved styling
 function InfoItem({ icon: Icon, title, content, link }) {
     if (!content) return null;
-    
-    const ContentWrapper = link ? 'a' : 'div';
+
+    const ContentWrapper = link ? "a" : "div";
     const wrapperProps = link ? { 
         href: link, 
-        className: "block hover:text-teal-600",
-        target: link.startsWith('http') ? '_blank' : undefined,
-        rel: link.startsWith('http') ? 'noopener noreferrer' : undefined
+        className: "group block text-gray-600 hover:text-teal-600 transition-colors duration-200",
+        target: link.startsWith("http") ? "_blank" : undefined,
+        rel: link.startsWith("http") ? "noopener noreferrer" : undefined,
     } : {};
 
     return (
-        <li className="flex items-start">
-            <Icon className="h-6 w-6 text-indigo-600 mr-3 flex-shrink-0 mt-1" />
-            <div>
-                <h3 className="text-sm font-bold text-gray-900">{title}</h3>
-                <ContentWrapper {...wrapperProps}>
-                    <p className="mt-1 text-sm text-gray-700">{content}</p>
-                </ContentWrapper>
+        <li className="flex items-start space-x-4 p-4 rounded-lg hover:bg-gray-50 transition-colors duration-200">
+        <div className="flex-shrink-0">
+            <Icon className="h-5 w-5 text-teal-600" />
+        </div>
+        <div className="flex-1 min-w-0">
+            <h3 className="text-m font-medium text-gray-900">{title}</h3>
+            <ContentWrapper {...wrapperProps}>
+            <div className="mt-1 text-m break-words">
+                {content}
+                {link && link.startsWith("http") && (
+                <ExternalLink className="inline-block ml-1 h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                )}
             </div>
+            </ContentWrapper>
+        </div>
         </li>
     );
 }
 
 // Social media icon component
-function SocialIcon({ icon: Icon, href, color = "text-gray-600" }) {
+function SocialIcon({ icon: Icon, href, label }) {
     if (!href) return null;
 
     return (
-        <a 
+        <a
             href={href}
             target="_blank"
             rel="noopener noreferrer"
-            className={`${color} hover:text-teal-600 transition-colors`}
+            aria-label={label}
+            className="rounded-lg p-2 text-gray-500 hover:text-teal-600 hover:bg-teal-50 transition-all duration-200"
         >
-            <Icon className="h-6 w-6" />
+            <Icon className="h-5 w-5" />
         </a>
     );
 }
 
-// Sidebar component - renders the organization's contact information
-export default function Sidebar({ onboardingFormData }) {
-    const fullAddress = [
-        onboardingFormData.orgProfile.org_physical_description,
-        onboardingFormData.orgProfile.org_district_town,
-        onboardingFormData.orgProfile.org_county,
-        onboardingFormData.orgProfile.org_country,
-        onboardingFormData.orgProfile.org_po_box
-    ].filter(Boolean).join(', ');
-
-    // Custom X (Twitter) icon since Lucide might not have the new X logo
+    // Custom X (Twitter) icon
     const XIcon = () => (
-        <svg 
-            className="h-5 w-5"
-            viewBox="0 0 24 24" 
-            fill="currentColor"
-            stroke="none"
-        >
-            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-        </svg>
+    <svg
+        className="h-5 w-5"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        stroke="none"
+    >
+        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
     );
 
+// Main Sidebar component
+export default function Sidebar({ onboardingFormData }) {
+    const { orgProfile } = onboardingFormData;
+
+    const fullAddress = [
+        orgProfile.org_physical_description,
+        orgProfile.org_district_town,
+        orgProfile.org_county,
+        orgProfile.org_country,
+        orgProfile.org_po_box,
+    ]
+        .filter(Boolean)
+        .join(", ");
+
     return (
-        <div className="bg-white rounded-lg shadow-lg p-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">
+        <div className="bg-white rounded-xl divide-y divide-gray-100">
+        {/* Contact Information Section */}
+        <div className="p-6">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-6">
                 <Translate>Contact Information</Translate>
             </h2>
-            
-            <ul className="space-y-4">
-                <InfoItem 
-                    icon={BuildingOfficeIcon}
-                    title={<Translate>Organization</Translate>}
-                    content={onboardingFormData.orgProfile.org_name}
-                />
 
-                <InfoItem 
-                    icon={EnvelopeIcon}
-                    title={<Translate>Email</Translate>}
-                    content={onboardingFormData.orgProfile.org_email}
-                    link={`mailto:${onboardingFormData.orgProfile.org_email}`}
-                />
+            <ul className="space-y-1">
+            <InfoItem
+                icon={Building2}
+                title={<Translate>Organization</Translate>}
+                content={orgProfile.org_name}
+            />
+
+            <InfoItem
+                icon={Mail}
+                title={<Translate>Email</Translate>}
+                content={orgProfile.org_email}
+                link={`mailto:${orgProfile.org_email}`}
+            />
                 
-                <InfoItem 
-                    icon={PhoneIcon}
-                    title={<Translate>Phone</Translate>}
-                    content={onboardingFormData.orgProfile.org_phone}
-                    link={`tel:${onboardingFormData.orgProfile.org_phone}`}
-                />
+                <InfoItem
+                icon={Phone}
+                title={<Translate>Phone</Translate>}
+                content={orgProfile.org_phone}
+                link={`tel:${orgProfile.org_phone}`}
+            />
                 
-                <InfoItem 
-                    icon={MapPinIcon}
-                    title={<Translate>Address</Translate>}
-                    content={fullAddress}
-                    link={onboardingFormData.orgProfile.org_google_maps_link}
-                />
+            <InfoItem
+                icon={MapPin}
+                title={<Translate>Address</Translate>}
+                content={fullAddress}
+                link={orgProfile.org_google_maps_link}
+            />
                 
-                <InfoItem 
-                    icon={GlobeAltIcon}
-                    title={<Translate>Website</Translate>}
-                    content={onboardingFormData.orgProfile.org_website}
-                    link={onboardingFormData.org_website}
-                />
-                
-                <InfoItem 
-                    icon={DocumentTextIcon}
-                    title={<Translate>Registration Number</Translate>}
-                    content={onboardingFormData.orgProfile.org_registration_number}
-                />
-                
-                <InfoItem 
-                    icon={CalendarIcon}
-                    title={<Translate>Established</Translate>}
-                    content={onboardingFormData.orgProfile.org_year_established}
-                />
+            <InfoItem
+                icon={Globe}
+                title={<Translate>Website</Translate>}
+                content={orgProfile.org_website}
+                link={orgProfile.org_website}
+            />
+            <InfoItem
+                icon={FileText}
+                title={<Translate>Registration Number</Translate>}
+                content={orgProfile.org_registration_number}
+            />
+            <InfoItem
+                icon={Calendar}
+                title={<Translate>Established</Translate>}
+                content={orgProfile.org_year_established}
+            />
             </ul>
 
+            {/* Contact Button */}
             <div className="mt-8">
-                <a 
-                    href={`mailto:${onboardingFormData.orgProfile.org_email}`}
-                    className="block w-full text-center px-8 py-4 bg-teal-600 text-white rounded-full font-bold text-lg hover:bg-teal-700 transition duration-300"
+            <a
+                href={`mailto:${orgProfile.org_email}`}
+                className="block w-full text-center px-6 py-3 bg-teal-600 text-white rounded-lg font-medium hover:bg-teal-700 transition-colors duration-200 "
+            >
+                <Translate>Contact Us</Translate>
+            </a>
+            </div>
+        </div>
+
+        {/* Map Section */}
+        {orgProfile.org_google_maps_link && (
+            <div className="p-6">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                <Translate>Location</Translate>
+            </h3>
+            <div className="rounded-lg overflow-hidden ">
+                <iframe
+                src={`https://www.openstreetmap.org/export/embed.html?bbox=${
+                    36.7779108 - 0.002
+                },${-1.0586336 - 0.002},${36.7779108 + 0.002},${
+                    -1.0586336 + 0.002
+                }&layer=mapnik&marker=${-1.0586336},${36.7779108}`}
+                width="100%"
+                height="200"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                className="rounded-lg"
+                title="Location Map"
+                />
+                <div className="mt-2 text-right">
+                <a
+                    href={orgProfile.org_google_maps_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center text-m text-teal-600 hover:text-teal-700 font-medium"
                 >
-                    <Translate>Contact Us</Translate>
+                    <Translate>View larger map</Translate>
+                    <ExternalLink className="ml-1 h-4 w-4" />
                 </a>
-            </div>
-
-            {onboardingFormData.orgProfile.org_google_maps_link && (
-                <div className="mt-4">
-                    <div className="w-full overflow-hidden">
-                        <StaticMap googleMapsUrl={onboardingFormData.orgProfile.org_google_maps_link} />
-                        <div className="text-xs text-gray-500 mt-1 text-right">
-                            <a 
-                                href={onboardingFormData.orgProfile.org_google_maps_link} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="hover:underline text-xl font-semibold text-teal-600"
-                            >
-                                View larger map
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Social Media Section */}
-            <div className="mt-8 pt-6 border-t border-gray-200">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">
-                    <Translate>Follow Us</Translate>
-                </h3>
-                <div className="flex items-center space-x-4">
-                    <SocialIcon 
-                        icon={Facebook} 
-                        href={onboardingFormData.orgProfile.org_facebook}
-                        color="text-blue-600"
-                    />
-                    <SocialIcon 
-                        icon={Instagram} 
-                        href={onboardingFormData.orgProfile.org_instagram}
-                        color="text-pink-600"
-                    />
-                    <SocialIcon 
-                        icon={XIcon} 
-                        href={onboardingFormData.orgProfile.org_x}
-                        color="text-gray-800"
-                    />
-                    <SocialIcon 
-                        icon={Linkedin} 
-                        href={onboardingFormData.orgProfile.org_linkedin}
-                        color="text-blue-700"
-                    />
-                    <SocialIcon 
-                        icon={Youtube} 
-                        href={onboardingFormData.orgProfile.org_youtube}
-                        color="text-red-600"
-                    />
                 </div>
             </div>
+            </div>
+        )}
+
+        {/* Social Media Section */}
+        <div className="p-6">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">
+            <Translate>Connect With Us</Translate>
+            </h3>
+            <div className="flex items-center gap-2">
+            <SocialIcon
+                icon={Facebook}
+                href={orgProfile.org_facebook}
+                label="Facebook"
+            />
+            <SocialIcon
+                icon={Instagram}
+                href={orgProfile.org_instagram}
+                label="Instagram"
+            />
+            <SocialIcon
+                icon={XIcon}
+                href={orgProfile.org_x}
+                label="X (Twitter)"
+            />
+            <SocialIcon
+                icon={Linkedin}
+                href={orgProfile.org_linkedin}
+                label="LinkedIn"
+            />
+            <SocialIcon
+                icon={Youtube}
+                href={orgProfile.org_youtube}
+                label="YouTube"
+            />
+            </div>
+        </div>
         </div>
     );
 }
