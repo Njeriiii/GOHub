@@ -17,6 +17,7 @@ export default function OrgProfile() {
     const apiClient = useApi();
     const location = useLocation(); 
     const [userId, setUserId] = useState(null);
+    const [adminId, setAdminId] = useState(null);
 
     useEffect(() => {
         if (location.state && location.state.org && location.state.org.user_id) {
@@ -31,6 +32,7 @@ export default function OrgProfile() {
             if (response.ok) {
             setOnboardingFormData(response.body);
             setLoading(false);
+            setAdminId(response.body.orgProfile.user_id);
             } else {
             console.error("Error fetching data: ", response.body);
             }
@@ -133,7 +135,7 @@ export default function OrgProfile() {
 
             {/* Admin Edit Button */}
             <div className="flex justify-end">
-                <AdminEditButton orgData={onboardingFormData} />
+                <AdminEditButton orgData={onboardingFormData} adminId={adminId} />
             </div>
 
             {/* Main Content Grid */}
@@ -155,7 +157,7 @@ export default function OrgProfile() {
     );
 }
 
-function AdminEditButton({ orgData}) {
+function AdminEditButton({ orgData, adminId}) {
     const navigate = useNavigate();
     const { user } = useAuth();
 
@@ -165,6 +167,8 @@ function AdminEditButton({ orgData}) {
     const handleEditClick = () => {
         navigate('/edit_profile', { state: { orgData } });
     };
+
+    if (adminId !== user.id) return null;
 
     return (
         <button
