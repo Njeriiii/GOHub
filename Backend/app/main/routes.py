@@ -3,7 +3,7 @@ from google.cloud import translate_v2 as translate
 import os
 from app import db
 from functools import lru_cache
-from datetime import datetime, timedelta
+from datetime import datetime
 from google.oauth2 import service_account
 import logging
 from sqlalchemy.sql import text
@@ -192,8 +192,7 @@ def get_cached_translation(text, target_language):
         )
         
         # Check if cache is still valid (less than 30 days old)
-        if (cached_entry and 
-            cached_entry.created_at > datetime.utcnow() - timedelta(days=30)):
+        if cached_entry:
             return {
                 'translatedText': cached_entry.translated_text,
                 'fromCache': True

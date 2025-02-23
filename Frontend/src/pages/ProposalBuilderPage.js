@@ -13,7 +13,7 @@ import ProposalBudgetSection from '../components/ProposalBuilderComponents/Propo
 import ExecutiveSummarySection from '../components/ProposalBuilderComponents/ExecutiveSummarySection';
 import Header from '../components/Header';
 import { useAuth } from '../contexts/AuthProvider';
-
+import { DynamicTranslate } from '../contexts/TranslationProvider';
 /**
  * ProposalBuilder
  * 
@@ -80,18 +80,27 @@ export default function ProposalBuilder() {
                     <div className="bg-gray-50 rounded-lg p-6 mb-8">
                         <div className="max-w-3xl">
                             <h1 className="text-3xl font-bold text-gray-900 mb-4">
-                                AI-Powered Grant Proposal Builder
+                                <DynamicTranslate>AI-Powered Grant Proposal Builder</DynamicTranslate>
                             </h1>
                             <div className="space-y-4 text-gray-600">
                                 <p className="text-lg">
+                                    <DynamicTranslate>
                                     Transform your project ideas into professionally written grant proposals. Our AI assistant guides you through each section, ensuring comprehensive and compelling content.
+                                    </DynamicTranslate>
                                 </p>
                                 <div className="flex space-x-4">
                                     <div className="border-l-4 border-teal-500 pl-4">
-                                        <h2 className="font-medium text-gray-900">Professional Quality</h2>
-                                        <p className="text-lg mt-1">Generate polished, funder-ready content that follows grant writing best practices.</p>
+                                        <h2 className="font-medium text-gray-900"><DynamicTranslate>Professional Quality</DynamicTranslate></h2>
+                                        <p className="text-lg mt-1">
+                                            <DynamicTranslate>
+                                            Generate polished, funder-ready content that follows grant writing best practices.
+                                            </DynamicTranslate>
+                                        </p>
                                     </div>
                                 </div>
+                                <div className="">
+                                        <p className="text-lg mt-1 font-bold"><DynamicTranslate>Note: This service can only generate content in English.</DynamicTranslate></p>
+                                    </div>
                             </div>
                         </div>
                     </div>
@@ -105,11 +114,12 @@ export default function ProposalBuilder() {
                                     <div>
                                         <p className="text 
                                         text-orange-800">
-                                            <span className="font-bold">Recommended order:</span> Complete sections from left to right. The Executive Summary should be written last as it draws from all other sections.
-                                        </p>
-                                        <p className="text-orange-600 text-sm mt-1 font-bold">
+                                            <DynamicTranslate>
+                                            Recommended order: Complete sections from left to right. The Executive Summary should be written last as it draws from all other sections.
+                                            </DynamicTranslate></p>
+                                        <p className="text-orange-600 text-sm mt-1 font-bold"><DynamicTranslate>
                                             Progress is automatically saved as you work.
-                                        </p>
+                                        </DynamicTranslate></p>
                                     </div>
                                 </div>
                                 <button 
@@ -150,9 +160,9 @@ export default function ProposalBuilder() {
                     <div className="mb-8">
                         {!(userId && user && user.is_admin) ? (
                             <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                                <p className="text-orange-800">
+                                <p className="text-orange-800"><DynamicTranslate>
                                     Please log in to access your organization's information. This tool is only available to registered CBO founders.
-                                </p>
+                                </DynamicTranslate></p>
                             </div>
                         ) : (
                             <>
@@ -175,9 +185,9 @@ export default function ProposalBuilder() {
                             }}
                             disabled={activeSection === sections[0].id}
                             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
+                        ><DynamicTranslate>
                             Previous Section
-                        </button>
+                        </DynamicTranslate></button>
                         <button
                             onClick={() => {
                                 const currentIndex = sections.findIndex(s => s.id === activeSection);
@@ -187,9 +197,9 @@ export default function ProposalBuilder() {
                             }}
                             disabled={activeSection === sections[sections.length - 1].id}
                             className="px-4 py-2 text-sm font-medium text-white bg-teal-600 border border-transparent rounded-md hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
+                        ><DynamicTranslate>
                             Next Section
-                        </button>
+                        </DynamicTranslate></button>
                     </div>
                 </div>
             </main>

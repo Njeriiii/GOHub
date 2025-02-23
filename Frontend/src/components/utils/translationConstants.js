@@ -6,10 +6,10 @@ export const STATIC_PHRASES = {
         'Home': 'Home',
         'Find GOs': 'Find GOs',
         'Establishment Guide': 'Establishment Guide',
-        'Volunteer': 'Volunteer',
         'About Us': 'About Us',
         'Welcome!': 'Welcome!',
         'Log out': 'Log out',
+        'Founder Resources': 'Founder Resources',
         
         // Main content
         'Discover Kenyan Organizations': 'Discover Kenyan Organizations',
@@ -67,9 +67,7 @@ export const STATIC_PHRASES = {
         // Contact Section
         'Contact Information': 'Contact Information',
         'Contact Us': 'Contact Us',
-        'Email': 'Email',
         'Phone': 'Phone',
-        'Address': 'Address',
         'Website': 'Website',
         'Beneficiaries': 'Beneficiaries',
 
@@ -89,6 +87,8 @@ export const STATIC_PHRASES = {
         'Volunteer': 'Volunteer',
         'Admin': 'Admin',
         'Your Skills': 'Your Skills',
+        'Skills': 'Skills',
+        'Matches': 'Matches',
 
         // Volunteer 'how to increase matches' section
         "Here are some steps to increase your matches": "Here are some steps to increase your matches",
@@ -103,14 +103,15 @@ export const STATIC_PHRASES = {
 
     sw: {
         // Navigation
-        'Home': 'Nyumbani',
-        'Find GOs': 'Tafuta Mashirika',
+        'Home': 'Ukurasa Mkuu',
+        'Find CBOs': 'Tafuta Mashirika',
         'Establishment Guide': 'Mwongozo wa Uanzishaji',
         'Volunteer': 'Kujitolea',
         'About Us': 'Kutuhusu',
         'Welcome!': 'Karibu!',
         'Log out': 'Toka',
         'View Profile': 'Tazama Profaili',
+        'Founder Resources': 'Rasilimali za Mwanzilishi',
         
         // Main content
         'Discover Kenyan Organizations': 'Gundua Mashirika ya Kenya',
@@ -125,6 +126,9 @@ export const STATIC_PHRASES = {
         'Skills Needed': 'Ujuzi Unahitajika',
         'organization(s)': ' Mashirika',
         'Loading organizations...': 'Kupakia mashirika...',
+        'Your Skills': 'Ujuzi Wako',
+        'Skills': 'Ujuzi',
+        'Matches': 'Mashirika yanayolingana',
         
         // Auth pages
         'Login': 'Ingia',
@@ -190,7 +194,6 @@ export const STATIC_PHRASES = {
         // Volunteer Dashboard
         'Matched Organizations': 'Mashirika Yanayolingana na ujuzi wako',
         'Volunteer Dashboard': 'Dash bodi ya Kujitolea',
-        'Volunteer': 'Anaye Jitolea',
         'Admin': 'Msimamizi',
         'Your Skills': 'Ujuzi Wako',
 

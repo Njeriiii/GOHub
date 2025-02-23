@@ -35,11 +35,22 @@ import {
 
 const messages = [
     <DynamicTranslate>If you're not a volunteer yet, sign up!</DynamicTranslate>,
-    <Translate>Update your skills profile to include more areas you're interested in</Translate>,
-    <Translate>Expand your search criteria, such as considering remote opportunities</Translate>,
-    <Translate>Check back regularly, as new opportunities are added frequently.</Translate>,
-    <Translate>Consider gaining new skills through online courses or workshops.</Translate>,
-    <Translate>Reach out to our support team for personalized assistance in finding opportunities.</Translate>
+    <DynamicTranslate>
+        Update your skills profile to include more areas you're interested in
+    </DynamicTranslate>,
+    <DynamicTranslate>
+        Expand your search criteria, such as considering remote opportunities
+    </DynamicTranslate>,
+    <DynamicTranslate>
+        Check back regularly, as new opportunities are added frequently.
+    </DynamicTranslate>,
+    <DynamicTranslate>
+        Consider gaining new skills through online courses or workshops.
+    </DynamicTranslate>,
+    <DynamicTranslate>
+        Reach out to our support team for personalized assistance in finding
+        opportunities.
+    </DynamicTranslate>,
 ];
 
 const BenefitCard = ({ icon: Icon, title, description }) => (
@@ -151,10 +162,10 @@ export default function VolunteerDashboard() {
                     <Card>
                         <CardHeader>
                             <CardTitle>
-                                <Translate>Please complete your volunteer profile</Translate>
+                                <DynamicTranslate>Please complete your volunteer profile</DynamicTranslate>
                             </CardTitle>
                             <CardDescription>
-                                <Translate>Follow these steps to get started</Translate>
+                                <DynamicTranslate>Follow these steps to get started</DynamicTranslate>
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -209,7 +220,7 @@ export default function VolunteerDashboard() {
                                         <div className="flex items-center gap-2 mb-3">
                                             <Briefcase className="w-4 h-4 text-gray-600" />
                                             <h3 className="font-medium">
-                                                <Translate>Skills</Translate>
+                                                <Translate>Your Skills</Translate>
                                             </h3>
                                         </div>
                                         <div className="flex flex-wrap gap-2">
@@ -284,7 +295,7 @@ export default function VolunteerDashboard() {
                                     <div>
                                         <CardTitle className='font-bold'><Translate>Matched Organizations</Translate></CardTitle>
                                         <CardDescription className='font-medium text-xl'>
-                                            {matchedOrgs.length} <Translate>organizations match your skills</Translate>
+                                            {matchedOrgs.length} <DynamicTranslate>organizations match your skills</DynamicTranslate>
                                         </CardDescription>
                                     </div>
                                 </div>

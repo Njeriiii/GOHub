@@ -1,5 +1,5 @@
 import React from "react";
-import { Translate } from "../contexts/TranslationProvider";
+import { DynamicTranslate } from "../contexts/TranslationProvider";
 import { 
     Building2,
     Phone,
@@ -95,51 +95,51 @@ export default function Sidebar({ onboardingFormData }) {
         {/* Contact Information Section */}
         <div className="p-6">
             <h2 className="text-2xl font-semibold text-gray-900 mb-6">
-                <Translate>Contact Information</Translate>
+                <DynamicTranslate>Contact Information</DynamicTranslate>
             </h2>
 
             <ul className="space-y-1">
             <InfoItem
                 icon={Building2}
-                title={<Translate>Organization</Translate>}
+                title={<DynamicTranslate>Organization</DynamicTranslate>}
                 content={orgProfile.org_name}
             />
 
             <InfoItem
                 icon={Mail}
-                title={<Translate>Email</Translate>}
+                title={<DynamicTranslate>Email</DynamicTranslate>}
                 content={orgProfile.org_email}
                 link={`mailto:${orgProfile.org_email}`}
             />
                 
                 <InfoItem
                 icon={Phone}
-                title={<Translate>Phone</Translate>}
+                title={<DynamicTranslate>Phone</DynamicTranslate>}
                 content={orgProfile.org_phone}
                 link={`tel:${orgProfile.org_phone}`}
             />
                 
             <InfoItem
                 icon={MapPin}
-                title={<Translate>Address</Translate>}
+                title={<DynamicTranslate>Address</DynamicTranslate>}
                 content={fullAddress}
                 link={orgProfile.org_google_maps_link}
             />
                 
             <InfoItem
                 icon={Globe}
-                title={<Translate>Website</Translate>}
+                title={<DynamicTranslate>Website</DynamicTranslate>}
                 content={orgProfile.org_website}
                 link={orgProfile.org_website}
             />
             <InfoItem
                 icon={FileText}
-                title={<Translate>Registration Number</Translate>}
+                title={<DynamicTranslate>Registration Number</DynamicTranslate>}
                 content={orgProfile.org_registration_number}
             />
             <InfoItem
                 icon={Calendar}
-                title={<Translate>Established</Translate>}
+                title={<DynamicTranslate>Established</DynamicTranslate>}
                 content={orgProfile.org_year_established}
             />
             </ul>
@@ -150,7 +150,7 @@ export default function Sidebar({ onboardingFormData }) {
                 href={`mailto:${orgProfile.org_email}`}
                 className="block w-full text-center px-6 py-3 bg-teal-600 text-white rounded-lg font-medium hover:bg-teal-700 transition-colors duration-200 "
             >
-                <Translate>Contact Us</Translate>
+                <DynamicTranslate>Contact Us</DynamicTranslate>
             </a>
             </div>
         </div>
@@ -159,7 +159,7 @@ export default function Sidebar({ onboardingFormData }) {
         {orgProfile.org_google_maps_link && (
             <div className="p-6">
             <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                <Translate>Location</Translate>
+                <DynamicTranslate>Location</DynamicTranslate>
             </h3>
             <div className="rounded-lg overflow-hidden ">
                 <iframe
@@ -183,7 +183,7 @@ export default function Sidebar({ onboardingFormData }) {
                     rel="noopener noreferrer"
                     className="inline-flex items-center text-m text-teal-600 hover:text-teal-700 font-medium"
                 >
-                    <Translate>View larger map</Translate>
+                    <DynamicTranslate>View larger map</DynamicTranslate>
                     <ExternalLink className="ml-1 h-4 w-4" />
                 </a>
                 </div>
@@ -194,7 +194,7 @@ export default function Sidebar({ onboardingFormData }) {
         {/* Social Media Section */}
         <div className="p-6">
             <h3 className="text-xl font-semibold text-gray-900 mb-4">
-            <Translate>Connect With Us</Translate>
+            <DynamicTranslate>Connect With Us</DynamicTranslate>
             </h3>
             <div className="flex items-center gap-2">
             <SocialIcon

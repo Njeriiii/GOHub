@@ -94,7 +94,7 @@ export function LanguageSwitch() {
     };
 
     return (
-        <div className="relative">
+        <div className="relative z-50">
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="p-2 rounded-full hover:bg-gray-100 transition-colors"
@@ -106,10 +106,10 @@ export function LanguageSwitch() {
             {isOpen && (
                 <>
                     <div 
-                        className="fixed inset-0" 
+                        className="fixed inset-0 z-40"
                         onClick={() => setIsOpen(false)}
                     />
-                    <div className="absolute right-0 mt-2 py-1 w-32 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
+                    <div className="absolute right-0 mt-2 py-1 w-32 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 z-50">
                         <button
                             onClick={() => handleLanguageChange('en')}
                             className={`block w-full text-left px-4 py-2 text-sm ${

@@ -5,7 +5,7 @@ import OrgDisplayCard from '../components/OrgDisplayCard';
 import Header from '../components/Header';
 import KenyaIcon from '../components/icons/KenyaIcon';
 import { Loader2, Search } from 'lucide-react';
-import { Translate } from '../contexts/TranslationProvider';
+import { Translate, DynamicTranslate } from '../contexts/TranslationProvider';
 
 // Component to load all organisations and display their name and an overview
 export default function DisplayPage() {
@@ -77,7 +77,7 @@ export default function DisplayPage() {
                                 <Translate>Discover Kenyan Organizations</Translate>
                             </h1>
                             <p className="text-2xl text-teal-600 font-bold">
-                                <Translate>Connect with community-based organizations making real change happen!</Translate>
+                                <DynamicTranslate>Connect with community-based organizations making real change happen!</DynamicTranslate>
                             </p>
                         </div>
                     </div>

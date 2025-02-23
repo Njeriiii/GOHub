@@ -12,10 +12,10 @@ export default function OrgProjects({ onboardingFormData }) {
             <Translate>Our Work</Translate>
             </h2>
             <p className="text-gray-500 mb-8 text-2xl font-medium">
-            <Translate>
+            <DynamicTranslate>
                 Explore our initiatives and projects making a difference in the
                 community
-            </Translate>
+            </DynamicTranslate>
             </p>
 
             {/* Program Initiatives Section */}
