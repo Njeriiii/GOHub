@@ -55,13 +55,14 @@ export default function EditProfile({  }) {
     };
 
     return (
-        <div className="max-w-4xl mx-auto py-8">
-            {/* Read-only organization info */}
-            <div className="bg-gray-100 rounded-lg p-6 mb-6">
+    <div className="min-h-screen bg-teal-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            {/* Organization Info Card */}
+            <div className="bg-white p-6 rounded-sm mb-6">
                 <h2 className="text-xl font-bold text-gray-900 mb-4">
                     {formData.orgProfile.org_name}
                 </h2>
-                <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                     <div>
                         <span className="text-gray-600">Registration Number:</span>
                         <span className="ml-2 font-medium">{formData.orgProfile.org_registration_number}</span>
@@ -74,21 +75,21 @@ export default function EditProfile({  }) {
             </div>
 
             {/* Navigation Tabs */}
-            <div className="mb-6 border-b border-gray-200">
-                <nav className="flex space-x-4" aria-label="Tabs">
+            <div className="bg-white rounded-sm mb-6">
+                <nav className="flex space-x-4 p-2" aria-label="Tabs">
                     {tabs.map((tab) => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`
-                                py-4 px-1 border-b-2 font-medium text-sm
+                                flex items-center py-3 px-4 rounded-lg font-medium text-sm transition-colors duration-200
                                 ${activeTab === tab.id
-                                    ? 'border-teal-500 text-teal-600'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                    ? 'bg-teal-50 text-teal-600'
+                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                                 }
                             `}
                         >
-                            <tab.icon className="h-5 w-5 inline-block mr-2" />
+                            <tab.icon className="h-5 w-5 mr-2" />
                             {tab.label}
                         </button>
                     ))}
@@ -96,8 +97,8 @@ export default function EditProfile({  }) {
             </div>
 
             {/* Tab Content */}
-            {activeTab === 'basic' && (
-                <div className="">
+            <div className="">
+                {activeTab === 'basic' && (
                     <EditBasicInfo
                         formData={formData}
                         localData={localData}
@@ -106,7 +107,6 @@ export default function EditProfile({  }) {
                         onSave={() => handleSave('basic')}
                         onCancel={() => handleCancel('basic')}
                     />
-                </div>
             )}
 
             {/* Inside your parent component */}
@@ -154,16 +154,19 @@ export default function EditProfile({  }) {
                     onEdit={true}
             />
             )}
+        </div>
 
             {/* Return to Profile Button */}
             <div className="flex justify-end">
                 <button
                     onClick={handleReturnToProfile}
-                    className="inline-flex items-center px-6 py-3 text-sm font-medium text-white bg-teal-600 rounded-full shadow-lg hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors duration-200"
+                    className="inline-flex items-center px-6 py-3 text-sm font-medium text-white bg-teal-600 rounded-lg shadow-sm hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors duration-200"
                 >
                     <span className="mr-2">Return to Profile</span>
                     <ArrowRightIcon className="h-5 w-5" />
                 </button>
             </div>
         </div>
-)};
+    </div>
+);
+}
