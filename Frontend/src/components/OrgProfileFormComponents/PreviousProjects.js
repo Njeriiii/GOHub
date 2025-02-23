@@ -35,7 +35,7 @@ const AutoResizeTextarea = ({ value, onChange, placeholder, name }) => {
                 onChange={onChange}
                 placeholder={placeholder}
                 rows={1}
-                className="w-full rounded-md border border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-2 resize-none overflow-hidden"
+                className="w-full rounded-md border border-gray-300 focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-2 resize-none overflow-hidden"
                 style={{ 
                     minHeight: '100px',
                     height: 'auto',
@@ -118,7 +118,7 @@ const PreviousProjectsList = forwardRef((props, ref) => {
                                 value={project.projectName}
                                 onChange={(e) => handleInputChange(index, e)}
                                 placeholder="E.g., Community Health Awareness Campaign 2022"
-                                className="w-full rounded-md border border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-2"
+                                className="w-full rounded-md border border-gray-300 focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-2"
                             />
                         </div>
 
@@ -154,7 +154,7 @@ const PreviousProjectsList = forwardRef((props, ref) => {
                 <button 
                     type="button" 
                     onClick={handleAddProject} 
-                    className="rounded-md bg-teal-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-teal-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600"
+                    className="rounded-md bg-teal-600 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600"
                 >
                     + Add Another Project
                 </button>

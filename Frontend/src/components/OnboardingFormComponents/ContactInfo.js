@@ -83,7 +83,7 @@ const ContactInfo = forwardRef(({ initialValues = { email: '', phone: '' } }, re
                             name="email"
                             value={state.email}
                             onChange={handleInputChange}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-base"
+                            className="mt-1 block w-full rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500 sm:text-base"
                             placeholder="organization@example.com"
                         />
                         {errors.email && (
@@ -104,7 +104,7 @@ const ContactInfo = forwardRef(({ initialValues = { email: '', phone: '' } }, re
                             name="phone"
                             value={state.phone}
                             onChange={handleInputChange}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-base"
+                            className="mt-1 block w-full rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500 sm:text-base"
                             placeholder="+254... or 0..."
                         />
                         {errors.phone && (

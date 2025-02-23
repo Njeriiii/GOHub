@@ -149,7 +149,7 @@ const OrgDetails = forwardRef((props, ref) => {
                     id="orgName"
                     value={state.orgName}
                     onChange={handleInputChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-base"
+                    className="mt-1 block w-full rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500 sm:text-base"
                     placeholder="e.g., GROOTS Kenya"
                 />
                 {errors.orgName && (
@@ -169,7 +169,7 @@ const OrgDetails = forwardRef((props, ref) => {
                         id="aboutOrg"
                         value={state.aboutOrg}
                         onChange={handleInputChange}
-                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-base min-h-[100px] transition-height duration-200"
+                        className="block w-full rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500 sm:text-base min-h-[100px] transition-height duration-200"
                         placeholder="Provide a brief description of your organization"
                         maxLength={200}
                         style={{ resize: 'none', overflow: 'hidden' }}
@@ -195,7 +195,7 @@ const OrgDetails = forwardRef((props, ref) => {
                         id="orgRegistrationNumber"
                         value={state.orgRegistrationNumber}
                         onChange={handleInputChange}
-                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-base"
+                        className="block w-full rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500 sm:text-base"
                         placeholder="Optional - Enter if registered"
                     />
                 </div>
@@ -217,7 +217,7 @@ const OrgDetails = forwardRef((props, ref) => {
                     onChange={handleInputChange}
                     min="1963"
                     max={new Date().getFullYear()}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-base"
+                    className="mt-1 block w-full rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500 sm:text-base"
                     placeholder={`Year between 1963 and ${new Date().getFullYear()}`}
                 />
                 {errors.orgYearEstablished && (

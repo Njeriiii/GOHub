@@ -121,9 +121,9 @@ const OnboardingForm = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8">
+        <div className="min-h-screen bg-teal-50 py-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div className="bg-white rounded-lg overflow-hidden">
                     <div className="px-4 py-5 sm:p-6">
                         <h2 className="text-2xl font-bold text-gray-900 text-center mb-8">
                             Organization Profile
@@ -175,7 +175,7 @@ const OnboardingForm = () => {
                                 <button
                                     type="submit"
                                     disabled={isSubmitting}
-                                    className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {isSubmitting ? 'Submitting...' : 'Submit Profile'}
                                     <Save className="ml-2 h-5 w-5" />
