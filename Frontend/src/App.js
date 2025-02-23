@@ -18,6 +18,7 @@ import VolunteerPage from './pages/VolunteerPage';
 import SelectUserTypePage from './pages/SelectUserTypePage';
 import EstablishmentGuide from './pages/EstablishmentGuide';
 import EditProfile from './pages/EditProfilePage';
+import EditVolunteerProfilePage from './pages/EditVolunteerProfilePage';
 import ProfileImages from "./components/OrgProfileFormComponents/ProfileImages";
 import ProposalBuilderPage from './pages/ProposalBuilderPage';
 import AboutUsPage from './pages/AboutUsPage';
@@ -48,6 +49,7 @@ function App() {
               <Route path="/org_profile" element={<OrgProfile />} />
               <Route path="/upload-images" element={<ProfileImages />} />
               <Route path="/edit_profile" element={<EditProfile />} />
+              <Route path="/volunteer/edit" element={<EditVolunteerProfilePage />} />
 
               <Route path="/establishment-guide" element={<EstablishmentGuide />} />
               <Route path="/proposal-builder" element={<ProposalBuilderPage />} />

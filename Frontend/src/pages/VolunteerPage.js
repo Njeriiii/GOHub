@@ -263,7 +263,7 @@ export default function VolunteerDashboard() {
 
                                     <button 
                                         className="w-full flex items-center justify-center gap-2 py-2 text-m font-medium text-teal-600 bg-teal-50 rounded-lg hover:bg-teal-100 transition-colors"
-                                        onClick={() => window.location.href = '/profile/edit'}
+                                        onClick={() => window.location.href = '/volunteer/edit'}
                                     >
                                         <Pencil className="w-4 h-4" />
                                         <Translate>Edit Profile</Translate>
