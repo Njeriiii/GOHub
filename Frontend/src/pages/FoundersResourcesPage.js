@@ -1,4 +1,7 @@
 import React from "react";
+import { useEffect, useState } from "react";
+import { useApi } from "../contexts/ApiProvider";
+import { useAuth } from "../contexts/AuthProvider";
 import {
     Card,
     CardHeader,
@@ -6,10 +9,37 @@ import {
     CardDescription,
     CardContent,
 } from "../components/ui/card";
-import { BookOpen, FileText, ArrowRight } from "lucide-react";
+import { BookOpen, FileText, ArrowRight, Building2 } from "lucide-react";
 import Header from "../components/Header";
+import OrgDisplayCard from "../components/OrgDisplayCard";
+
+const OrgViewSection = ({ loading, onboardingFormData }) => {
+    return (
+        <div className="max-w-3xl mx-auto bg-white rounded-m p-6">
+            <div className="flex items-center gap-3 mb-6">
+                <Building2 className="h-5 w-5 text-teal-600" />
+                <h2 className="text-lg font-semibold text-gray-900">View your Organization's Profile</h2>
+            </div>
+
+            {loading ? (
+                <div className="flex items-center justify-center py-8">
+                    <div className="animate-spin rounded-full h-6 w-6 border-2 border-teal-500 border-t-transparent"></div>
+                </div>
+            ) : (
+                <OrgDisplayCard org={onboardingFormData.orgProfile} />
+            )}
+        </div>
+    );
+};
 
 export default function FoundersResourcesPage () {
+
+    const apiClient = useApi();
+    const { user } = useAuth();
+    const userId = user.id;
+    const [onboardingFormData, setOnboardingFormData] = useState(null);
+    const [loading, setLoading] = useState(true);
+
   // Define resources with their details
     const resources = [
         {
@@ -27,6 +57,21 @@ export default function FoundersResourcesPage () {
         icon: FileText,
         },
     ];
+
+    useEffect(() => {    
+        apiClient.get(`/profile/load_org?user_id=${userId}`)
+            .then((response) => {
+                if (response.ok) {
+                    setOnboardingFormData(response.body);
+                    setLoading(false);
+                } else {
+                    console.error("Error fetching data: ", response.body);
+                }
+            })
+            .catch((error) => {
+                console.error("Error fetching data: ", error);
+            });
+        }, [apiClient, userId]);
 
     return (
         <div className="min-h-screen bg-teal-50">
@@ -72,6 +117,10 @@ export default function FoundersResourcesPage () {
                 </a>
             );
             })}
+        </div>
+
+        <div className="lg:col-span-1 max-w-3xl mx-auto mt-10 border-t border-gray-200 pt-8">
+            <OrgViewSection loading={loading} onboardingFormData={onboardingFormData}/>
         </div>
         </div>
     );
