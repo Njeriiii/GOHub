@@ -94,7 +94,7 @@ export default function HomePage() {
                             <CardContent className="p-6">
                                 <Lightbulb className="w-8 h-8 text-teal-600 mb-4" />
                                 <h3 className="text-xl font-semibold mb-2">
-                                    <Translate>Founder's Resources</Translate>
+                                    <Translate>Founder Resources</Translate>
                                 </h3>
                                 <p className="text-gray-600 mb-4">
                                     <DynamicTranslate>Resources, guides, and support for CBO founders and leaders</DynamicTranslate>
