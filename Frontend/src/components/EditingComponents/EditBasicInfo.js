@@ -241,7 +241,7 @@ const EditBasicInfo = ({
                             ref={overviewTextAreaRef}
                             value={localData.orgProfile.org_overview}
                             onChange={handleOverviewChange}
-                            className="block w-full rounded-md border-gray-300 shadow-sm 
+                            className="block w-full rounded-md border-gray-300
                                     focus:border-teal-500 focus:ring-teal-500 sm:text-base 
                                     min-h-[100px] transition-height duration-200"
                             placeholder="Provide a brief description of your organization"

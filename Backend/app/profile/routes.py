@@ -330,6 +330,103 @@ def get_all_skills():
     return jsonify([skill.serialize() for skill in skills]), 200
 
 
+@profile.route("/profile/volunteer/edit", methods=["POST"])
+def edit_volunteer_profile():
+    data = request.get_json()
+
+    # Get user_id from the request data
+    user_id = data.get("userId")
+
+    if not user_id:
+        return jsonify({"message": "User ID is required"}), 400
+
+    try:
+        user = User.query.filter_by(id=user_id).one()
+    except NoResultFound:
+        return jsonify({"message": "User not found"}), 404
+
+    if user.is_admin:
+        return (
+            jsonify({"message": "Admin users cannot edit a volunteer profile"}),
+            403,
+        )
+
+    # Get current skills
+    current_tech_skills = {
+        skill.skill for skill in user.skills if skill.status == "tech"
+    }
+    current_non_tech_skills = {
+        skill.skill for skill in user.skills if skill.status == "non-tech"
+    }
+
+    # Get skills to add and remove
+    new_tech_skills = set(data.get("techSkills", []))
+    new_non_tech_skills = set(data.get("nonTechSkills", []))
+
+    try:
+        # Handle tech skills changes
+        tech_skills_to_add = new_tech_skills - current_tech_skills
+        tech_skills_to_remove = current_tech_skills - new_tech_skills
+
+        # Handle non-tech skills changes
+        non_tech_skills_to_add = new_non_tech_skills - current_non_tech_skills
+        non_tech_skills_to_remove = current_non_tech_skills - new_non_tech_skills
+
+        # Remove skills that are no longer needed
+        for skill in user.skills[
+            :
+        ]:  # Create a copy of the list to avoid modification during iteration
+            if (skill.status == "tech" and skill.skill in tech_skills_to_remove) or (
+                skill.status == "non-tech" and skill.skill in non_tech_skills_to_remove
+            ):
+                user.skills.remove(skill)
+
+        # Add new tech skills
+        for skill_name in tech_skills_to_add:
+            skill_obj = SkillsNeeded.query.filter_by(skill=skill_name).first()
+            if not skill_obj:
+                skill_obj = SkillsNeeded(skill=skill_name, status="tech")
+                db.session.add(skill_obj)
+            user.skills.append(skill_obj)
+
+        # Add new non-tech skills
+        for skill_name in non_tech_skills_to_add:
+            skill_obj = SkillsNeeded.query.filter_by(skill=skill_name).first()
+            if not skill_obj:
+                skill_obj = SkillsNeeded(skill=skill_name, status="non-tech")
+                db.session.add(skill_obj)
+            user.skills.append(skill_obj)
+
+        db.session.commit()
+
+        # Return summary of changes
+        changes = {
+            "added": {
+                "tech": list(tech_skills_to_add),
+                "non_tech": list(non_tech_skills_to_add),
+            },
+            "removed": {
+                "tech": list(tech_skills_to_remove),
+                "non_tech": list(non_tech_skills_to_remove),
+            },
+        }
+
+        return (
+            jsonify(
+                {
+                    "message": "Volunteer skills updated successfully",
+                    "changes": changes,
+                    "user": user.serialize(),
+                }
+            ),
+            200,
+        )
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": f"An error occurred: {str(e)}"}), 500
+
+
 # Edit basic organization profile information
 @profile.route("/profile/edit_basic_info", methods=["POST"])
 def edit_org_profile():

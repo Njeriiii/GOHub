@@ -244,7 +244,7 @@ export default function ProjectNarrativeSection({ }) {
 
 
     return (
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white rounded-lg p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Project Narrative</h2>
 
             {/* Information Notice */}
@@ -288,7 +288,7 @@ export default function ProjectNarrativeSection({ }) {
                                         )}
                                         placeholder={field.placeholder}
                                         rows={3}
-                                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                                        className="block w-full rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500"
                                     />
                                 ) : (
                                     <input
@@ -300,7 +300,7 @@ export default function ProjectNarrativeSection({ }) {
                                             e.target.value
                                         )}
                                         placeholder={field.placeholder}
-                                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                                        className="block w-full rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500"
                                     />
                                 )}
                                 </div>
@@ -314,7 +314,7 @@ export default function ProjectNarrativeSection({ }) {
             <button
                 onClick={handleGenerate}
                 disabled={isGenerating}
-                className="mt-6 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50"
+                className="mt-6 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50"
             >
                 {isGenerating ? (
                     <>

@@ -13,7 +13,7 @@ import ProposalBudgetSection from '../components/ProposalBuilderComponents/Propo
 import ExecutiveSummarySection from '../components/ProposalBuilderComponents/ExecutiveSummarySection';
 import Header from '../components/Header';
 import { useAuth } from '../contexts/AuthProvider';
-
+import { DynamicTranslate } from '../contexts/TranslationProvider';
 /**
  * ProposalBuilder
  * 
@@ -37,6 +37,7 @@ export default function ProposalBuilder() {
     const [activeSection, setActiveSection] = useState('organizationInfo');
     const [showTip, setShowTip] = useState(true);
     const { user } = useAuth();
+    console.log(user);
     const userId = user ? user.id : null;
     const [completedSections, setCompletedSections] = useState(() => {
         // Initialize from localStorage
@@ -71,49 +72,59 @@ export default function ProposalBuilder() {
     }, []);
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-teal-50">
             <Header />
             <main>
                 <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
                     {/* Introduction section */}
-                    <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+                    <div className="bg-gray-50 rounded-lg p-6 mb-8">
                         <div className="max-w-3xl">
                             <h1 className="text-3xl font-bold text-gray-900 mb-4">
-                                AI-Powered Grant Proposal Builder
+                                <DynamicTranslate>AI-Powered Grant Proposal Builder</DynamicTranslate>
                             </h1>
                             <div className="space-y-4 text-gray-600">
                                 <p className="text-lg">
+                                    <DynamicTranslate>
                                     Transform your project ideas into professionally written grant proposals. Our AI assistant guides you through each section, ensuring comprehensive and compelling content.
+                                    </DynamicTranslate>
                                 </p>
                                 <div className="flex space-x-4">
                                     <div className="border-l-4 border-teal-500 pl-4">
-                                        <h2 className="font-medium text-gray-900">Professional Quality</h2>
-                                        <p className="text-lg mt-1">Generate polished, funder-ready content that follows grant writing best practices.</p>
+                                        <h2 className="font-medium text-gray-900"><DynamicTranslate>Professional Quality</DynamicTranslate></h2>
+                                        <p className="text-lg mt-1">
+                                            <DynamicTranslate>
+                                            Generate polished, funder-ready content that follows grant writing best practices.
+                                            </DynamicTranslate>
+                                        </p>
                                     </div>
                                 </div>
+                                <div className="">
+                                        <p className="text-lg mt-1 font-bold"><DynamicTranslate>Note: This service can only generate content in English.</DynamicTranslate></p>
+                                    </div>
                             </div>
                         </div>
                     </div>
 
                     {/* Progress Overview */}
                     {showTip && (
-                        <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <div className="mb-6 bg-orange-50 border border-orange-200 rounded-lg p-4">
                             <div className="flex justify-between items-start">
                                 <div className="flex space-x-2">
-                                    <ArrowDownIcon className="h-5 w-5 text-yellow-600" />
+                                    <ArrowDownIcon className="h-5 w-5 text-orange-600" />
                                     <div>
                                         <p className="text 
-                                        text-yellow-800">
-                                            <span className="font-bold">Recommended order:</span> Complete sections from left to right. The Executive Summary should be written last as it draws from all other sections.
-                                        </p>
-                                        <p className="text-yellow-600 text-sm mt-1">
+                                        text-orange-800">
+                                            <DynamicTranslate>
+                                            Recommended order: Complete sections from left to right. The Executive Summary should be written last as it draws from all other sections.
+                                            </DynamicTranslate></p>
+                                        <p className="text-orange-600 text-sm mt-1 font-bold"><DynamicTranslate>
                                             Progress is automatically saved as you work.
-                                        </p>
+                                        </DynamicTranslate></p>
                                     </div>
                                 </div>
                                 <button 
                                     onClick={() => setShowTip(false)}
-                                    className="text-yellow-600 hover:text-yellow-800"
+                                    className="text-orange-600 hover:text-orange-800"
                                 >
                                     ×
                                 </button>
@@ -147,11 +158,11 @@ export default function ProposalBuilder() {
                     </div>
 
                     <div className="mb-8">
-                        {!userId ? (
-                            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                                <p className="text-yellow-800">
-                                    Please log in to access organization information.
-                                </p>
+                        {!(userId && user && user.is_admin) ? (
+                            <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                                <p className="text-orange-800"><DynamicTranslate>
+                                    Please log in to access your organization's information. This tool is only available to registered CBO founders.
+                                </DynamicTranslate></p>
                             </div>
                         ) : (
                             <>
@@ -174,9 +185,9 @@ export default function ProposalBuilder() {
                             }}
                             disabled={activeSection === sections[0].id}
                             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
+                        ><DynamicTranslate>
                             Previous Section
-                        </button>
+                        </DynamicTranslate></button>
                         <button
                             onClick={() => {
                                 const currentIndex = sections.findIndex(s => s.id === activeSection);
@@ -186,9 +197,9 @@ export default function ProposalBuilder() {
                             }}
                             disabled={activeSection === sections[sections.length - 1].id}
                             className="px-4 py-2 text-sm font-medium text-white bg-teal-600 border border-transparent rounded-md hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
+                        ><DynamicTranslate>
                             Next Section
-                        </button>
+                        </DynamicTranslate></button>
                     </div>
                 </div>
             </main>

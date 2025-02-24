@@ -197,7 +197,7 @@ export default function OrganizationInfoSection() {
     }
 
     return (
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white rounded-lg p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Organization Information</h2>
             
             {error && (
@@ -225,7 +225,7 @@ export default function OrganizationInfoSection() {
                             <input
                                 type="text"
                                 value={inputs.orgName}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                                className="mt-1 block w-full rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500"
                                 readOnly
                             />
                         </div>
@@ -234,7 +234,7 @@ export default function OrganizationInfoSection() {
                             <input
                                 type="text"
                                 value={inputs.yearEstablished}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                                className="mt-1 block w-full rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500"
                                 readOnly
                             />
                         </div>
@@ -253,7 +253,7 @@ export default function OrganizationInfoSection() {
                                 value={inputs.grantSpecific.relevantInitiatives}
                                 onChange={(e) => handleInputChange('grantSpecific', 'relevantInitiatives', e.target.value)}
                                 rows={4}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                                className="mt-1 block w-full rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500"
                             />
                         </div>
                         <div>
@@ -264,7 +264,7 @@ export default function OrganizationInfoSection() {
                                 value={inputs.grantSpecific.ongoingProjects}
                                 onChange={(e) => handleInputChange('grantSpecific', 'ongoingProjects', e.target.value)}
                                 rows={4}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                                className="mt-1 block w-full rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500"
                             />
                         </div>
                     </div>
@@ -283,7 +283,7 @@ export default function OrganizationInfoSection() {
                                 onChange={(e) => handleInputChange('grantSpecific', 'orgCapacity', e.target.value)}
                                 placeholder="If relevant, describe any additional capacity specific to this project..."
                                 rows={3}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                                className="mt-1 block w-full rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500"
                             />
                         </div>
                         <div>
@@ -295,7 +295,7 @@ export default function OrganizationInfoSection() {
                                 onChange={(e) => handleInputChange('grantSpecific', 'previousGrants', e.target.value)}
                                 placeholder="If applicable, mention specific grants relevant to this application..."
                                 rows={3}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                                className="mt-1 block w-full rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500"
                             />
                         </div>
                         <div>
@@ -307,7 +307,7 @@ export default function OrganizationInfoSection() {
                                 onChange={(e) => handleInputChange('grantSpecific', 'successStories', e.target.value)}
                                 placeholder="If relevant, share success stories related to similar projects..."
                                 rows={3}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                                className="mt-1 block w-full rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500"
                             />
                         </div>
                         <div>
@@ -319,7 +319,7 @@ export default function OrganizationInfoSection() {
                                 onChange={(e) => handleInputChange('grantSpecific', 'teamQualifications', e.target.value)}
                                 placeholder="If applicable, mention specific team qualifications relevant to this project..."
                                 rows={3}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                                className="mt-1 block w-full rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500"
                             />
                         </div>
                         <div>
@@ -331,7 +331,7 @@ export default function OrganizationInfoSection() {
                                 onChange={(e) => handleInputChange('grantSpecific', 'partnershipHistory', e.target.value)}
                                 placeholder="If applicable, describe partnerships relevant to this specific project..."
                                 rows={3}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                                className="mt-1 block w-full rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500"
                             />
                         </div>
                     </div>
@@ -341,7 +341,7 @@ export default function OrganizationInfoSection() {
                 <button
                     onClick={handleGenerate}
                     disabled={isGenerating}
-                    className="mt-6 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50"
+                    className="mt-6 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50"
                 >
                     {isGenerating ? (
                         <>

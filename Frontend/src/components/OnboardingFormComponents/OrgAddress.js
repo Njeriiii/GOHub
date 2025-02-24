@@ -149,7 +149,7 @@ return (
                     name="districtTown" 
                     value={state.districtTown} 
                     onChange={handleInputChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-base"
+                    className="mt-1 block w-full rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500 sm:text-base"
                     placeholder="e.g., Westlands"
                 />
                 {errors.districtTown && (
@@ -187,7 +187,7 @@ return (
                     name="poBox" 
                     value={state.poBox} 
                     onChange={handleInputChange} 
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-base"
+                    className="mt-1 block w-full rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500 sm:text-base"
                     placeholder="e.g., P.O. Box 12345-00100"
                 />
                 {errors.poBox && (
@@ -224,7 +224,7 @@ return (
                     name="physicalDescription"
                     value={state.physicalDescription}
                     onChange={handleInputChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-base min-h-[100px]"
+                    className="mt-1 block w-full rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500 sm:text-base min-h-[100px]"
                     placeholder="e.g., Located on the 3rd floor of Kilimani Business Center, next to Shell Petrol Station"
                     style={{ resize: 'none', overflow: 'hidden' }}
                 />
@@ -241,7 +241,7 @@ return (
                 <p className="mt-1 text-sm text-gray-500">
                     Share your Google Maps link to help people find your exact location
                 </p>
-                <div className="mt-1 relative rounded-md shadow-sm">
+                <div className="mt-1 relative rounded-md ">
                     <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                         <MapPin className="h-5 w-5 text-gray-400" />
                     </div>

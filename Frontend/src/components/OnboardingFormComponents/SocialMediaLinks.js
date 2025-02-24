@@ -134,7 +134,7 @@ const SocialMediaLinks = forwardRef(({ initialValues = {} }, ref) => {
                             <label htmlFor={`${platform}Input`} className="block text-xl font-medium text-gray-700">
                                 {platformLabels[platform]}
                             </label>
-                            <div className="mt-1 relative rounded-md shadow-sm">
+                            <div className="mt-1 relative rounded-md ">
                                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                                     <Icon className="h-5 w-5 text-gray-400" />
                                 </div>

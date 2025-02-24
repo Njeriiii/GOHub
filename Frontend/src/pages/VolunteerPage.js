@@ -1,26 +1,124 @@
 import React, { useState, useEffect } from 'react';
-import { PencilIcon, MapPinIcon, EnvelopeIcon, BriefcaseIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/solid';
-import Header from '../components/Header';
-import OrgDisplayCard from '../components/OrgDisplayCard';
 import { useApi } from '../contexts/ApiProvider';
 import { useAuth } from '../contexts/AuthProvider';
-import { Translate, DynamicTranslate } from '../contexts/TranslationProvider';
+import { DynamicTranslate, Translate } from '../contexts/TranslationProvider';
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+    VolunteerMainCard,
+} from "../components/ui/card";
+import {
+    Mail,
+    Briefcase,
+    ChevronDown,
+    ChevronUp,
+    Pencil,
+    User,
+    BadgeCheck,
+    Sparkles,
+    Target,
+    Users,
+    Award, 
+    GraduationCap, 
+    Clock,
+} from "lucide-react";
+import { Loader2 } from 'lucide-react';
+import Header from '../components/Header';
+import OrgDisplayCard from '../components/OrgDisplayCard';
+import {
+    techSkillOptions,
+    nonTechSkillOptions,
+} from "../components/utils/supportNeedsFocusAreaEntries";
 
-export default function VolunteerPage() {
+const messages = [
+    <DynamicTranslate>If you're not a volunteer yet, sign up!</DynamicTranslate>,
+    <DynamicTranslate>
+        Update your skills profile to include more areas you're interested in
+    </DynamicTranslate>,
+    <DynamicTranslate>
+        Expand your search criteria, such as considering remote opportunities
+    </DynamicTranslate>,
+    <DynamicTranslate>
+        Check back regularly, as new opportunities are added frequently.
+    </DynamicTranslate>,
+    <DynamicTranslate>
+        Consider gaining new skills through online courses or workshops.
+    </DynamicTranslate>,
+    <DynamicTranslate>
+        Reach out to our support team for personalized assistance in finding
+        opportunities.
+    </DynamicTranslate>,
+];
+
+const BenefitCard = ({ icon: Icon, title, description }) => (
+    <div className="p-4 bg-white">
+        <div className="flex flex-col items-start">
+        <div className="p-2 bg-teal-50 rounded-lg mb-4">
+            <Icon className="w-6 h-6 text-teal-600" />
+        </div>
+        <div className="space-y-1">
+            <h3 className="text-gray-900 font-medium">
+            <DynamicTranslate>{title}</DynamicTranslate>
+            </h3>
+            <p className="text-gray-600">
+            <DynamicTranslate>{description}</DynamicTranslate>
+            </p>
+        </div>
+        </div>
+    </div>
+);
+
+const BenefitSection = () => {
+    return (
+        <div className="grid md:grid-cols-2 gap-6 mb-8">
+            <BenefitCard
+            icon={GraduationCap}
+            title="Earn University Credit"
+            description="Gain university credits while making a difference."
+            />
+            <BenefitCard
+            icon={Users}
+            title="Build Your Community"
+            description="Create meaningful connections and strengthen your community."
+            />
+            <BenefitCard
+            icon={Award}
+            title="Gain Valuable Experience"
+            description="Develop practical skills for your career."
+            />
+            <BenefitCard
+            icon={Clock}
+            title="Flexible Hours"
+            description="Volunteer on your own schedule."
+            />
+        </div>
+    );
+};
+export default function VolunteerDashboard() {
     const [matchedOrgs, setMatchedOrgs] = useState([]);
     const [volunteerInfo, setVolunteerInfo] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [showAllSkills, setShowAllSkills] = useState(false);
     const apiClient = useApi();
     const { getUserId } = useAuth();
-    const [showAllSkills, setShowAllSkills] = useState(false);
-
-    // Get the userId from the API context
     const userId = getUserId();
+
+    // Create a map of all possible skills for label lookup
+    const allSkillOptions = [...techSkillOptions, ...nonTechSkillOptions];
+    const skillLabelMap = Object.fromEntries(
+        allSkillOptions.map(option => [option.value.toLowerCase(), option.label])
+    );
+
+    const getSkillLabel = (skillValue) => {
+        return skillLabelMap[skillValue.toLowerCase()] || skillValue;
+    };
 
     useEffect(() => {
         const fetchData = async () => {
-
             try {
                 const [matchResponse, volunteerResponse] = await Promise.all([
                     apiClient.get(`/main/match-skills?user_id=${userId}`),
@@ -31,11 +129,8 @@ export default function VolunteerPage() {
                     throw new Error('Failed to fetch data');
                 }
 
-                const matchData = await matchResponse.body;
-                const volunteerData = await volunteerResponse.body;
-
-                setMatchedOrgs(matchData.matches || []);
-                setVolunteerInfo(volunteerData.volunteer || null);
+                setMatchedOrgs(matchResponse.body.matches || []);
+                setVolunteerInfo(volunteerResponse.body.volunteer || null);
                 setError(null);
             } catch (err) {
                 setError(err.message);
@@ -49,154 +144,193 @@ export default function VolunteerPage() {
 
     if (isLoading) {
         return (
-            <>
+            <div className="min-h-screen bg-teal-50">
                 <Header />
-                <div className="flex justify-center items-center h-screen">
-                    <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-teal-600"></div>
+                <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
+                    <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
                 </div>
-            </>
+            </div>
         );
     }
 
     if (error) {
         return (
-            <>
+            <div className="min-h-screen bg-teal-50">
                 <Header />
-                <div className="flex justify-center items-center h-screen">
-                    {/* <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                        <strong className="font-bold">Error: </strong>
-                        <span className="block sm:inline">{error}</span>
-                    </div> */}
-
-                    <div className="bg-white shadow-lg rounded-lg p-6">
-                        <h3 className="text-xl font-semibold mb-4 text-teal-600"><Translate>Please sign up as a volunteer to access volunteering opportunities!</Translate></h3>
-                        <ul className="space-y-2 text-gray-600">
-                            <li className="flex items-start">
-                                <span className="bg-teal-100 text-teal-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-1 flex-shrink-0">1</span>
-                                <span><Translate>Update your skills profile to include more areas you're interested in.</Translate></span>
-                            </li>
-                            <li className="flex items-start">
-                                <span className="bg-teal-100 text-teal-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-1 flex-shrink-0">2</span>
-                                <span><Translate>Expand your search criteria, such as considering remote opportunities.</Translate></span>
-                            </li>
-                            <li className="flex items-start">
-                                <span className="bg-teal-100 text-teal-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-1 flex-shrink-0">3</span>
-                                <span><Translate>Check back regularly, as new opportunities are added frequently.</Translate></span>
-                            </li>
-                            <li className="flex items-start">
-                                <span className="bg-teal-100 text-teal-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-1 flex-shrink-0">4</span>
-                                <span><Translate>Consider gaining new skills through online courses or workshops.</Translate></span>
-                            </li>
-                            <li className="flex items-start">
-                                <span className="bg-teal-100 text-teal-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-1 flex-shrink-0">5</span>
-                                <span><Translate>Reach out to our support team for personalized assistance in finding opportunities.</Translate></span>
-                            </li>
-                        </ul>
-                    </div>
+                <div className="container mx-auto px-4 py-16">
+                    <BenefitSection/>       
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>
+                                <DynamicTranslate>Please complete your volunteer profile</DynamicTranslate>
+                            </CardTitle>
+                            <CardDescription>
+                                <DynamicTranslate>Follow these steps to get started</DynamicTranslate>
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-4">
+                                {messages.map((message, index) => (
+                                    <div key={index} className="flex items-center gap-3">
+                                        <div className="w-6 h-6 rounded-full bg-teal-50 text-teal-600 flex items-center justify-center font-medium">
+                                            {index + 1}
+                                        </div>
+                                        <p className="text-gray-600">{message}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
                 </div>
-            </>
+            </div>
         );
     }
 
     return (
-        <div className="bg-gray-100 min-h-screen">
+        <div className="min-h-screen bg-teal-50">
             <Header />
             <div className="container mx-auto px-4 py-8">
-                <h1 className="text-4xl font-bold text-gray-800 mb-8"><Translate>Volunteer Dashboard</Translate></h1>
-                
-                <div className="flex flex-col lg:flex-row gap-8">
-                    {/* Left column: Volunteer Info */}
-                    <div className="lg:w-1/3">
+                <div className="grid lg:grid-cols-3 gap-8">
+                    <div>
                         {volunteerInfo && (
-                            <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-                                <div className="bg-teal-600 text-white p-4">
-                                    <h2 className="text-2xl font-semibold">{volunteerInfo.first_name} {volunteerInfo.last_name}</h2>
-                                    {volunteerInfo.is_admin && <p className="text-teal-100"><Translate>Admin</Translate></p>}
-                                    {!volunteerInfo.is_admin && <p className="text-teal-100"><Translate>Volunteer</Translate></p>}
-                                </div>
-                                <div className="p-6">
-                                    <div className="flex items-center mb-4">
-                                        <EnvelopeIcon className="h-5 w-5 text-gray-400 mr-2" />
-                                        <p className="text-gray-600">{volunteerInfo.email}</p>
+                            <Card>
+                                <CardHeader>
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 bg-teal-50 rounded-full">
+                                            <User className="w-5 h-5 text-teal-600" />
+                                        </div>
+                                        <div>
+                                            <CardTitle>{volunteerInfo.first_name} {volunteerInfo.last_name}</CardTitle>
+                                            <CardDescription className="flex items-center gap-1 font-medium">
+                                                {volunteerInfo.is_admin && <BadgeCheck className="w-4 h-4" />}
+                                                <span>{volunteerInfo.is_admin ? <Translate>Admin</Translate> : <Translate>Volunteer</Translate>}</span>
+                                            </CardDescription>
+                                        </div>
                                     </div>
-                                    <div className="flex items-center mb-4">
-                                        <MapPinIcon className="h-5 w-5 text-gray-400 mr-2" />
-                                        <p className="text-gray-600">{volunteerInfo.location || 'Not specified'}</p>
+                                </CardHeader>
+                                <CardContent className="space-y-6">
+                                    <div className="space-y-3">
+                                        <div className="flex items-center gap-2 text-gray-600">
+                                            <Mail className="w-4 h-4" />
+                                            <span>{volunteerInfo.email}</span>
+                                        </div>
                                     </div>
-                                    <div className="mb-4">
-                                        <h3 className="text-xl font-semibold mb-2 flex items-center">
-                                            <BriefcaseIcon className="h-5 w-5 text-gray-400 mr-2" />
-                                            <Translate>
-                                            Your Skills
-                                            </Translate></h3>
-                                        <ul className="space-y-2">
-                                            {volunteerInfo.skills && volunteerInfo.skills.slice(0, showAllSkills ? undefined : 5).map((skill) => (
-                                                <li key={skill.skill_id} className="bg-teal-100 text-teal-800 rounded-full px-3 py-1 text-sm inline-block mr-2 mb-2">
-                                                <DynamicTranslate>
-                                                    {skill.skill}
-                                                </DynamicTranslate>
-                                                </li>
+
+                                    <div>
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <Briefcase className="w-4 h-4 text-gray-600" />
+                                            <h3 className="font-medium">
+                                                <Translate>Your Skills</Translate>
+                                            </h3>
+                                        </div>
+                                        <div className="flex flex-wrap gap-2">
+                                            {volunteerInfo.skills?.slice(0, showAllSkills ? undefined : 5).map((skill) => (
+                                                <span 
+                                                    key={skill.skill_id} 
+                                                    className="inline-flex items-center px-2.5 py-1 rounded-full text-lg font-bold bg-teal-50 text-teal-600"
+                                                >
+                                                    {getSkillLabel(skill.skill)}
+                                                </span>
                                             ))}
-                                        </ul>
-                                        {volunteerInfo.skills && volunteerInfo.skills.length > 5 && (
+                                        </div>
+                                        {volunteerInfo.skills?.length > 5 && (
                                             <button
                                                 onClick={() => setShowAllSkills(!showAllSkills)}
-                                                className="text-teal-600 hover:text-teal-800 text-sm font-medium mt-2 flex items-center"
+                                                className="mt-3 flex items-center text-m text-teal-600 hover:text-teal-700"
                                             >
                                                 {showAllSkills ? (
-                                                    <>Show Less <ChevronUpIcon className="h-4 w-4 ml-1" /></>
+                                                    <>
+                                                        <ChevronUp className="w-4 h-4 mr-1" />
+                                                        <Translate>Show Less</Translate>
+                                                    </>
                                                 ) : (
-                                                    <>Show More <ChevronDownIcon className="h-4 w-4 ml-1" /></>
+                                                    <>
+                                                        <ChevronDown className="w-4 h-4 mr-1" />
+                                                        <Translate>Show More</Translate>
+                                                    </>
                                                 )}
                                             </button>
                                         )}
                                     </div>
-                                    <button className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-full flex items-center">
-                                        <PencilIcon className="h-4 w-4 mr-2" />
-                                        <Translate>
-                                        Edit Profile
-                                        </Translate>
+
+                                    {/* Quick Stats */}
+                                    <Card>
+                                        <CardHeader>
+                                            <CardTitle className="text-xl"><Translate>Your Potential for Impact</Translate></CardTitle>
+                                        </CardHeader>
+                                        <CardContent className="grid grid-cols-2 gap-4">
+                                            <div className="p-4 bg-teal-50 rounded-lg text-center">
+                                                <Sparkles className="w-5 h-5 text-teal-600 mx-auto mb-2" />
+                                                <div className="text-3xl font-bold text-teal-700">{volunteerInfo?.skills?.length || 0}</div>
+                                                <div className="text-m text-teal-600"><Translate>Skills</Translate></div>
+                                            </div>
+                                            <div className="p-4 bg-teal-50 rounded-lg text-center">
+                                                <Target className="w-5 h-5 text-teal-600 mx-auto mb-2" />
+                                                <div className="text-3xl font-bold text-teal-700">{matchedOrgs.length}</div>
+                                                <div className="text-m text-teal-600"><Translate>Matches</Translate></div>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+
+                                    <button 
+                                        className="w-full flex items-center justify-center gap-2 py-2 text-m font-medium text-teal-600 bg-teal-50 rounded-lg hover:bg-teal-100 transition-colors"
+                                        onClick={() => window.location.href = '/volunteer/edit'}
+                                    >
+                                        <Pencil className="w-4 h-4" />
+                                        <Translate>Edit Profile</Translate>
                                     </button>
-                                </div>
-                            </div>
+                                </CardContent>
+                            </Card>
                         )}
+                        <div className="mt-8">
+                            <BenefitSection />
+                        </div>
                     </div>
 
-                    {/* Right column: Matched Organizations */}
-                    <div className="lg:w-2/3">
-                        <h2 className="text-2xl font-bold text-gray-800 mb-4"><Translate>Matched Organizations</Translate></h2>
-                        <div className="">
-                            <div className="grid gap-6">
+                    <div className="lg:col-span-2">
+                        <VolunteerMainCard className="bg-teal-50">
+                            <CardHeader>
+                                <div className="flex items-center bg-teal-50">
+                                    <Users className="w-10 h-5 text-teal-600" />
+                                    <div>
+                                        <CardTitle className='font-bold'><Translate>Matched Organizations</Translate></CardTitle>
+                                        <CardDescription className='font-medium text-xl'>
+                                            {matchedOrgs.length} <DynamicTranslate>organizations match your skills</DynamicTranslate>
+                                        </CardDescription>
+                                    </div>
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-4 bg-teal-50">
                                     {matchedOrgs.map((org) => (
-                                        <OrgDisplayCard key={org.org_id} org={org} />
+                                        <OrgDisplayCard key={org.org_id} org={org} isVolunteerPage={true} />
                                     ))}
-                            </div>
-                        </div>
-                            <div className="bg-white shadow-lg rounded-lg p-6">
-                                <h3 className="text-xl font-semibold mb-4 text-teal-600"><Translate>Here are some steps to increase your matches</Translate></h3>
-                                <ul className="space-y-2 text-gray-600">
-                                    <li className="flex items-start">
-                                        <span className="bg-teal-100 text-teal-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-1 flex-shrink-0">1</span>
-                                        <span><Translate>Update your skills profile to include more areas you're interested in.</Translate></span>
-                                    </li>
-                                    <li className="flex items-start">
-                                        <span className="bg-teal-100 text-teal-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-1 flex-shrink-0">2</span>
-                                        <span><Translate>Expand your search criteria, such as considering remote opportunities.</Translate></span>
-                                    </li>
-                                    <li className="flex items-start">
-                                        <span className="bg-teal-100 text-teal-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-1 flex-shrink-0">3</span>
-                                        <span><Translate>Check back regularly, as new opportunities are added frequently.</Translate></span>
-                                    </li>
-                                    <li className="flex items-start">
-                                        <span className="bg-teal-100 text-teal-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-1 flex-shrink-0">4</span>
-                                        <span><Translate>Consider gaining new skills through online courses or workshops.</Translate></span>
-                                    </li>
-                                    <li className="flex items-start">
-                                        <span className="bg-teal-100 text-teal-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-1 flex-shrink-0">5</span>
-                                        <span><Translate>Reach out to our support team for personalized assistance in finding opportunities.</Translate></span>
-                                    </li>
-                                </ul>
-                            </div>
+                                    {matchedOrgs.length === 0 && (
+                                        <div className="text-center py-8 text-gray-500">
+                                            <Translate>No matching organizations found yet. Try updating your skills!</Translate>
+                                        </div>
+                                    )}
+                                </div>
+                            </CardContent>
+                        </VolunteerMainCard>
+
+                        <Card>
+                            <CardHeader>
+                                <CardTitle><Translate>Tips to Find More Matches</Translate></CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-3">
+                                    {messages.map((message, index) => (
+                                        <div key={index} className="flex items-center gap-3">
+                                            <div className="w-6 h-6 rounded-full bg-teal-50 text-teal-600 flex items-center justify-center font-medium">
+                                                {index + 1}
+                                            </div>
+                                            <p className="text-gray-600 text-lg">{message}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </CardContent>
+                        </Card>
                     </div>
                 </div>
             </div>

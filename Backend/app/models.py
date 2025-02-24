@@ -57,6 +57,23 @@ org_skills_connection = db.Table(
     db.Column("description", db.Text, nullable=True)
 )
 
+
+def serialize_org_skill_connection(connection):
+    """
+    Serializes a single row from the org_skills_connection table
+    and includes the related skill information
+    """
+    # Get the related skill
+    skill = SkillsNeeded.query.get(connection.skill_id)
+
+    return {
+        "org_id": connection.org_id,
+        "skill_id": connection.skill_id,
+        "description": connection.description,
+        "skill_name": skill.skill,  # Add the skill name
+        "status": skill.status,  # Add the status
+    }
+
 # Define the Focus Areas table
 org_focus_areas = db.Table(
     "org_focus_areas",

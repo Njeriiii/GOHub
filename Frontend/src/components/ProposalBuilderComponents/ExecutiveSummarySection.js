@@ -102,7 +102,7 @@ export default function ExecutiveSummarySection() {
     };
 
     return (
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white rounded-lg p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Executive Summary</h2>
 
             {/* Information Notice */}
@@ -124,8 +124,8 @@ export default function ExecutiveSummarySection() {
                 </div>
             )}
 
-            <div className="mb-8 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                <p className="text-yellow-800">
+            <div className="mb-8 bg-orange-50 border border-orange-200 rounded-lg p-4">
+                <p className="text-orange-800">
                     <span className="font-bold">Note:</span> Before generating the executive summary, make sure you've completed all other sections of your proposal. The AI will use that context to create a comprehensive summary.
                 </p>
             </div>
@@ -141,7 +141,7 @@ export default function ExecutiveSummarySection() {
                         onChange={(e) => handleInputChange('keyHighlights', e.target.value)}
                         placeholder="What are the most important points that should stand out?"
                         rows={3}
-                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                        className="block w-full rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500"
                     />
                 </div>
 
@@ -154,7 +154,7 @@ export default function ExecutiveSummarySection() {
                         onChange={(e) => handleInputChange('uniqueValue', e.target.value)}
                         placeholder="What makes your organization/project uniquely qualified to address this need?"
                         rows={3}
-                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                        className="block w-full rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500"
                     />
                 </div>
 
@@ -167,7 +167,7 @@ export default function ExecutiveSummarySection() {
                         onChange={(e) => handleInputChange('urgency', e.target.value)}
                         placeholder="Why is this project critical now? What makes the timing important?"
                         rows={3}
-                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                        className="block w-full rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500"
                     />
                 </div>
 
@@ -180,7 +180,7 @@ export default function ExecutiveSummarySection() {
                         onChange={(e) => handleInputChange('impact', e.target.value)}
                         placeholder="What are the most compelling outcomes and impacts to highlight?"
                         rows={3}
-                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                        className="block w-full rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500"
                     />
                 </div>
             </div>
@@ -189,7 +189,7 @@ export default function ExecutiveSummarySection() {
             <button
                 onClick={handleGenerate}
                 disabled={isGenerating}
-                className="mt-6 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50"
+                className="mt-6 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50"
             >
                 {isGenerating ? (
                     <>

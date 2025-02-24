@@ -94,7 +94,7 @@ const GeneratedContent = ({
     }
 
     return (
-        <div className="mt-8 bg-white border border-gray-200 rounded-xl shadow-sm">
+        <div className="mt-8 bg-white border border-gray-200 rounded-xl">
             {/* Header */}
             <div className="px-6 py-4 border-b border-gray-200">
                 <h3 className="text-lg font-semibold text-gray-900">

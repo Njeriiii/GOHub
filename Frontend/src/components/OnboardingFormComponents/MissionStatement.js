@@ -65,7 +65,7 @@ const MissionStatement = forwardRef(({ initialValue = '' }, ref) => {
                 ref={textAreaRef}
                 value={statement}
                 onChange={handleInputChange}
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 
+                className="w-full rounded-md border-gray-300 focus:border-teal-500 
                         focus:ring-teal-500 sm:text-base min-h-[100px] transition-height duration-200"
                 placeholder="Enter your organization's mission statement..."
                 style={{ resize: 'none', overflow: 'hidden' }}

@@ -198,11 +198,11 @@ export default function KeyWordSearch({ orgData = [], onSearchResults }) {
     };
 
     return (
-        <div className="bg-teal-600 rounded-xl">
+        <div className="bg-teal-50 rounded-xl">
             <div className="p-8">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-2xl font-semibold text-white flex items-center gap-2">
+                    <h2 className="text-2xl font-semibold text-gray flex items-center gap-2">
                         <Translate>Find Organizations</Translate>
                     </h2>
                     {searchResults.length > 0 && (
@@ -241,13 +241,13 @@ export default function KeyWordSearch({ orgData = [], onSearchResults }) {
                 <div className="space-y-4">
                     <button
                         onClick={() => setIsFiltersVisible(!isFiltersVisible)}
-                        className="flex items-center gap-2 text-sm text-teal-50 hover:text-white transition-colors"
+                        className="flex items-center gap-2 text-sm text-teal-600 hover:text-gray transition-colors"
                     >
                         <ChevronDown 
-                            className={`h-4 w-4 transition-transform duration-200 
+                            className={`h-4 w-4 transition-transform duration-200
                                 ${isFiltersVisible ? 'rotate-180' : ''}`}
                         />
-                        <span className="font-bold text-xl">
+                        <span className="font-bold text-xl text-teal-600">
                             <Translate>Advanced Filters</Translate>
                         </span>
                     </button>
@@ -259,7 +259,7 @@ export default function KeyWordSearch({ orgData = [], onSearchResults }) {
                     >
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
                             <div>
-                                <label className="block text-l font-bold text-teal-50 mb-2">
+                                <label className="block text-l font-bold text-teal-600 mb-2">
                                     <Translate>Focus Area</Translate>
                                 </label>
                                 <div className="relative backdrop-blur-sm">
@@ -286,7 +286,7 @@ export default function KeyWordSearch({ orgData = [], onSearchResults }) {
                             </div>
 
                             <div>
-                                <label className="block text-l font-bold text-teal-50 mb-2">
+                                <label className="block text-l font-bold text-teal-600 mb-2">
                                     <Translate>Skills Needed</Translate>
                                 </label>
                                 <div className="relative backdrop-blur-sm">

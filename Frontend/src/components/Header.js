@@ -13,11 +13,10 @@ import { Translate, LanguageSwitch } from '../contexts/TranslationProvider';
 // Navigation links
 const navigation = [
     { name: "Home", href: "/" },
-    { name: "Find GOs", href: "/find-gos" },
-    { name: "Establishment Guide", href: "/establishment-guide" },
-    { name: "Proposal Builder", href: "/proposal-builder" },
+    { name: "Find CBOs", href: "/find-gos" },
+    { name: "Founder Resources", href: "/founder-resources" },
     { name: "Volunteer", href: "/volunteer" },
-    { name: "About", href: "/about" },
+    { name: "About Us", href: "/about-us" },
 ];
 
 // Logo component
@@ -51,7 +50,7 @@ export default function Header() {
     };
 
     return (
-        <header className="bg-white shadow-md">
+        <header className="bg-white">
         <nav
             className="mx-auto flex max-w-7xl items-center justify-between p-4 lg:px-8"
             aria-label="Global"

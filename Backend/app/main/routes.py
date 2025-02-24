@@ -3,7 +3,7 @@ from google.cloud import translate_v2 as translate
 import os
 from app import db
 from functools import lru_cache
-from datetime import datetime, timedelta
+from datetime import datetime
 from google.oauth2 import service_account
 import logging
 from sqlalchemy.sql import text
@@ -12,7 +12,8 @@ from app.models import (
     SkillsNeeded,
     org_skills_connection,
     OrgProfile,
-    TranslationCache
+    TranslationCache,
+    serialize_org_skill_connection
 )
 
 main = Blueprint("main", __name__)
@@ -52,6 +53,10 @@ def get_all_orgs():
             "focus_areas": [focus_area.serialize() for focus_area in org.focus_areas],
             "skills_needed": [skill.serialize() for skill in org.skills_needed],
             "org_logo_filename": org.logo_url,
+            "org_mission_statement": org.org_mission_statement,
+            "org_year_established": org.org_year_established,
+            "org_district_town": org.org_district_town,
+            "org_county": org.org_county,
         }
 
         orgs_data.append(org_data)
@@ -87,14 +92,23 @@ def match_volunteer_skills():
         # Prepare the response data
         org_matches = []
         for org in matching_orgs:
-            
+            # Get the skills connections for this organization
+            org_skills = (
+                db.session.query(org_skills_connection)
+                .join(SkillsNeeded)
+                .filter(org_skills_connection.c.org_id == org.id)
+                .all()
+            )
             org_matches.append(
                 {
                     "org_id": org.id,
                     "org_name": org.org_name,
                     "user_id": org.user_id,
                     "focus_areas": [focus_area.serialize() for focus_area in org.focus_areas],
-                    # "matching_skills": matching_skills,
+                    "skills_needed": [
+                        serialize_org_skill_connection(skill_connection)
+                        for skill_connection in org_skills
+                    ],
                 }
             )
         
@@ -178,8 +192,7 @@ def get_cached_translation(text, target_language):
         )
         
         # Check if cache is still valid (less than 30 days old)
-        if (cached_entry and 
-            cached_entry.created_at > datetime.utcnow() - timedelta(days=30)):
+        if cached_entry:
             return {
                 'translatedText': cached_entry.translated_text,
                 'fromCache': True

@@ -41,7 +41,7 @@ const AutoResizeTextarea = ({ value, onChange, placeholder, name }) => {
                 onChange={onChange}
                 placeholder={placeholder}
                 rows={1}
-                className="w-full rounded-md border border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-2 resize-none overflow-hidden"
+                className="w-full rounded-md border border-gray-300 focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-2 resize-none overflow-hidden"
                 style={{ 
                     minHeight: '100px',
                     height: 'auto',

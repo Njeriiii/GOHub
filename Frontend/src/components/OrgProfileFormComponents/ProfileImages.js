@@ -122,11 +122,11 @@ export function ProfileImages({
     };
 
     return (
-        <div className=" py-12 px-4 sm:px-6 lg:px-8">
+        <div className="py-12 px-4 sm:px-6 lg:px-8 bg-teal-50 min-h-screen">
         <div className="max-w-5xl mx-auto">
             {/* Enhanced Header with animation */}
             <div className="text-center mb-12 animate-fadeIn">
-            <div className="inline-flex flex-col items-center space-y-2 bg-white rounded-2xl px-8 py-4 shadow-sm border border-gray-100">
+            <div className="inline-flex flex-col items-center space-y-2 bg-white rounded-2xl px-8 py-4 border border-gray-100">
                 <div className="flex items-center space-x-3">
                 <ImageIcon className="h-8 w-8 text-teal-600" />
                 <h2 className="text-3xl font-bold text-gray-800">
@@ -141,13 +141,13 @@ export function ProfileImages({
             </div>
 
             {/* Main content with enhanced visuals */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 transition-all hover:shadow-md">
+            <div className="bg-white rounded-xl border border-gray-100 transition-all ">
             <div className="p-8">
                 <div className="grid md:grid-cols-2 gap-8">
                 {/* Logo Upload with enhanced UI */}
                 <div className="space-y-4 group">
                     <div className="flex items-center space-x-3 mb-6">
-                    <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-sm group-hover:shadow transition-all">
+                    <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 transition-all">
                         <ImageIcon className="h-6 w-6 text-white" />
                     </div>
                     <div>
@@ -169,7 +169,7 @@ export function ProfileImages({
                             className="w-full h-full object-contain bg-gray-50 rounded-xl border-2 border-blue-100"
                         />
                         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all rounded-xl" />
-                        <label className="absolute bottom-4 right-4 bg-white rounded-xl px-4 py-2 shadow-lg cursor-pointer hover:bg-gray-50 transition-all transform hover:-translate-y-1 border border-gray-200">
+                        <label className="absolute bottom-4 right-4 bg-white rounded-xl px-4 py-2 cursor-pointer hover:bg-gray-50 transition-all transform hover:-translate-y-1 border border-gray-200">
                             <span className="text-base font-medium">
                             Change Logo
                             </span>
@@ -213,7 +213,7 @@ export function ProfileImages({
                 {/* Cover Photo Upload with enhanced UI */}
                 <div className="space-y-4 group">
                     <div className="flex items-center space-x-3 mb-6">
-                    <div className="p-3 rounded-xl bg-gradient-to-br from-teal-500 to-teal-600 shadow-sm group-hover:shadow transition-all">
+                    <div className="p-3 rounded-xl bg-gradient-to-br from-teal-500 to-teal-600 transition-all">
                         <ImageIcon className="h-6 w-6 text-white" />
                     </div>
                     <div>
@@ -235,7 +235,7 @@ export function ProfileImages({
                             className="w-full h-full object-cover rounded-xl border-2 border-teal-100"
                         />
                         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all rounded-xl" />
-                        <label className="absolute bottom-4 right-4 bg-white rounded-xl px-4 py-2 shadow-lg cursor-pointer hover:bg-gray-50 transition-all transform hover:-translate-y-1 border border-gray-200">
+                        <label className="absolute bottom-4 right-4 bg-white rounded-xl px-4 py-2 cursor-pointer hover:bg-gray-50 transition-all transform hover:-translate-y-1 border border-gray-200">
                             <span className="text-base font-medium">
                             Change Cover
                             </span>
@@ -292,7 +292,7 @@ export function ProfileImages({
                 <button
                     onClick={handleSubmit}
                     disabled={loading}
-                    className="flex items-center space-x-3 px-8 py-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-xl hover:from-teal-600 hover:to-teal-700 transition-all hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
+                    className="flex items-center space-x-3 px-8 py-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-xl hover:from-teal-600 hover:to-teal-700 transition-all  disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     <span className="text-base font-medium">
                     {loading ? "Saving Changes..." : "Save"}

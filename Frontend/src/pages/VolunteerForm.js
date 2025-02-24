@@ -3,48 +3,39 @@ import { useNavigate} from 'react-router-dom';
 import CreatableSelect from "react-select/creatable";
 import { useApi } from '../contexts/ApiProvider';
 import { useAuth } from '../contexts/AuthProvider';
+import { nonTechSkillOptions, techSkillOptions } from '../components/utils/supportNeedsFocusAreaEntries';
+
+const formatSkillsForSelect = (skills) => {
+    return skills.map((skill) => ({
+        value: skill.toLowerCase().replace(/\s+/g, ""),
+        label:
+            nonTechSkillOptions.find((option) => option.value === skill)?.label ||
+            techSkillOptions.find((option) => option.value === skill)?.label ||
+            skill,
+    }));
+};
 
 // This component represents the volunteer form page.
 // It allows volunteers to submit their technical and non-technical skills.
-const VolunteerForm = () => {
-    const [techSkills, setTechSkills] = useState([]);
-    const [nonTechSkills, setNonTechSkills] = useState([]);
+const VolunteerForm = ({ 
+    isEditing = false,
+    initialTechSkills = [],
+    initialNonTechSkills = [],
+    onCancel
+}) => {
+    const [techSkills, setTechSkills] = useState(
+        isEditing ? formatSkillsForSelect(initialTechSkills) : []
+    );
+    const [nonTechSkills, setNonTechSkills] = useState(
+        isEditing ? formatSkillsForSelect(initialNonTechSkills) : []
+    );
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(false);
     const apiClient = useApi();
     const { getUserId } = useAuth();
 
     // Get the userId from the API context
     const userId = getUserId();
-
-    const techSkillOptions = [
-        { value: 'webdevelopment', label: 'Web Development' },
-        { value: 'photography', label: 'Photography' },
-        { value: 'graphicdesign', label: 'Graphic Design' },
-        { value: 'dataanalysis', label: 'Data Analysis' },
-        { value: 'videoproduction', label: 'Video Production' },
-        { value: 'digitalmarketing', label: 'Digital Marketing' },
-        { value: 'cybersecurity', label: 'Cybersecurity' },
-        { value: '3dmodeling', label: '3D Modeling' },
-        { value: 'soundengineering', label: 'Sound Engineering' },
-        { value: 'uxuidesign', label: 'UX/UI Design' },
-    ];
-
-    const nonTechSkillOptions = [
-        { value: 'communication', label: 'Communication' },
-        { value: 'leadership', label: 'Leadership' },
-        { value: 'projectmanagement', label: 'Project Management' },
-        { value: 'publicspeaking', label: 'Public Speaking' },
-        { value: 'writing', label: 'Writing' },
-        { value: 'teamwork', label: 'Teamwork' },
-        { value: 'problemsolving', label: 'Problem Solving' },
-        { value: 'timemanagement', label: 'Time Management' },
-        { value: 'creativity', label: 'Creativity' },
-        { value: 'customerservice', label: 'Customer Service' },
-        { value: 'eventplanning', label: 'Event Planning' },
-        { value: 'fundraising', label: 'Fundraising' },
-        { value: 'mentoring', label: 'Mentoring' },
-        { value: 'conflictresolution', label: 'Conflict Resolution' },
-    ];
 
     const checkRedirect = async () => {
         // Check if a profile has been created
@@ -69,6 +60,9 @@ const VolunteerForm = () => {
                 if (profileResponse.body.volunteer.skills.length > 0) {
                     // Profile exists, redirect to dashboard
                     navigate('/');
+                } else {
+                    // Profile does not exist, allow user to create one
+                    return;
                 }
             }
         }
@@ -80,6 +74,7 @@ const VolunteerForm = () => {
             alert('User ID is missing. Please try logging in again.');
             return;
         }
+        setIsLoading(true);
     
         const data = { 
             userId, 
@@ -88,20 +83,20 @@ const VolunteerForm = () => {
         };
     
         try {
-            const response = await apiClient.post('/profile/volunteer', data);
+            const endpoint = isEditing ? '/profile/volunteer/edit' : '/profile/volunteer';
+            const response = await apiClient.post(endpoint, data);
         
             if (response.ok) {
             alert('Form submitted successfully!');
-            setTechSkills([]);
-            setNonTechSkills([]);
-            // Optionally, navigate to a success page or dashboard
-            navigate('/');
+                navigate('/volunteer');
             } else {
                 alert('Error submitting form. Please try again.');
-            }
+                }
             } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred. Please try again later.');
+                console.error('Error:', error);
+                alert('An error occurred. Please try again later.');
+            } finally {
+                setIsLoading(false);
             }
         };
     
@@ -136,14 +131,15 @@ const VolunteerForm = () => {
 
         // delay the redirect to allow the checkRedirect function to run
         // before the return statement
-        setTimeout(() => {
+        if (!isEditing) {
             checkRedirect();
-
+        }
             return (            
-                <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <div className="max-w-md w-full space-y-8">
-                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                    Volunteer Information
+                <div className="absolute inset-0 bg-teal-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+                <div className="w-full max-w-md">
+                <div className="bg-white rounded-lg p-8">
+                    <h2 className="text-center text-3xl font-bold text-gray-900 mb-8">
+                    {isEditing ? 'Edit Skills' : 'Volunteer Information'}
                     </h2>
                     <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                     <div>
@@ -176,18 +172,30 @@ const VolunteerForm = () => {
                         />
                     </div>
             
-                    <div>
+                    <div className="flex gap-4">
+                        {onCancel && (
+                        <button
+                            type="button"
+                            onClick={onCancel}
+                            className="flex-1 py-2 px-4 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+                        >
+                            Cancel
+                        </button>
+                    )}
                         <button
                         type="submit"
-                        className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+                        disabled={isLoading}
+                        className={`flex-1 py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 ${
+                            isLoading ? 'opacity-75 cursor-not-allowed' : ''
+                        }`}
                         >
-                        Submit
+                        {isLoading ? 'Saving...' : (isEditing ? 'Save Changes' : 'Submit')}
                         </button>
                     </div>
                     </form>
                 </div>
+                    </div>
                 </div>
             );
-        }, 500);
     };
 export default VolunteerForm;
